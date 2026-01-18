@@ -115,11 +115,31 @@ fn main {
   // 5. Request Decoder Example
   println("5. Request Decoder Example")
   println("---")
-  println("RequestDecoder API usage:")
-  println("  let decoder = @lib.RequestDecoder::new()")
-  println("  decoder.feed(data)  // Feed raw bytes")
-  println("  decoder.decode()    // Try to decode a request")
-  println("  Note: Decoder is intended for use with network I/O")
+  // Create a raw HTTP request as bytes
+  let raw_request = "GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
+  let raw_bytes : Array[Byte] = []
+  for i in 0..<raw_request.length() {
+    raw_bytes.push(raw_request[i].to_int().to_byte())
+  }
+  println("Raw request (\{raw_bytes.length()} bytes):")
+  println(bytes_to_string(raw_bytes))
+
+  let decoder = @lib.RequestDecoder::new()
+  match decoder.feed(raw_bytes) {
+    Ok(_) => println("Feed succeeded")
+    Err(e) => println("Feed error: \{e}")
+  }
+  match decoder.decode() {
+    Ok(Some(req)) => {
+      println("Decoded request:")
+      println("  Method: \{req.http_method}")
+      println("  URI: \{req.uri}")
+      println("  Version: \{req.version}")
+      println("  Headers: \{req.headers.length()}")
+    }
+    Ok(None) => println("Decode returned None (need more data)")
+    Err(e) => println("Decode error: \{e}")
+  }
   println("")
 
   // 6. Response Decoder Example

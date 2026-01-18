@@ -476,7 +476,7 @@ fn decoder_bytes_to_string_slice(
   let mut result = ""
   let mut i = start
   while i < end {
-    result = result + arr[i].to_string()
+    result = result + Int::unsafe_to_char(arr[i].to_int()).to_string()
     i = i + 1
   }
   result
