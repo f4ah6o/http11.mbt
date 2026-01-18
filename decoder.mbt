@@ -620,12 +620,9 @@ fn decoder_string_to_lower(s : String) -> String {
   while idx < s.length() {
     let c = s[idx]
     let ci = c.to_int()
-    let new_c = if ci >= 65 && ci <= 90 {
-      Int::unsafe_to_char(ci + 32).to_string()
-    } else {
-      c.to_string()
-    }
-    result = result + new_c
+    // Use Int::unsafe_to_char for all characters, as Char.to_string() may produce numeric output
+    let new_ci = if ci >= 65 && ci <= 90 { ci + 32 } else { ci }
+    result = result + Int::unsafe_to_char(new_ci).to_string()
     idx = idx + 1
   }
   result
