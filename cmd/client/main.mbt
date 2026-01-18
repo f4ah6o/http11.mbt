@@ -73,7 +73,6 @@ fn parse_url(url : String) -> (String, Int, String) {
       break
     }
   }
-
   (host, port, path)
 }
 
@@ -89,12 +88,18 @@ fn parse_port(s : String) -> Int {
       break
     }
   }
-  if result == 0 { 80 } else { result }
+  if result == 0 {
+    80
+  } else {
+    result
+  }
 }
 
 ///|
 fn print_response(response : @lib.Response) -> Unit {
-  println("\{response.version} \{response.status_code} \{response.reason_phrase}")
+  println(
+    "\{response.version} \{response.status_code} \{response.reason_phrase}",
+  )
   for h in response.headers {
     let (name, value) = h
     println("\{name}: \{value}")
@@ -112,7 +117,6 @@ async fn main {
   let url = "http://127.0.0.1:8080/"
   println("Fetching \{url}...")
   println("")
-
   let (host, port, path) = parse_url(url)
 
   // Build request
@@ -152,6 +156,5 @@ async fn main {
       }
     }
   }
-
   conn.close()
 }

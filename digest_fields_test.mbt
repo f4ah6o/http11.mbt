@@ -12,7 +12,10 @@ fn init {
   match digest.get("sha-256") {
     Some(val) => {
       let bytes = val.bytes()
-      if bytes.length() == 3 && bytes[0].to_int() == 97 && bytes[1].to_int() == 98 && bytes[2].to_int() == 99 {
+      if bytes.length() == 3 &&
+        bytes[0].to_int() == 97 &&
+        bytes[1].to_int() == 98 &&
+        bytes[2].to_int() == 99 {
         println("digest_fields.mbt: ContentDigest::get OK")
       } else {
         println("digest_fields.mbt: ContentDigest::get FAILED")
@@ -32,12 +35,11 @@ fn init {
   // Test empty input
   match ContentDigest::parse("") {
     Ok(_) => println("digest_fields.mbt: Empty parse FAILED")
-    Err(e) => {
+    Err(e) =>
       match e {
         Empty => println("digest_fields.mbt: Empty parse OK")
         _ => println("digest_fields.mbt: Empty parse FAILED (wrong error)")
       }
-    }
   }
 
   // Test ReprDigest::parse
@@ -58,13 +60,12 @@ fn init {
 
   // Test WantContentDigest::get
   match want.get("sha-256") {
-    Some(w) => {
+    Some(w) =>
       if w == 10 {
         println("digest_fields.mbt: WantContentDigest::get OK")
       } else {
         println("digest_fields.mbt: WantContentDigest::get FAILED")
       }
-    }
     None => println("digest_fields.mbt: WantContentDigest::get FAILED (None)")
   }
 
@@ -88,7 +89,10 @@ fn init {
   match decoded.get("sha-256") {
     Some(dv) => {
       let db = dv.bytes()
-      if db.length() == 3 && db[0].to_int() == 97 && db[1].to_int() == 98 && db[2].to_int() == 99 {
+      if db.length() == 3 &&
+        db[0].to_int() == 97 &&
+        db[1].to_int() == 98 &&
+        db[2].to_int() == 99 {
         println("digest_fields.mbt: Base64 decode OK")
       } else {
         println("digest_fields.mbt: Base64 decode FAILED")
@@ -96,6 +100,5 @@ fn init {
     }
     None => println("digest_fields.mbt: Base64 decode FAILED (None)")
   }
-
   println("digest_fields.mbt: All basic tests completed")
 }

@@ -1,6 +1,7 @@
 ///|
 /// http11.mbt Example Program
 /// Demonstrates encoding and decoding of HTTP/1.1 requests and responses
+
 ///|
 
 // Helper function to convert bytes to readable string representation
@@ -27,6 +28,7 @@ fn bytes_to_string(bytes : Array[Byte]) -> String {
   result
 }
 
+///|
 fn main {
   println("========================================")
   println("http11.mbt Example Program")
@@ -40,7 +42,6 @@ fn main {
     .header("Host", "example.com")
     .header("Connection", "keep-alive")
     .header("Accept", "application/json")
-
   let get_encoded = @lib.encode_request(get_req)
   println("Encoded GET request:")
   println(bytes_to_string(get_encoded))
@@ -56,12 +57,10 @@ fn main {
     post_body_bytes.push(post_body[i].to_byte())
     i = i + 1
   }
-
   let post_req = @lib.Request::new("POST", "/api/users")
     .header("Host", "example.com")
     .header("Content-Type", "application/json")
     .body(post_body_bytes)
-
   let post_encoded = @lib.encode_request(post_req)
   println("Encoded POST request:")
   println(bytes_to_string(post_encoded))
@@ -77,12 +76,10 @@ fn main {
     resp_body_bytes.push(resp_body[j].to_byte())
     j = j + 1
   }
-
   let resp = @lib.Response::new(200, "OK")
     .header("Content-Type", "text/plain")
     .header("Content-Length", resp_body.length().to_string())
     .body(resp_body_bytes)
-
   let resp_encoded = @lib.encode_response(resp)
   println("Encoded response:")
   println(bytes_to_string(resp_encoded))
@@ -105,7 +102,6 @@ fn main {
     chunk2_bytes.push(chunk2[k2].to_byte())
     k2 = k2 + 1
   }
-
   let chunks = [chunk1_bytes, chunk2_bytes]
   let chunked_encoded = @lib.encode_chunks(chunks)
   println("Encoded chunked data:")
@@ -123,7 +119,6 @@ fn main {
   }
   println("Raw request (\{raw_bytes.length()} bytes):")
   println(bytes_to_string(raw_bytes))
-
   let decoder = @lib.RequestDecoder::new()
   match decoder.feed(raw_bytes) {
     Ok(_) => println("Feed succeeded")
@@ -151,7 +146,6 @@ fn main {
   println("  decoder.decode()    // Try to decode a response")
   println("  Note: Decoder is intended for use with network I/O")
   println("")
-
   println("========================================")
   println("All examples completed successfully!")
   println("========================================")

@@ -79,6 +79,7 @@ let decoder = RequestDecoder::with_limits(DecoderLimits::unlimited())
 
 ```moonbit
 // 基本的なリクエスト作成
+
 ///|
 let req = Request::new("GET", "/test")
   .header("Host", "example.com")
@@ -120,6 +121,7 @@ req.is_chunked()          // false
 
 ```moonbit
 // 基本的なレスポンス作成
+
 ///|
 let resp = Response::new(200, "OK")
   .header("Content-Type", "text/plain")
@@ -191,6 +193,7 @@ match decoder.decode() {
 
 ```moonbit
 // チャンクエンコード
+
 ///|
 let chunk1 = "Hello, ".to_bytes()
 

@@ -39,10 +39,10 @@ fn build_html_response() -> @lib.Response {
   let body = "<!DOCTYPE html>\n<html>\n<head><title>http11.mbt Server</title></head>\n<body>\n<h1>Welcome to http11.mbt!</h1>\n<p>A pure MoonBit HTTP/1.1 implementation.</p>\n<ul>\n<li><a href=\"/\">Home</a></li>\n<li><a href=\"/info\">Server Info (JSON)</a></li>\n<li><a href=\"/echo\">Echo Request</a></li>\n</ul>\n</body>\n</html>"
   let body_bytes = string_to_bytes(body)
   @lib.Response::new(200, "OK")
-    .header("Content-Type", "text/html; charset=utf-8")
-    .header("Content-Length", body_bytes.length().to_string())
-    .header("Connection", "close")
-    .body(body_bytes)
+  .header("Content-Type", "text/html; charset=utf-8")
+  .header("Content-Length", body_bytes.length().to_string())
+  .header("Connection", "close")
+  .body(body_bytes)
 }
 
 ///|
@@ -50,10 +50,10 @@ fn build_json_response() -> @lib.Response {
   let body = "{\"server\":\"http11.mbt\",\"version\":\"0.1.0\",\"language\":\"MoonBit\"}"
   let body_bytes = string_to_bytes(body)
   @lib.Response::new(200, "OK")
-    .header("Content-Type", "application/json")
-    .header("Content-Length", body_bytes.length().to_string())
-    .header("Connection", "close")
-    .body(body_bytes)
+  .header("Content-Type", "application/json")
+  .header("Content-Length", body_bytes.length().to_string())
+  .header("Connection", "close")
+  .body(body_bytes)
 }
 
 ///|
@@ -71,10 +71,10 @@ fn build_echo_response(request : @lib.Request) -> @lib.Response {
   }
   let body_bytes = string_to_bytes(body)
   @lib.Response::new(200, "OK")
-    .header("Content-Type", "text/plain; charset=utf-8")
-    .header("Content-Length", body_bytes.length().to_string())
-    .header("Connection", "close")
-    .body(body_bytes)
+  .header("Content-Type", "text/plain; charset=utf-8")
+  .header("Content-Length", body_bytes.length().to_string())
+  .header("Connection", "close")
+  .body(body_bytes)
 }
 
 ///|
@@ -82,10 +82,10 @@ fn build_not_found_response() -> @lib.Response {
   let body = "404 Not Found"
   let body_bytes = string_to_bytes(body)
   @lib.Response::new(404, "Not Found")
-    .header("Content-Type", "text/plain")
-    .header("Content-Length", body_bytes.length().to_string())
-    .header("Connection", "close")
-    .body(body_bytes)
+  .header("Content-Type", "text/plain")
+  .header("Content-Length", body_bytes.length().to_string())
+  .header("Connection", "close")
+  .body(body_bytes)
 }
 
 ///|
@@ -105,34 +105,35 @@ async fn main {
   println("  curl http://localhost:8080/")
   println("  curl http://localhost:8080/info")
   println("  curl http://localhost:8080/echo")
-  @socket.TcpServer::new(
-    @socket.Addr::parse("0.0.0.0:8080"),
-    reuse_addr=true,
-  ).run_forever(fn(conn, _peer_addr) {
-    let decoder = @lib.RequestDecoder::new()
-    while conn.read_some() is Some(data) {
-      match decoder.feed(bytes_to_array(data)) {
-        Err(_) => {
-          let response_str = "HTTP/1.1 400 Bad Request\r\nContent-Length: 11\r\nConnection: close\r\n\r\nBad Request"
-          conn.write(array_to_bytes(string_to_bytes(response_str)))
-          return
+  @socket.TcpServer::new(@socket.Addr::parse("0.0.0.0:8080"), reuse_addr=true).run_forever(fn(
+      conn,
+      _peer_addr,
+    ) {
+      let decoder = @lib.RequestDecoder::new()
+      while conn.read_some() is Some(data) {
+        match decoder.feed(bytes_to_array(data)) {
+          Err(_) => {
+            let response_str = "HTTP/1.1 400 Bad Request\r\nContent-Length: 11\r\nConnection: close\r\n\r\nBad Request"
+            conn.write(array_to_bytes(string_to_bytes(response_str)))
+            return
+          }
+          Ok(_) => ()
         }
-        Ok(_) => ()
+        match decoder.decode() {
+          Ok(Some(request)) => {
+            let response = build_response(request)
+            let response_bytes = @lib.encode_response(response)
+            conn.write(array_to_bytes(response_bytes))
+            return
+          }
+          Ok(None) | Err(@lib.HttpError::UnexpectedEof) => ()
+          Err(_) => {
+            let response_str = "HTTP/1.1 400 Bad Request\r\nContent-Length: 11\r\nConnection: close\r\n\r\nBad Request"
+            conn.write(array_to_bytes(string_to_bytes(response_str)))
+            return
+          }
+        }
       }
-      match decoder.decode() {
-        Ok(Some(request)) => {
-          let response = build_response(request)
-          let response_bytes = @lib.encode_response(response)
-          conn.write(array_to_bytes(response_bytes))
-          return
-        }
-        Ok(None) | Err(@lib.HttpError::UnexpectedEof) => ()
-        Err(_) => {
-          let response_str = "HTTP/1.1 400 Bad Request\r\nContent-Length: 11\r\nConnection: close\r\n\r\nBad Request"
-          conn.write(array_to_bytes(string_to_bytes(response_str)))
-          return
-        }
-      }
-    }
-  })
+    },
+  )
 }
