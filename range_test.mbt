@@ -1,27 +1,33 @@
 ///|
 fn init {
   // Test parse single range
-  let range1 = Range::parse("bytes=0-499").unwrap()
-  if range1.unit() == "bytes" && range1.is_bytes() {
-    println("range.mbt: Parse single range OK")
-  } else {
-    println("range.mbt: Parse single range FAILED")
-  }
-
-  let specs1 = range1.ranges()
-  if specs1.length() == 1 {
-    match specs1[0] {
-      Range(s, e) => {
-        if s == 0UL && e == 499UL {
-          println("range.mbt: Single range values OK")
-        } else {
-          println("range.mbt: Single range values FAILED")
-        }
+  match Range::parse("bytes=0-499") {
+    Ok(range1) => {
+      if range1.unit() == "bytes" && range1.is_bytes() {
+        println("range.mbt: Parse single range OK")
+      } else {
+        println("range.mbt: Parse single range FAILED")
       }
-      _ => println("range.mbt: Single range type FAILED")
+
+      let specs1 = range1.ranges()
+      if specs1.length() == 1 {
+        match specs1[0] {
+          Range(s, e) => {
+            if s == 0UL && e == 499UL {
+              println("range.mbt: Single range values OK")
+            } else {
+              println("range.mbt: Single range values FAILED")
+            }
+          }
+          _ => println("range.mbt: Single range type FAILED")
+        }
+      } else {
+        println("range.mbt: Single range count FAILED")
+      }
     }
-  } else {
-    println("range.mbt: Single range count FAILED")
+    Err(e) => {
+      println("range.mbt: Parse ERROR: " + e.to_string())
+    }
   }
 
   // Test parse multiple ranges

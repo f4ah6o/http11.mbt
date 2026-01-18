@@ -75,44 +75,52 @@ pub(all) struct Range {
 
 ///|
 pub fn Range::parse(input : String) -> Result[Range, RangeError] {
-  let s = rg_trim_string(input)
+  let s = input
+
   if s.length() == 0 {
     return Err(Empty)
   }
 
-  // Find '=' for unit=ranges format
-  let eq_pos = rg_find_char(s, 61)
-  match eq_pos {
-    None => Err(InvalidFormat)
-    Some(pos) => {
-      let unit = rg_trim_string(rg_string_slice(s, 0, pos))
-      let ranges_str = rg_trim_string(rg_string_slice_from(s, pos + 1))
-
-      if unit.length() == 0 {
-        return Err(InvalidUnit)
-      }
-
-      let parts = rg_split_string(ranges_str, ",")
-      let ranges : Array[RangeSpec] = []
-      let mut idx = 0
-      while idx < parts.length() {
-        let part = rg_trim_string(parts[idx])
-        if part.length() > 0 {
-          match rg_parse_range_spec(part) {
-            Ok(spec) => ranges.push(spec)
-            Err(e) => return Err(e)
-          }
-        }
-        idx = idx + 1
-      }
-
-      if ranges.length() == 0 {
-        return Err(Empty)
-      }
-
-      Ok({ unit, ranges, })
-    }
+  // Check for "bytes=" prefix
+  if s.length() < 6 {
+    return Err(InvalidFormat)
   }
+
+  // Simple check: does string start with "bytes="
+  let mut has_bytes = true
+  if s[0] != 'b' { has_bytes = false }
+  else if s[1] != 'y' { has_bytes = false }
+  else if s[2] != 't' { has_bytes = false }
+  else if s[3] != 'e' { has_bytes = false }
+  else if s[4] != 's' { has_bytes = false }
+  else if s[5] != '=' { has_bytes = false }
+
+  if !has_bytes {
+    return Err(InvalidFormat)
+  }
+
+  // Parse everything after "bytes="
+  let ranges_str = s.substring(start=6, end=s.length())
+
+  let parts = rg_split_string(ranges_str, ",")
+  let ranges : Array[RangeSpec] = []
+  let mut idx = 0
+  while idx < parts.length() {
+    let part = rg_trim_string(parts[idx])
+    if part.length() > 0 {
+      match rg_parse_range_spec(part) {
+        Ok(spec) => ranges.push(spec)
+        Err(e) => return Err(e)
+      }
+    }
+    idx = idx + 1
+  }
+
+  if ranges.length() == 0 {
+    return Err(Empty)
+  }
+
+  Ok({ unit: "bytes", ranges, })
 }
 
 ///|
@@ -406,68 +414,75 @@ pub fn AcceptRanges::to_string(self : AcceptRanges) -> String {
 
 ///|
 fn rg_parse_range_spec(s : String) -> Result[RangeSpec, RangeError] {
-  let dash_pos = rg_find_char(s, 45)
-  match dash_pos {
-    None => Err(InvalidRange)
-    Some(pos) => {
-      let start_str = rg_trim_string(rg_string_slice(s, 0, pos))
-      let end_str = rg_trim_string(rg_string_slice_from(s, pos + 1))
+  // Find '-' manually by checking each character
+  let mut dash_pos = -1
+  let mut idx = 0
+  while idx < s.length() {
+    let ch_code = s[idx].to_int()
+    if ch_code == 45 {  // '-' = 45
+      dash_pos = idx
+      break
+    }
+    idx = idx + 1
+  }
 
-      if start_str.length() == 0 && end_str.length() == 0 {
-        return Err(InvalidRange)
-      }
+  if dash_pos == -1 {
+    return Err(InvalidRange)
+  }
 
-      if start_str.length() == 0 {
-        // Suffix: -500
-        match rg_parse_u64(end_str) {
-          Some(length) => Ok(Suffix(length))
-          None => Err(InvalidRange)
-        }
-      } else if end_str.length() == 0 {
-        // FromStart: 500-
-        match rg_parse_u64(start_str) {
-          Some(start) => Ok(FromStart(start))
-          None => Err(InvalidRange)
-        }
-      } else {
-        // Range: 0-499
-        match (rg_parse_u64(start_str), rg_parse_u64(end_str)) {
-          (Some(start), Some(end)) => {
-            if start > end {
-              Err(InvalidBounds)
-            } else {
-              Ok(Range(start, end))
-            }
-          }
-          _ => Err(InvalidRange)
+  // Get start and end parts
+  let mut start_str = ""
+  let mut j = 0
+  while j < dash_pos {
+    start_str = start_str + s[j].to_string()
+    j = j + 1
+  }
+
+  let mut end_str = ""
+  j = dash_pos + 1
+  while j < s.length() {
+    end_str = end_str + s[j].to_string()
+    j = j + 1
+  }
+
+  // Trim whitespace
+  start_str = rg_trim_string(start_str)
+  end_str = rg_trim_string(end_str)
+
+  if start_str.length() == 0 && end_str.length() == 0 {
+    return Err(InvalidRange)
+  }
+
+  if start_str.length() == 0 {
+    // Suffix: -500
+    match rg_parse_u64(end_str) {
+      Some(length) => Ok(Suffix(length))
+      None => Err(InvalidRange)
+    }
+  } else if end_str.length() == 0 {
+    // FromStart: 500-
+    match rg_parse_u64(start_str) {
+      Some(start) => Ok(FromStart(start))
+      None => Err(InvalidRange)
+    }
+  } else {
+    // Range: 0-499
+    match (rg_parse_u64(start_str), rg_parse_u64(end_str)) {
+      (Some(start), Some(end)) => {
+        if start > end {
+          Err(InvalidBounds)
+        } else {
+          Ok(Range(start, end))
         }
       }
+      _ => Err(InvalidRange)
     }
   }
 }
 
 ///|
 fn rg_trim_string(s : String) -> String {
-  let mut start = 0
-  let len = s.length()
-  while start < len {
-    let ch = rg_char_at(s, start)
-    if ch == 32 || ch == 9 || ch == 10 || ch == 13 {
-      start = start + 1
-    } else {
-      break
-    }
-  }
-  let mut end = len
-  while end > start {
-    let ch = rg_char_at(s, end - 1)
-    if ch == 32 || ch == 9 || ch == 10 || ch == 13 {
-      end = end - 1
-    } else {
-      break
-    }
-  }
-  rg_string_slice(s, start, end)
+  s.trim().to_string()
 }
 
 ///|
