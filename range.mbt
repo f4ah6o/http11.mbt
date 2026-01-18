@@ -23,10 +23,7 @@ pub(all) enum RangeSpec {
 } derive(Eq)
 
 ///|
-pub fn RangeSpec::to_bounds(
-  self : RangeSpec,
-  total_length : UInt64,
-) -> (UInt64, UInt64)? {
+pub fn RangeSpec::to_bounds(self : RangeSpec, total_length : UInt64) -> (UInt64, UInt64)? {
   if total_length == 0UL {
     return None
   }
@@ -57,9 +54,15 @@ pub fn RangeSpec::to_bounds(
 ///|
 pub fn RangeSpec::to_string(self : RangeSpec) -> String {
   match self {
-    Range(s, e) => rg_u64_to_string(s) + "-" + rg_u64_to_string(e)
-    FromStart(s) => rg_u64_to_string(s) + "-"
-    Suffix(l) => "-" + rg_u64_to_string(l)
+    Range(s, e) => {
+      rg_u64_to_string(s) + "-" + rg_u64_to_string(e)
+    }
+    FromStart(s) => {
+      rg_u64_to_string(s) + "-"
+    }
+    Suffix(l) => {
+      "-" + rg_u64_to_string(l)
+    }
   }
 }
 
@@ -73,6 +76,7 @@ pub(all) struct Range {
 ///|
 pub fn Range::parse(input : String) -> Result[Range, RangeError] {
   let s = input
+
   if s.length() == 0 {
     return Err(Empty)
   }
@@ -84,25 +88,20 @@ pub fn Range::parse(input : String) -> Result[Range, RangeError] {
 
   // Simple check: does string start with "bytes="
   let mut has_bytes = true
-  if s[0] != 'b' {
-    has_bytes = false
-  } else if s[1] != 'y' {
-    has_bytes = false
-  } else if s[2] != 't' {
-    has_bytes = false
-  } else if s[3] != 'e' {
-    has_bytes = false
-  } else if s[4] != 's' {
-    has_bytes = false
-  } else if s[5] != '=' {
-    has_bytes = false
-  }
+  if s[0] != 'b' { has_bytes = false }
+  else if s[1] != 'y' { has_bytes = false }
+  else if s[2] != 't' { has_bytes = false }
+  else if s[3] != 'e' { has_bytes = false }
+  else if s[4] != 's' { has_bytes = false }
+  else if s[5] != '=' { has_bytes = false }
+
   if !has_bytes {
     return Err(InvalidFormat)
   }
 
   // Parse everything after "bytes="
-  let ranges_str = rg_string_slice_from(s, 6)
+  let ranges_str = try! s[6:].to_string()
+
   let parts = rg_split_string(ranges_str, ",")
   let ranges : Array[RangeSpec] = []
   let mut idx = 0
@@ -116,10 +115,12 @@ pub fn Range::parse(input : String) -> Result[Range, RangeError] {
     }
     idx = idx + 1
   }
+
   if ranges.length() == 0 {
     return Err(Empty)
   }
-  Ok({ unit: "bytes", ranges })
+
+  Ok({ unit: "bytes", ranges, })
 }
 
 ///|
@@ -183,6 +184,7 @@ pub fn ContentRange::parse(input : String) -> Result[ContentRange, RangeError] {
     Some(pos) => {
       let unit = rg_trim_string(rg_string_slice(s, 0, pos))
       let rest = rg_trim_string(rg_string_slice_from(s, pos + 1))
+
       if unit.length() == 0 {
         return Err(InvalidUnit)
       }
@@ -194,6 +196,7 @@ pub fn ContentRange::parse(input : String) -> Result[ContentRange, RangeError] {
         Some(spos) => {
           let range_str = rg_trim_string(rg_string_slice(rest, 0, spos))
           let length_str = rg_trim_string(rg_string_slice_from(rest, spos + 1))
+
           let complete_length : UInt64? = if length_str == "*" {
             None
           } else {
@@ -202,9 +205,15 @@ pub fn ContentRange::parse(input : String) -> Result[ContentRange, RangeError] {
               None => return Err(InvalidFormat)
             }
           }
+
           if range_str == "*" {
             // unsatisfied range: bytes */1000
-            return Ok({ unit, start: None, end: None, complete_length })
+            return Ok({
+              unit,
+              start: None,
+              end: None,
+              complete_length,
+            })
           }
 
           // Parse start-end
@@ -214,12 +223,18 @@ pub fn ContentRange::parse(input : String) -> Result[ContentRange, RangeError] {
             Some(dpos) => {
               let start_str = rg_string_slice(range_str, 0, dpos)
               let end_str = rg_string_slice_from(range_str, dpos + 1)
+
               match (rg_parse_u64(start_str), rg_parse_u64(end_str)) {
                 (Some(s), Some(e)) => {
                   if s > e {
                     return Err(InvalidBounds)
                   }
-                  Ok({ unit, start: Some(s), end: Some(e), complete_length })
+                  Ok({
+                    unit,
+                    start: Some(s),
+                    end: Some(e),
+                    complete_length,
+                  })
                 }
                 _ => Err(InvalidFormat)
               }
@@ -232,20 +247,23 @@ pub fn ContentRange::parse(input : String) -> Result[ContentRange, RangeError] {
 }
 
 ///|
-pub fn ContentRange::new_bytes(
-  start : UInt64,
-  end : UInt64,
-  complete_length : UInt64?,
-) -> ContentRange {
-  { unit: "bytes", start: Some(start), end: Some(end), complete_length }
+pub fn ContentRange::new_bytes(start : UInt64, end : UInt64, complete_length : UInt64?) -> ContentRange {
+  {
+    unit: "bytes",
+    start: Some(start),
+    end: Some(end),
+    complete_length,
+  }
 }
 
 ///|
-pub fn ContentRange::unsatisfied(
-  unit : String,
-  complete_length : UInt64,
-) -> ContentRange {
-  { unit, start: None, end: None, complete_length: Some(complete_length) }
+pub fn ContentRange::unsatisfied(unit : String, complete_length : UInt64) -> ContentRange {
+  {
+    unit,
+    start: None,
+    end: None,
+    complete_length: Some(complete_length),
+  }
 }
 
 ///|
@@ -271,7 +289,13 @@ pub fn ContentRange::complete_length(self : ContentRange) -> UInt64? {
 ///|
 pub fn ContentRange::length(self : ContentRange) -> UInt64? {
   match (self.start, self.end) {
-    (Some(s), Some(e)) => if e >= s { Some(e - s + 1UL) } else { None }
+    (Some(s), Some(e)) => {
+      if e >= s {
+        Some(e - s + 1UL)
+      } else {
+        None
+      }
+    }
     _ => None
   }
 }
@@ -288,9 +312,12 @@ pub fn ContentRange::is_unsatisfied(self : ContentRange) -> Bool {
 pub fn ContentRange::to_string(self : ContentRange) -> String {
   let mut result = self.unit + " "
   match (self.start, self.end) {
-    (Some(s), Some(e)) =>
+    (Some(s), Some(e)) => {
       result = result + rg_u64_to_string(s) + "-" + rg_u64_to_string(e) + "/"
-    _ => result = result + "*/"
+    }
+    _ => {
+      result = result + "*/"
+    }
   }
   match self.complete_length {
     Some(len) => result + rg_u64_to_string(len)
@@ -310,6 +337,7 @@ pub fn AcceptRanges::parse(input : String) -> Result[AcceptRanges, RangeError] {
   if s.length() == 0 {
     return Err(Empty)
   }
+
   let parts = rg_split_string(s, ",")
   let units : Array[String] = []
   let mut idx = 0
@@ -320,20 +348,22 @@ pub fn AcceptRanges::parse(input : String) -> Result[AcceptRanges, RangeError] {
     }
     idx = idx + 1
   }
+
   if units.length() == 0 {
     return Err(Empty)
   }
+
   Ok({ units, })
 }
 
 ///|
 pub fn AcceptRanges::bytes() -> AcceptRanges {
-  { units: ["bytes"] }
+  { units: ["bytes"], }
 }
 
 ///|
 pub fn AcceptRanges::none() -> AcceptRanges {
-  { units: ["none"] }
+  { units: ["none"], }
 }
 
 ///|
@@ -377,12 +407,9 @@ pub fn AcceptRanges::to_string(self : AcceptRanges) -> String {
 }
 
 ///|
-
 ///|
 /// Helper functions
-
 ///|
-
 ///|
 
 ///|
@@ -392,12 +419,13 @@ fn rg_parse_range_spec(s : String) -> Result[RangeSpec, RangeError] {
   let mut idx = 0
   while idx < s.length() {
     let ch_code = s[idx].to_int()
-    if ch_code == 45 { // '-' = 45
+    if ch_code == 45 {  // '-' = 45
       dash_pos = idx
       break
     }
     idx = idx + 1
   }
+
   if dash_pos == -1 {
     return Err(InvalidRange)
   }
@@ -406,22 +434,25 @@ fn rg_parse_range_spec(s : String) -> Result[RangeSpec, RangeError] {
   let mut start_str = ""
   let mut j = 0
   while j < dash_pos {
-    start_str = start_str + Int::unsafe_to_char(s[j].to_int()).to_string()
+    start_str = start_str + s[j].to_string()
     j = j + 1
   }
+
   let mut end_str = ""
   j = dash_pos + 1
   while j < s.length() {
-    end_str = end_str + Int::unsafe_to_char(s[j].to_int()).to_string()
+    end_str = end_str + s[j].to_string()
     j = j + 1
   }
 
   // Trim whitespace
   start_str = rg_trim_string(start_str)
   end_str = rg_trim_string(end_str)
+
   if start_str.length() == 0 && end_str.length() == 0 {
     return Err(InvalidRange)
   }
+
   if start_str.length() == 0 {
     // Suffix: -500
     match rg_parse_u64(end_str) {
@@ -437,12 +468,13 @@ fn rg_parse_range_spec(s : String) -> Result[RangeSpec, RangeError] {
   } else {
     // Range: 0-499
     match (rg_parse_u64(start_str), rg_parse_u64(end_str)) {
-      (Some(start), Some(end)) =>
+      (Some(start), Some(end)) => {
         if start > end {
           Err(InvalidBounds)
         } else {
           Ok(Range(start, end))
         }
+      }
       _ => Err(InvalidRange)
     }
   }
@@ -468,7 +500,7 @@ fn rg_string_slice(s : String, start : Int, end : Int) -> String {
   let mut idx = start
   while idx < end {
     let ch = s[idx]
-    result = result + Int::unsafe_to_char(ch.to_int()).to_string()
+    result = result + ch.to_string()
     idx = idx + 1
   }
   result
@@ -481,7 +513,7 @@ fn rg_string_slice_from(s : String, start : Int) -> String {
   let len = s.length()
   while idx < len {
     let ch = s[idx]
-    result = result + Int::unsafe_to_char(ch.to_int()).to_string()
+    result = result + ch.to_string()
     idx = idx + 1
   }
   result
@@ -505,6 +537,7 @@ fn rg_split_string(s : String, sep : String) -> Array[String] {
   let mut start = 0
   let sep_len = sep.length()
   let mut idx = 0
+
   while idx <= s.length() - sep_len {
     let mut is_match = true
     let mut j = 0
@@ -534,7 +567,11 @@ fn rg_to_lower_case(s : String) -> String {
   while idx < s.length() {
     let ch = rg_char_at(s, idx)
     // Convert A-Z (65-90) to a-z (97-122)
-    let new_ch = if ch >= 65 && ch <= 90 { ch + 32 } else { ch }
+    let new_ch = if ch >= 65 && ch <= 90 {
+      ch + 32
+    } else {
+      ch
+    }
     result = result + Int::unsafe_to_char(new_ch).to_string()
     idx = idx + 1
   }
@@ -546,9 +583,11 @@ pub fn rg_parse_u64(s : String) -> UInt64? {
   if s.length() == 0 {
     return None
   }
+
   let mut result : UInt64 = 0UL
   let mut idx = 0
   let len = s.length()
+
   while idx < len {
     let ch = rg_char_at(s, idx)
     if ch < 48 || ch > 57 {
@@ -556,7 +595,7 @@ pub fn rg_parse_u64(s : String) -> UInt64? {
     }
 
     // Convert digit char to UInt64 by building it up
-    let digit = ch - 48 // This gives us Int 0-9
+    let digit = ch - 48  // This gives us Int 0-9
     let digit_u64 = int_digit_to_u64(digit)
 
     // Check for overflow before multiplying
@@ -568,61 +607,51 @@ pub fn rg_parse_u64(s : String) -> UInt64? {
     result = result * 10UL
 
     // Check if result > MAX_U64 - digit
-    if rg_u64_greater_than(
-        result,
-        rg_u64_subtract(18446744073709551615UL, digit_u64),
-      ) {
+    if rg_u64_greater_than(result, rg_u64_subtract(18446744073709551615UL, digit_u64)) {
       return None
     }
     result = result + digit_u64
+
     idx = idx + 1
   }
+
   Some(result)
 }
 
 ///|
 fn int_digit_to_u64(d : Int) -> UInt64 {
   // Convert single digit Int (0-9) to UInt64
-  if d == 0 {
-    0UL
-  } else if d == 1 {
-    1UL
-  } else if d == 2 {
-    2UL
-  } else if d == 3 {
-    3UL
-  } else if d == 4 {
-    4UL
-  } else if d == 5 {
-    5UL
-  } else if d == 6 {
-    6UL
-  } else if d == 7 {
-    7UL
-  } else if d == 8 {
-    8UL
-  } else {
-    9UL
-  }
+  if d == 0 { 0UL }
+  else if d == 1 { 1UL }
+  else if d == 2 { 2UL }
+  else if d == 3 { 3UL }
+  else if d == 4 { 4UL }
+  else if d == 5 { 5UL }
+  else if d == 6 { 6UL }
+  else if d == 7 { 7UL }
+  else if d == 8 { 8UL }
+  else { 9UL }
 }
 
 ///|
 fn rg_u64_greater_than(a : UInt64, b : UInt64) -> Bool {
-  // Check if a > b by checking if a - b doesn't underflow and result > 0
-  // We use built-in subtraction which wraps on underflow
+  // Check if a > b using subtraction
   if a == b {
     false
-  } else if a < b {
-    false
   } else {
-    true
+    // If a - b would underflow, then a < b, so a > b is false
+    // Otherwise a > b is true
+    let diff = rg_u64_subtract(a, b)
+    // If we subtracted and the result plus b equals a, then a >= b
+    let sum = diff + b
+    sum == a && a != b
   }
 }
 
 ///|
 fn rg_u64_subtract(a : UInt64, b : UInt64) -> UInt64 {
   // Safe subtraction that returns 0 on underflow
-  if a < b {
+  if rg_u64_greater_than(b, a) {
     0UL
   } else {
     a - b
@@ -634,6 +663,7 @@ pub fn rg_u64_to_string(n : UInt64) -> String {
   if n == 0UL {
     return "0"
   }
+
   let chars : Array[String] = []
   let mut num = n
   while num > 0UL {
@@ -643,6 +673,7 @@ pub fn rg_u64_to_string(n : UInt64) -> String {
     chars.push(Int::unsafe_to_char(digit_int + 48).to_string())
     num = num / 10UL
   }
+
   let mut result = ""
   let mut idx = chars.length() - 1
   while idx >= 0 {
@@ -658,25 +689,14 @@ pub fn rg_u64_to_string(n : UInt64) -> String {
 ///|
 fn u64_digit_to_int(d : UInt64) -> Int {
   // Convert a single digit UInt64 (0-9) to Int
-  if d == 0UL {
-    0
-  } else if d == 1UL {
-    1
-  } else if d == 2UL {
-    2
-  } else if d == 3UL {
-    3
-  } else if d == 4UL {
-    4
-  } else if d == 5UL {
-    5
-  } else if d == 6UL {
-    6
-  } else if d == 7UL {
-    7
-  } else if d == 8UL {
-    8
-  } else {
-    9
-  }
+  if d == 0UL { 0 }
+  else if d == 1UL { 1 }
+  else if d == 2UL { 2 }
+  else if d == 3UL { 3 }
+  else if d == 4UL { 4 }
+  else if d == 5UL { 5 }
+  else if d == 6UL { 6 }
+  else if d == 7UL { 7 }
+  else if d == 8UL { 8 }
+  else { 9 }
 }

@@ -45,7 +45,7 @@ pub(all) struct DigestEntry {
 
 ///|
 pub fn DigestEntry::new(algorithm : String, value : DigestValue) -> DigestEntry {
-  { algorithm, value }
+  { algorithm, value, }
 }
 
 ///|
@@ -70,31 +70,25 @@ pub(all) struct ContentDigest {
 } derive(Eq)
 
 ///|
-pub fn ContentDigest::parse(
-  input : String,
-) -> Result[ContentDigest, DigestFieldsError] {
+pub fn ContentDigest::parse(input : String) -> Result[ContentDigest, DigestFieldsError] {
   let s = df_trim(input)
   if s.length() == 0 {
     return Err(Empty)
   }
+
   match df_parse_dictionary(s, df_parse_byte_sequence) {
-    Ok(entries) => Ok({ entries, })
+    Ok(entries) => Ok({ entries: entries, })
     Err(e) => Err(e)
   }
 }
 
 ///|
-pub fn ContentDigest::entries(
-  self : ContentDigest,
-) -> Array[(String, DigestValue)] {
+pub fn ContentDigest::entries(self : ContentDigest) -> Array[(String, DigestValue)] {
   self.entries
 }
 
 ///|
-pub fn ContentDigest::get(
-  self : ContentDigest,
-  algorithm : String,
-) -> DigestValue? {
+pub fn ContentDigest::get(self : ContentDigest, algorithm : String) -> DigestValue? {
   let key = df_to_lower_case(algorithm)
   let mut idx = 0
   while idx < self.entries.length() {
@@ -129,15 +123,14 @@ pub(all) struct ReprDigest {
 } derive(Eq)
 
 ///|
-pub fn ReprDigest::parse(
-  input : String,
-) -> Result[ReprDigest, DigestFieldsError] {
+pub fn ReprDigest::parse(input : String) -> Result[ReprDigest, DigestFieldsError] {
   let s = df_trim(input)
   if s.length() == 0 {
     return Err(Empty)
   }
+
   match df_parse_dictionary(s, df_parse_byte_sequence) {
-    Ok(entries) => Ok({ entries, })
+    Ok(entries) => Ok({ entries: entries, })
     Err(e) => Err(e)
   }
 }
@@ -184,11 +177,8 @@ pub(all) struct DigestPreference {
 } derive(Eq)
 
 ///|
-pub fn DigestPreference::new(
-  algorithm : String,
-  weight : Int,
-) -> DigestPreference {
-  { algorithm, weight }
+pub fn DigestPreference::new(algorithm : String, weight : Int) -> DigestPreference {
+  { algorithm, weight, }
 }
 
 ///|
@@ -213,40 +203,34 @@ pub(all) struct WantContentDigest {
 } derive(Eq)
 
 ///|
-pub fn WantContentDigest::parse(
-  input : String,
-) -> Result[WantContentDigest, DigestFieldsError] {
+pub fn WantContentDigest::parse(input : String) -> Result[WantContentDigest, DigestFieldsError] {
   let s = df_trim(input)
   if s.length() == 0 {
     return Err(Empty)
   }
+
   match df_parse_dictionary(s, df_parse_preference) {
     Ok(entries) => {
-      let preferences : Array[DigestPreference] = []
+      let preferences = []
       let mut idx = 0
       while idx < entries.length() {
         let (algorithm, weight) = entries[idx]
         preferences.push(DigestPreference::new(algorithm, weight))
         idx = idx + 1
       }
-      Ok({ preferences, })
+      Ok({ preferences: preferences, })
     }
     Err(e) => Err(e)
   }
 }
 
 ///|
-pub fn WantContentDigest::preferences(
-  self : WantContentDigest,
-) -> Array[DigestPreference] {
+pub fn WantContentDigest::preferences(self : WantContentDigest) -> Array[DigestPreference] {
   self.preferences
 }
 
 ///|
-pub fn WantContentDigest::get(
-  self : WantContentDigest,
-  algorithm : String,
-) -> Int? {
+pub fn WantContentDigest::get(self : WantContentDigest, algorithm : String) -> Int? {
   let key = df_to_lower_case(algorithm)
   let mut idx = 0
   while idx < self.preferences.length() {
@@ -280,32 +264,29 @@ pub(all) struct WantReprDigest {
 } derive(Eq)
 
 ///|
-pub fn WantReprDigest::parse(
-  input : String,
-) -> Result[WantReprDigest, DigestFieldsError] {
+pub fn WantReprDigest::parse(input : String) -> Result[WantReprDigest, DigestFieldsError] {
   let s = df_trim(input)
   if s.length() == 0 {
     return Err(Empty)
   }
+
   match df_parse_dictionary(s, df_parse_preference) {
     Ok(entries) => {
-      let preferences : Array[DigestPreference] = []
+      let preferences = []
       let mut idx = 0
       while idx < entries.length() {
         let (algorithm, weight) = entries[idx]
         preferences.push(DigestPreference::new(algorithm, weight))
         idx = idx + 1
       }
-      Ok({ preferences, })
+      Ok({ preferences: preferences, })
     }
     Err(e) => Err(e)
   }
 }
 
 ///|
-pub fn WantReprDigest::preferences(
-  self : WantReprDigest,
-) -> Array[DigestPreference] {
+pub fn WantReprDigest::preferences(self : WantReprDigest) -> Array[DigestPreference] {
   self.preferences
 }
 
@@ -338,23 +319,21 @@ pub fn WantReprDigest::to_string(self : WantReprDigest) -> String {
 }
 
 ///|
-
 ///|
 /// Parser functions
-
+///|
 ///|
 
 ///|
-
-///|
-fn[T] df_parse_dictionary(
+fn df_parse_dictionary[T](
   input : String,
-  value_parser : (String) -> Result[T, DigestFieldsError],
+  value_parser : (String) -> Result[T, DigestFieldsError]
 ) -> Result[Array[(String, T)], DigestFieldsError] {
   let s = df_trim(input)
   if s.length() == 0 {
     return Err(Empty)
   }
+
   let parts = df_split_string(s, ",")
   let entries : Array[(String, T)] = []
   let mut idx = 0
@@ -371,12 +350,15 @@ fn[T] df_parse_dictionary(
       Some(pos) => {
         let algorithm = df_trim(df_substring(part, 0, pos))
         let value_str = df_trim(df_substring_from(part, pos + 1))
+
         if algorithm.length() == 0 {
           return Err(InvalidAlgorithm)
         }
+
         if !df_is_valid_token(algorithm) {
           return Err(InvalidAlgorithm)
         }
+
         match value_parser(value_str) {
           Ok(value) => entries.push((df_to_lower_case(algorithm), value))
           Err(e) => return Err(e)
@@ -385,16 +367,16 @@ fn[T] df_parse_dictionary(
     }
     idx = idx + 1
   }
+
   if entries.length() == 0 {
     return Err(Empty)
   }
+
   Ok(entries)
 }
 
 ///|
-fn df_parse_byte_sequence(
-  input : String,
-) -> Result[DigestValue, DigestFieldsError] {
+fn df_parse_byte_sequence(input : String) -> Result[DigestValue, DigestFieldsError] {
   // Format: :base64:
   // Find first ':'
   let colon1_pos = df_find_char(input, 58)
@@ -413,6 +395,7 @@ fn df_parse_byte_sequence(
           if !df_trim(rest2).is_empty() {
             return Err(InvalidByteSequence)
           }
+
           match df_base64_decode(base64) {
             Ok(bytes) => Ok(DigestValue::new(bytes))
             Err(_) => Err(InvalidBase64)
@@ -440,8 +423,15 @@ fn df_parse_preference(input : String) -> Result[Int, DigestFieldsError] {
     }
     idx = idx + 1
   }
+
   match df_parse_u8(s) {
-    Some(v) => if v > 10 { Err(InvalidPreference) } else { Ok(v) }
+    Some(v) => {
+      if v > 10 {
+        Err(InvalidPreference)
+      } else {
+        Ok(v)
+      }
+    }
     None => Err(InvalidPreference)
   }
 }
@@ -451,9 +441,11 @@ fn df_is_valid_token(s : String) -> Bool {
   if s.length() == 0 {
     return false
   }
+
   let mut idx = 0
   while idx < s.length() {
-    let ch = s[idx]
+    let code = s[idx]
+    let ch = Int::unsafe_to_char(code.to_int())
     if !df_is_token_char(ch) {
       return false
     }
@@ -463,31 +455,19 @@ fn df_is_valid_token(s : String) -> Bool {
 }
 
 ///|
-fn df_is_token_char(ch : UInt16) -> Bool {
+fn df_is_token_char(ch : Char) -> Bool {
   let code = ch.to_int()
-  code == 33 ||
-  code == 35 ||
-  code == 36 ||
-  code == 37 ||
-  code == 38 ||
-  code == 39 ||
-  code == 42 ||
-  code == 43 ||
-  code == 45 ||
-  code == 46 ||
+  code == 33 || code == 35 || code == 36 || code == 37 || code == 38 || code == 39 ||
+  code == 42 || code == 43 || code == 45 || code == 46 ||
   (code >= 48 && code <= 57) ||
   (code >= 65 && code <= 90) ||
-  code == 94 ||
-  code == 95 ||
-  code == 96 ||
+  code == 94 || code == 95 || code == 96 ||
   (code >= 97 && code <= 122) ||
-  code == 124 ||
-  code == 126
+  code == 124 || code == 126
 }
 
 ///|
 /// String helper functions
-
 ///|
 
 ///|
@@ -502,6 +482,7 @@ fn df_split_string(s : String, sep : String) -> Array[String] {
   let mut start = 0
   let sep_len = sep.length()
   let mut idx = 0
+
   while idx <= s.length() - sep_len {
     let mut is_match = true
     let mut j = 0
@@ -526,12 +507,12 @@ fn df_split_string(s : String, sep : String) -> Array[String] {
 
 ///|
 fn df_substring(s : String, start : Int, end : Int) -> String {
-  s.substring(start~, end~)
+  s.substring(start=start, end=end)
 }
 
 ///|
 fn df_substring_from(s : String, start : Int) -> String {
-  s.substring(start~, end=s.length())
+  s.substring(start=start, end=s.length())
 }
 
 ///|
@@ -539,11 +520,15 @@ fn df_to_lower_case(s : String) -> String {
   let mut result = ""
   let mut idx = 0
   while idx < s.length() {
-    let ch = s[idx]
-    let code = ch.to_int()
-    // Convert A-Z (65-90) to a-z (97-122)
-    let new_code = if code >= 65 && code <= 90 { code + 32 } else { code }
-    result = result + Int::unsafe_to_char(new_code).to_string()
+    let c = s[idx]
+    let ci = c.to_int()
+    let new_c = if ci >= 65 && ci <= 90 {
+      // A-Z (65-90) -> a-z (97-122)
+      Int::unsafe_to_char(ci + 32).to_string()
+    } else {
+      Int::unsafe_to_char(ci).to_string()
+    }
+    result = result + new_c
     idx = idx + 1
   }
   result
@@ -581,11 +566,9 @@ fn df_int_to_string(n : Int) -> String {
 }
 
 ///|
-
 ///|
 /// Base64 encoding/decoding (RFC 4648)
 /// Uses same implementation as auth.mbt
-
 ///|
 
 ///|
@@ -602,12 +585,13 @@ fn df_base64_encode(input : Array[Byte]) -> String {
     let b0 = input[i].to_int()
     let b1 = if i + 1 < len { input[i + 1].to_int() } else { 0 }
     let b2 = if i + 2 < len { input[i + 2].to_int() } else { 0 }
+
     let n = b0 * 65536 + b1 * 256 + b2
 
     // Encode 6-bit values
-    let i0 = n / 1048576 // 2^20
-    let i1 = n / 4096 % 64 // 2^12
-    let i2 = n / 64 % 64
+    let i0 = n / 1048576  // 2^20
+    let i1 = (n / 4096) % 64  // 2^12
+    let i2 = (n / 64) % 64
     let i3 = n % 64
 
     // Map to base64 alphabet
@@ -615,9 +599,11 @@ fn df_base64_encode(input : Array[Byte]) -> String {
     let c1 = df_base64_char(i1)
     let c2 = if i + 1 < len { df_base64_char(i2) } else { "=" }
     let c3 = if i + 2 < len { df_base64_char(i3) } else { "=" }
+
     result = result + c0 + c1 + c2 + c3
     i = i + 3
   }
+
   result
 }
 
@@ -641,13 +627,16 @@ fn df_base64_decode(input : String) -> Result[Array[Byte], DigestFieldsError] {
   while s_len > 0 && s[s_len - 1] == '=' {
     s_len = s_len - 1
   }
+
   let result : Array[Byte] = []
   let mut buf = 0
   let mut bits = 0
   let mut idx = 0
+
   while idx < s_len {
     let ch = s[idx]
     let ch_code = ch.to_int()
+
     let val = if ch_code >= 65 && ch_code <= 90 {
       // A-Z
       ch_code - 65
@@ -666,46 +655,37 @@ fn df_base64_decode(input : String) -> Result[Array[Byte], DigestFieldsError] {
     } else {
       return Err(InvalidBase64)
     }
+
     buf = buf * 64 + val
     bits = bits + 6
+
     if bits >= 8 {
       bits = bits - 8
       let byte = buf / df_pow2(bits)
       result.push(byte.to_byte())
       buf = buf % df_pow2(bits)
     }
+
     idx = idx + 1
   }
+
   Ok(result)
 }
 
 ///|
 fn df_pow2(n : Int) -> Int {
-  if n == 0 {
-    1
-  } else if n == 1 {
-    2
-  } else if n == 2 {
-    4
-  } else if n == 3 {
-    8
-  } else if n == 4 {
-    16
-  } else if n == 5 {
-    32
-  } else if n == 6 {
-    64
-  } else if n == 7 {
-    128
-  } else if n == 8 {
-    256
-  } else if n == 9 {
-    512
-  } else if n == 10 {
-    1024
-  } else {
-    1
-  }
+  if n == 0 { 1 }
+  else if n == 1 { 2 }
+  else if n == 2 { 4 }
+  else if n == 3 { 8 }
+  else if n == 4 { 16 }
+  else if n == 5 { 32 }
+  else if n == 6 { 64 }
+  else if n == 7 { 128 }
+  else if n == 8 { 256 }
+  else if n == 9 { 512 }
+  else if n == 10 { 1024 }
+  else { 1 }
 }
 
 ///|
@@ -713,17 +693,21 @@ fn df_parse_u8(s : String) -> Int? {
   if s.length() == 0 {
     return None
   }
+
   let mut result = 0
   let mut idx = 0
   let len = s.length()
+
   while idx < len {
     let ch = s[idx]
     let ch_code = ch.to_int()
     if ch_code < 48 || ch_code > 57 {
       return None
     }
+
     result = result * 10 + (ch_code - 48)
     idx = idx + 1
   }
+
   Some(result)
 }

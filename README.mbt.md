@@ -208,6 +208,81 @@ let encoded = encode_chunk("data".to_bytes())
 // 4\r\ndata\r\n
 ```
 
+## サンプル
+
+本ライブラリには実行可能なサンプルプログラムが含まれています。
+
+### 実行方法
+
+```bash
+moon run cmd/main
+```
+
+### 出力例
+
+```
+========================================
+http11.mbt Example Program
+========================================
+
+1. GET Request Example
+---
+Encoded GET request:
+GET /api/users HTTP/1.1\r\n
+Host: example.com\r\n
+Connection: keep-alive\r\n
+Accept: application/json\r\n
+\r\n
+
+2. POST Request with Body Example
+---
+Encoded POST request:
+POST /api/users HTTP/1.1\r\n
+Host: example.com\r\n
+Content-Type: application/json\r\n
+\r\n
+{"name":"Alice","age":30}
+
+3. Response Example
+---
+Encoded response:
+HTTP/1.1 200 OK\r\n
+Content-Type: text/plain\r\n
+Content-Length: 13\r\n
+\r\n
+Hello, World!
+
+4. Chunked Transfer Encoding Example
+---
+Encoded chunked data:
+7\r\n
+Hello, \r\n
+6\r\n
+world!\r\n
+0\r\n
+\r\n
+
+5. Request Decoder Example
+---
+RequestDecoder API usage:
+  let decoder = @lib.RequestDecoder::new()
+  decoder.feed(data)  // Feed raw bytes
+  decoder.decode()    // Try to decode a request
+  Note: Decoder is intended for use with network I/O
+
+6. Response Decoder Example
+---
+ResponseDecoder API usage:
+  let decoder = @lib.ResponseDecoder::new()
+  decoder.feed(data)  // Feed raw bytes
+  decoder.decode()    // Try to decode a response
+  Note: Decoder is intended for use with network I/O
+
+========================================
+All examples completed successfully!
+========================================
+```
+
 ## ライセンス
 
 ```
