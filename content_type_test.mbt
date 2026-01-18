@@ -2,7 +2,9 @@
 fn init {
   // Test parse simple
   let ct1 = ContentType::parse("text/html").unwrap()
-  if ct1.media_type() == "text" && ct1.subtype() == "html" && ct1.mime_type() == "text/html" {
+  if ct1.media_type() == "text" &&
+    ct1.subtype() == "html" &&
+    ct1.mime_type() == "text/html" {
     println("content_type.mbt: Simple parse OK")
   } else {
     println("content_type.mbt: Simple parse FAILED")
@@ -10,7 +12,9 @@ fn init {
 
   // Test parse with charset
   let ct2 = ContentType::parse("text/html; charset=utf-8").unwrap()
-  if ct2.media_type() == "text" && ct2.subtype() == "html" && ct2.charset().unwrap() == "utf-8" {
+  if ct2.media_type() == "text" &&
+    ct2.subtype() == "html" &&
+    ct2.charset().unwrap() == "utf-8" {
     println("content_type.mbt: Parse with charset OK")
   } else {
     println("content_type.mbt: Parse with charset FAILED")
@@ -25,7 +29,9 @@ fn init {
   }
 
   // Test parse multipart
-  let ct4 = ContentType::parse("multipart/form-data; boundary=----WebKitFormBoundary").unwrap()
+  let ct4 = ContentType::parse(
+    "multipart/form-data; boundary=----WebKitFormBoundary",
+  ).unwrap()
   if ct4.is_form_data() && ct4.boundary().unwrap() == "----WebKitFormBoundary" {
     println("content_type.mbt: Parse multipart OK")
   } else {
@@ -34,7 +40,9 @@ fn init {
 
   // Test case insensitivity
   let ct5 = ContentType::parse("TEXT/HTML; CHARSET=UTF-8").unwrap()
-  if ct5.media_type() == "text" && ct5.subtype() == "html" && ct5.charset().unwrap() == "UTF-8" {
+  if ct5.media_type() == "text" &&
+    ct5.subtype() == "html" &&
+    ct5.charset().unwrap() == "UTF-8" {
     println("content_type.mbt: Case insensitivity OK")
   } else {
     println("content_type.mbt: Case insensitivity FAILED")
@@ -129,13 +137,16 @@ fn init {
   }
 
   // Test to_string with quoted value
-  let ct17 = ContentType::new("text", "plain").with_parameter("name", "hello world")
+  let ct17 = ContentType::new("text", "plain").with_parameter(
+    "name", "hello world",
+  )
   let str17 = ct17.to_string()
   if str17 == "text/plain; name=\"hello world\"" {
     println("content_type.mbt: to_string with quoted value OK")
   } else {
-    println("content_type.mbt: to_string with quoted value FAILED: got " + str17)
+    println(
+      "content_type.mbt: to_string with quoted value FAILED: got " + str17,
+    )
   }
-
   println("content_type.mbt: All tests completed")
 }

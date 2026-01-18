@@ -11,7 +11,8 @@ fn init {
 
   // Test IfMatch multiple
   let im2 = IfMatch::parse("\"a\", \"b\", \"c\"").unwrap()
-  if im2.matches(EntityTag::strong("b").unwrap()) && !im2.matches(EntityTag::strong("d").unwrap()) {
+  if im2.matches(EntityTag::strong("b").unwrap()) &&
+    !im2.matches(EntityTag::strong("d").unwrap()) {
     println("conditional.mbt: IfMatch multiple OK")
   } else {
     println("conditional.mbt: IfMatch multiple FAILED")
@@ -35,7 +36,8 @@ fn init {
 
   // Test IfNoneMatch single
   let inm1 = IfNoneMatch::parse("\"abc\"").unwrap()
-  if !inm1.matches(EntityTag::strong("abc").unwrap()) && inm1.matches(EntityTag::strong("xyz").unwrap()) {
+  if !inm1.matches(EntityTag::strong("abc").unwrap()) &&
+    inm1.matches(EntityTag::strong("xyz").unwrap()) {
     println("conditional.mbt: IfNoneMatch single OK")
   } else {
     println("conditional.mbt: IfNoneMatch single FAILED")
@@ -113,13 +115,11 @@ fn init {
   } else {
     println("conditional.mbt: IfMatch to_string FAILED")
   }
-
   let ir4 = IfRange::parse("\"abc\"").unwrap()
   if ir4.to_string() == "\"abc\"" {
     println("conditional.mbt: IfRange to_string OK")
   } else {
     println("conditional.mbt: IfRange to_string FAILED")
   }
-
   println("conditional.mbt: All tests completed")
 }

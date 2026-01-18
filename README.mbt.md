@@ -24,37 +24,52 @@ MoonBit で実装された Sans I/O な HTTP/1.1 パーサー・エンコーダ�
 ## エラー型
 
 ```moonbit
+///|
 pub enum HttpError {
-  InvalidData(String)           // 不正なデータ
-  BufferOverflow(Int, Int)      // (size, limit)
-  TooManyHeaders(Int, Int)      // (count, limit)
-  HeaderLineTooLong(Int, Int)   // (size, limit)
-  BodyTooLarge(Int, Int)        // (size, limit)
-  UnexpectedEof                 // 予期しない EOF
-  InvalidHeaderValue            // 不正なヘッダー値
-  InvalidStatusCode             // 不正なステータスコード
-  InvalidChunkSize              // 不正なチャンクサイズ
+  InvalidData(String) // 不正なデータ
+  BufferOverflow(Int, Int) // (size, limit)
+  TooManyHeaders(Int, Int) // (count, limit)
+  HeaderLineTooLong(Int, Int) // (size, limit)
+  BodyTooLarge(Int, Int) // (size, limit)
+  UnexpectedEof // 予期しない EOF
+  InvalidHeaderValue // 不正なヘッダー値
+  InvalidStatusCode // 不正なステータスコード
+  InvalidChunkSize // 不正なチャンクサイズ
 }
 ```
 
 ## デコーダーリミット
 
 ```moonbit
+///|
 pub struct DecoderLimits {
-  max_buffer_size : Int       // デフォルト: 65536
-  max_headers_count : Int     // デフォルト: 100
-  max_header_line_size : Int  // デフォルト: 8192
-  max_body_size : Int         // デフォルト: 10485760 (10MB)
+  max_buffer_size : Int // デフォルト: 65536
+  max_headers_count : Int // デフォルト: 100
+  max_header_line_size : Int // デフォルト: 8192
+  max_body_size : Int // デフォルト: 10485760 (10MB)
 }
 
 // デフォルトリミットで作成
+
+///|
 let decoder = RequestDecoder::new()
 
 // カスタムリミットで作成
-let limits = { max_buffer_size: 32768, max_headers_count: 50, max_header_line_size: 4096, max_body_size: 5242880 }
+
+///|
+let limits = {
+  max_buffer_size: 32768,
+  max_headers_count: 50,
+  max_header_line_size: 4096,
+  max_body_size: 5242880,
+}
+
+///|
 let decoder = RequestDecoder::with_limits(limits)
 
 // 無制限（テスト用途）
+
+///|
 let decoder = RequestDecoder::with_limits(DecoderLimits::unlimited())
 ```
 
@@ -64,19 +79,26 @@ let decoder = RequestDecoder::with_limits(DecoderLimits::unlimited())
 
 ```moonbit
 // 基本的なリクエスト作成
+///|
 let req = Request::new("GET", "/test")
   .header("Host", "example.com")
   .header("Connection", "keep-alive")
 
 // ボディ付きリクエスト
+
+///|
 let req = Request::new("POST", "/api")
   .header("Content-Type", "application/json")
   .body("{\"key\":\"value\"}".to_bytes())
 
 // バージョン指定
+
+///|
 let req = Request::with_version("GET", "/", "HTTP/1.0")
 
 // エンコード
+
+///|
 let encoded = encode_request(req)
 // GET /test HTTP/1.1\r\nHost: example.com\r\nConnection: keep-alive\r\n\r\n
 ```
@@ -98,16 +120,21 @@ req.is_chunked()          // false
 
 ```moonbit
 // 基本的なレスポンス作成
+///|
 let resp = Response::new(200, "OK")
   .header("Content-Type", "text/plain")
   .header("Content-Length", "5")
 
 // ボディ付きレスポンス
+
+///|
 let resp = Response::new(404, "Not Found")
   .header("Content-Type", "text/html")
   .body("<h1>Not Found</h1>".to_bytes())
 
 // エンコード
+
+///|
 let encoded = encode_response(resp)
 // HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 5\r\n\r\n
 ```
@@ -164,12 +191,19 @@ match decoder.decode() {
 
 ```moonbit
 // チャンクエンコード
+///|
 let chunk1 = "Hello, ".to_bytes()
+
+///|
 let chunk2 = "world!".to_bytes()
+
+///|
 let encoded = encode_chunks([chunk1, chunk2])
 // 7\r\nHello, \r\n6\r\nworld!\r\n0\r\n\r\n
 
 // 単一チャンク
+
+///|
 let encoded = encode_chunk("data".to_bytes())
 // 4\r\ndata\r\n
 ```

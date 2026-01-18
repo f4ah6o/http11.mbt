@@ -14,7 +14,11 @@ pub fn Response::new(status_code : Int, reason_phrase : String) -> Response {
 }
 
 ///|
-pub fn Response::with_version(version : String, status_code : Int, reason_phrase : String) -> Response {
+pub fn Response::with_version(
+  version : String,
+  status_code : Int,
+  reason_phrase : String,
+) -> Response {
   { version, status_code, reason_phrase, headers: [], body: [] }
 }
 
@@ -39,7 +43,11 @@ pub fn Response::is_server_error(self : Response) -> Bool {
 }
 
 ///|
-pub fn Response::header(self : Response, name : String, value : String) -> Response {
+pub fn Response::header(
+  self : Response,
+  name : String,
+  value : String,
+) -> Response {
   let new_headers = []
   for h in self.headers {
     new_headers.push(h)
@@ -50,7 +58,7 @@ pub fn Response::header(self : Response, name : String, value : String) -> Respo
 
 ///|
 pub fn Response::body(self : Response, body : Array[Byte]) -> Response {
-  { ..self, body }
+  { ..self, body, }
 }
 
 ///|
@@ -137,7 +145,9 @@ fn response_parse_int(s : String) -> Int? {
   let mut result = 0
   let mut idx = 0
   let len = s.length()
-  if len == 0 { return None }
+  if len == 0 {
+    return None
+  }
   while idx < len {
     let c = s[idx]
     let ci = c.to_int()

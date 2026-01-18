@@ -46,7 +46,7 @@ pub fn CacheControl::new() -> CacheControl {
     must_understand: false,
     public: false,
     private: false,
-    immutable: false
+    immutable: false,
   }
 }
 
@@ -56,11 +56,9 @@ pub fn CacheControl::parse(input : String) -> Result[CacheControl, CacheError] {
   if s.length() == 0 {
     return Ok(CacheControl::new())
   }
-
   let mut cc = CacheControl::new()
   let parts = cc_split_string(s, ",")
   let mut idx = 0
-
   while idx < parts.length() {
     let directive = cc_trim_string(parts[idx])
     if directive.length() > 0 {
@@ -72,12 +70,14 @@ pub fn CacheControl::parse(input : String) -> Result[CacheControl, CacheError] {
     }
     idx = idx + 1
   }
-
   Ok(cc)
 }
 
 ///|
-pub fn CacheControl::with_max_age(self : CacheControl, seconds : Int) -> CacheControl {
+pub fn CacheControl::with_max_age(
+  self : CacheControl,
+  seconds : Int,
+) -> CacheControl {
   {
     max_age: Some(seconds),
     s_maxage: self.s_maxage,
@@ -94,12 +94,15 @@ pub fn CacheControl::with_max_age(self : CacheControl, seconds : Int) -> CacheCo
     must_understand: self.must_understand,
     public: self.public,
     private: self.private,
-    immutable: self.immutable
+    immutable: self.immutable,
   }
 }
 
 ///|
-pub fn CacheControl::with_s_maxage(self : CacheControl, seconds : Int) -> CacheControl {
+pub fn CacheControl::with_s_maxage(
+  self : CacheControl,
+  seconds : Int,
+) -> CacheControl {
   {
     max_age: self.max_age,
     s_maxage: Some(seconds),
@@ -116,7 +119,7 @@ pub fn CacheControl::with_s_maxage(self : CacheControl, seconds : Int) -> CacheC
     must_understand: self.must_understand,
     public: self.public,
     private: self.private,
-    immutable: self.immutable
+    immutable: self.immutable,
   }
 }
 
@@ -138,7 +141,7 @@ pub fn CacheControl::with_no_cache(self : CacheControl) -> CacheControl {
     must_understand: self.must_understand,
     public: self.public,
     private: self.private,
-    immutable: self.immutable
+    immutable: self.immutable,
   }
 }
 
@@ -160,7 +163,7 @@ pub fn CacheControl::with_no_store(self : CacheControl) -> CacheControl {
     must_understand: self.must_understand,
     public: self.public,
     private: self.private,
-    immutable: self.immutable
+    immutable: self.immutable,
   }
 }
 
@@ -182,7 +185,7 @@ pub fn CacheControl::with_no_transform(self : CacheControl) -> CacheControl {
     must_understand: self.must_understand,
     public: self.public,
     private: self.private,
-    immutable: self.immutable
+    immutable: self.immutable,
   }
 }
 
@@ -204,7 +207,7 @@ pub fn CacheControl::with_only_if_cached(self : CacheControl) -> CacheControl {
     must_understand: self.must_understand,
     public: self.public,
     private: self.private,
-    immutable: self.immutable
+    immutable: self.immutable,
   }
 }
 
@@ -226,7 +229,7 @@ pub fn CacheControl::with_must_revalidate(self : CacheControl) -> CacheControl {
     must_understand: self.must_understand,
     public: self.public,
     private: self.private,
-    immutable: self.immutable
+    immutable: self.immutable,
   }
 }
 
@@ -248,7 +251,7 @@ pub fn CacheControl::with_proxy_revalidate(self : CacheControl) -> CacheControl 
     must_understand: self.must_understand,
     public: self.public,
     private: self.private,
-    immutable: self.immutable
+    immutable: self.immutable,
   }
 }
 
@@ -270,7 +273,7 @@ pub fn CacheControl::with_public(self : CacheControl) -> CacheControl {
     must_understand: self.must_understand,
     public: true,
     private: self.private,
-    immutable: self.immutable
+    immutable: self.immutable,
   }
 }
 
@@ -292,7 +295,7 @@ pub fn CacheControl::with_private(self : CacheControl) -> CacheControl {
     must_understand: self.must_understand,
     public: self.public,
     private: true,
-    immutable: self.immutable
+    immutable: self.immutable,
   }
 }
 
@@ -314,7 +317,7 @@ pub fn CacheControl::with_immutable(self : CacheControl) -> CacheControl {
     must_understand: self.must_understand,
     public: self.public,
     private: self.private,
-    immutable: true
+    immutable: true,
   }
 }
 
@@ -400,60 +403,72 @@ pub fn CacheControl::is_immutable(self : CacheControl) -> Bool {
 
 ///|
 pub fn CacheControl::is_cacheable(self : CacheControl) -> Bool {
-  !self.no_store && (self.public || self.max_age is Some(_) || self.s_maxage is Some(_))
+  !self.no_store &&
+  (self.public || self.max_age is Some(_) || self.s_maxage is Some(_))
 }
 
 ///|
 pub fn CacheControl::to_string(self : CacheControl) -> String {
   let parts : Array[String] = []
-
   match self.max_age {
     Some(secs) => parts.push("max-age=" + secs.to_string())
     None => ()
   }
-
   match self.s_maxage {
     Some(secs) => parts.push("s-maxage=" + secs.to_string())
     None => ()
   }
-
   match self.max_stale {
-    Some(secs) => {
+    Some(secs) =>
       if secs == 2147483647 {
         parts.push("max-stale")
       } else {
         parts.push("max-stale=" + secs.to_string())
       }
-    }
     None => ()
   }
-
   match self.min_fresh {
     Some(secs) => parts.push("min-fresh=" + secs.to_string())
     None => ()
   }
-
   match self.stale_while_revalidate {
     Some(secs) => parts.push("stale-while-revalidate=" + secs.to_string())
     None => ()
   }
-
   match self.stale_if_error {
     Some(secs) => parts.push("stale-if-error=" + secs.to_string())
     None => ()
   }
-
-  if self.no_cache { parts.push("no-cache") }
-  if self.no_store { parts.push("no-store") }
-  if self.no_transform { parts.push("no-transform") }
-  if self.only_if_cached { parts.push("only-if-cached") }
-  if self.must_revalidate { parts.push("must-revalidate") }
-  if self.proxy_revalidate { parts.push("proxy-revalidate") }
-  if self.must_understand { parts.push("must-understand") }
-  if self.public { parts.push("public") }
-  if self.private { parts.push("private") }
-  if self.immutable { parts.push("immutable") }
-
+  if self.no_cache {
+    parts.push("no-cache")
+  }
+  if self.no_store {
+    parts.push("no-store")
+  }
+  if self.no_transform {
+    parts.push("no-transform")
+  }
+  if self.only_if_cached {
+    parts.push("only-if-cached")
+  }
+  if self.must_revalidate {
+    parts.push("must-revalidate")
+  }
+  if self.proxy_revalidate {
+    parts.push("proxy-revalidate")
+  }
+  if self.must_understand {
+    parts.push("must-understand")
+  }
+  if self.public {
+    parts.push("public")
+  }
+  if self.private {
+    parts.push("private")
+  }
+  if self.immutable {
+    parts.push("immutable")
+  }
   cc_join_strings(parts, ", ")
 }
 
@@ -465,7 +480,7 @@ pub(all) struct Age {
 
 ///|
 pub fn Age::new(seconds : Int) -> Age {
-  { seconds: seconds }
+  { seconds, }
 }
 
 ///|
@@ -474,7 +489,6 @@ pub fn Age::parse(input : String) -> Result[Age, CacheError] {
   if s.length() == 0 {
     return Err(Empty)
   }
-
   match cc_parse_u64(s) {
     Some(secs) => Ok({ seconds: secs })
     None => Err(InvalidNumber)
@@ -499,13 +513,13 @@ pub(all) struct Expires {
 
 ///|
 pub fn Expires::new(date : HttpDate) -> Expires {
-  { date: date }
+  { date, }
 }
 
 ///|
 pub fn Expires::parse(input : String) -> Result[Expires, CacheError] {
   match HttpDate::parse(input) {
-    Ok(date) => Ok({ date: date })
+    Ok(date) => Ok({ date, })
     Err(_) => Err(InvalidDate)
   }
 }
@@ -521,62 +535,62 @@ pub fn Expires::to_string(self : Expires) -> String {
 }
 
 ///|
+
 ///|
 /// Helper functions
+
 ///|
 
 ///|
-fn cc_parse_directive(directive : String, cc : CacheControl) -> Result[CacheControl, CacheError] {
+fn cc_parse_directive(
+  directive : String,
+  cc : CacheControl,
+) -> Result[CacheControl, CacheError] {
   let eq_pos = cc_find_char(directive, 61)
-
   match eq_pos {
     Some(pos) => {
-      let name = cc_to_lower_case(cc_trim_string(cc_string_slice(directive, 0, pos)))
+      let name = cc_to_lower_case(
+        cc_trim_string(cc_string_slice(directive, 0, pos)),
+      )
       let value = cc_trim_string(cc_string_slice_from(directive, pos + 1))
-
-      let value_unquoted = if value.length() >= 2 && cc_char_at(value, 0) == 34 && cc_char_at(value, value.length() - 1) == 34 {
+      let value_unquoted = if value.length() >= 2 &&
+        cc_char_at(value, 0) == 34 &&
+        cc_char_at(value, value.length() - 1) == 34 {
         cc_string_slice(value, 1, value.length() - 1)
       } else {
         value
       }
-
       match name {
-        "max-age" => {
+        "max-age" =>
           match cc_parse_u64(value_unquoted) {
             Some(secs) => Ok(cc_set_max_age(cc, secs))
             None => Err(InvalidNumber)
           }
-        }
-        "s-maxage" => {
+        "s-maxage" =>
           match cc_parse_u64(value_unquoted) {
             Some(secs) => Ok(cc_set_s_maxage(cc, secs))
             None => Err(InvalidNumber)
           }
-        }
-        "max-stale" => {
+        "max-stale" =>
           match cc_parse_u64(value_unquoted) {
             Some(secs) => Ok(cc_set_max_stale(cc, secs))
             None => Err(InvalidNumber)
           }
-        }
-        "min-fresh" => {
+        "min-fresh" =>
           match cc_parse_u64(value_unquoted) {
             Some(secs) => Ok(cc_set_min_fresh(cc, secs))
             None => Err(InvalidNumber)
           }
-        }
-        "stale-while-revalidate" => {
+        "stale-while-revalidate" =>
           match cc_parse_u64(value_unquoted) {
             Some(secs) => Ok(cc_set_stale_while_revalidate(cc, secs))
             None => Err(InvalidNumber)
           }
-        }
-        "stale-if-error" => {
+        "stale-if-error" =>
           match cc_parse_u64(value_unquoted) {
             Some(secs) => Ok(cc_set_stale_if_error(cc, secs))
             None => Err(InvalidNumber)
           }
-        }
         _ => Ok(cc)
       }
     }
@@ -618,7 +632,7 @@ fn cc_set_max_age(cc : CacheControl, secs : Int) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -640,7 +654,7 @@ fn cc_set_s_maxage(cc : CacheControl, secs : Int) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -662,7 +676,7 @@ fn cc_set_max_stale(cc : CacheControl, secs : Int) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -684,7 +698,7 @@ fn cc_set_min_fresh(cc : CacheControl, secs : Int) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -706,7 +720,7 @@ fn cc_set_stale_while_revalidate(cc : CacheControl, secs : Int) -> CacheControl 
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -728,7 +742,7 @@ fn cc_set_stale_if_error(cc : CacheControl, secs : Int) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -750,7 +764,7 @@ fn cc_set_no_cache(cc : CacheControl) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -772,7 +786,7 @@ fn cc_set_no_store(cc : CacheControl) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -794,7 +808,7 @@ fn cc_set_no_transform(cc : CacheControl) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -816,7 +830,7 @@ fn cc_set_only_if_cached(cc : CacheControl) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -838,7 +852,7 @@ fn cc_set_must_revalidate(cc : CacheControl) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -860,7 +874,7 @@ fn cc_set_proxy_revalidate(cc : CacheControl) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -882,7 +896,7 @@ fn cc_set_must_understand(cc : CacheControl) -> CacheControl {
     must_understand: true,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -904,7 +918,7 @@ fn cc_set_public(cc : CacheControl) -> CacheControl {
     must_understand: cc.must_understand,
     public: true,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -926,7 +940,7 @@ fn cc_set_private(cc : CacheControl) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: true,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -948,7 +962,7 @@ fn cc_set_immutable(cc : CacheControl) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: true
+    immutable: true,
   }
 }
 
@@ -970,7 +984,7 @@ fn cc_set_max_stale_unlimited(cc : CacheControl) -> CacheControl {
     must_understand: cc.must_understand,
     public: cc.public,
     private: cc.private,
-    immutable: cc.immutable
+    immutable: cc.immutable,
   }
 }
 
@@ -1050,7 +1064,6 @@ fn cc_split_string(s : String, sep : String) -> Array[String] {
   let mut start = 0
   let sep_len = sep.length()
   let mut idx = 0
-
   while idx <= s.length() - sep_len {
     let mut is_match = true
     let mut j = 0
@@ -1094,11 +1107,9 @@ fn cc_parse_u64(s : String) -> Int? {
   let mut result = 0
   let mut idx = 0
   let len = s.length()
-
   if len == 0 {
     return None
   }
-
   while idx < len {
     let ci = cc_char_at(s, idx)
     if ci >= 48 && ci <= 57 {
@@ -1111,7 +1122,6 @@ fn cc_parse_u64(s : String) -> Int? {
     }
     idx = idx + 1
   }
-
   Some(result)
 }
 

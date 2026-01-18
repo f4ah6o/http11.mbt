@@ -20,8 +20,8 @@ pub fn EntityTag::parse(input : String) -> Result[EntityTag, ETagError] {
   if s.length() == 0 {
     return Err(Empty)
   }
-
-  let (weak, start_idx) = if s.length() >= 2 && (etag_string_starts_with(s, "W/") || etag_string_starts_with(s, "w/")) {
+  let (weak, start_idx) = if s.length() >= 2 &&
+    (etag_string_starts_with(s, "W/") || etag_string_starts_with(s, "w/")) {
     (true, 2)
   } else {
     (false, 0)
@@ -42,11 +42,7 @@ pub fn EntityTag::parse(input : String) -> Result[EntityTag, ETagError] {
       if !is_valid_etag(tag) {
         return Err(InvalidCharacter)
       }
-
-      Ok({
-        weak,
-        tag
-      })
+      Ok({ weak, tag })
     }
   }
 }
@@ -56,10 +52,7 @@ pub fn EntityTag::strong(tag : String) -> Result[EntityTag, ETagError] {
   if !is_valid_etag(tag) {
     return Err(InvalidCharacter)
   }
-  Ok({
-    weak: false,
-    tag
-  })
+  Ok({ weak: false, tag })
 }
 
 ///|
@@ -67,10 +60,7 @@ pub fn EntityTag::weak(tag : String) -> Result[EntityTag, ETagError] {
   if !is_valid_etag(tag) {
     return Err(InvalidCharacter)
   }
-  Ok({
-    weak: true,
-    tag
-  })
+  Ok({ weak: true, tag })
 }
 
 ///|
@@ -120,11 +110,9 @@ pub fn parse_etag_list(input : String) -> Result[ETagList, ETagError] {
   if s.length() == 0 {
     return Err(Empty)
   }
-
   if s == "*" {
     return Ok(Any)
   }
-
   let parts = etag_split_string(s, ",")
   let etags : Array[EntityTag] = []
   let mut part_idx = 0
@@ -140,11 +128,9 @@ pub fn parse_etag_list(input : String) -> Result[ETagList, ETagError] {
     }
     part_idx = part_idx + 1
   }
-
   if etags.length() == 0 {
     return Err(Empty)
   }
-
   Ok(Tags(etags))
 }
 
@@ -202,8 +188,10 @@ pub fn ETagList::to_string(self : ETagList) -> String {
 }
 
 ///|
+
 ///|
 /// Helper functions
+
 ///|
 
 ///|
@@ -313,7 +301,6 @@ fn etag_split_string(s : String, sep : String) -> Array[String] {
   let mut start = 0
   let sep_len = sep.length()
   let mut idx = 0
-
   while idx <= s.length() - sep_len {
     let mut is_match = true
     let mut j = 0

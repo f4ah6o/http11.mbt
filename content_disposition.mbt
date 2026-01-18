@@ -36,20 +36,19 @@ pub(all) struct ContentDisposition {
 } derive(Eq)
 
 ///|
-pub fn ContentDisposition::parse(input : String) -> Result[ContentDisposition, ContentDispositionError] {
+pub fn ContentDisposition::parse(
+  input : String,
+) -> Result[ContentDisposition, ContentDispositionError] {
   let s = cd_trim_string(input)
   if s.length() == 0 {
     return Err(Empty)
   }
-
   let parts = cd_split_params(s)
   if parts.length() == 0 {
     return Err(InvalidFormat)
   }
-
   let type_str = cd_to_lower_case(cd_trim_string(parts[0]))
   let disp_type = cd_parse_disposition_type(type_str)
-
   match disp_type {
     Err(e) => return Err(e)
     Ok(dt) => {
@@ -58,62 +57,61 @@ pub fn ContentDisposition::parse(input : String) -> Result[ContentDisposition, C
         filename: None,
         filename_ext: None,
         name: None,
-        parameters: []
+        parameters: [],
       }
-
       let mut part_idx = 1
       while part_idx < parts.length() {
         let part = cd_trim_string(parts[part_idx])
         if part.length() > 0 {
-          let eq_pos = cd_find_char(part, 61)  // =
+          let eq_pos = cd_find_char(part, 61) // =
           match eq_pos {
             Some(pos) => {
-              let param_name = cd_to_lower_case(cd_trim_string(cd_string_slice(part, 0, pos)))
-              let param_value = cd_trim_string(cd_string_slice_from(part, pos + 1))
-
+              let param_name = cd_to_lower_case(
+                cd_trim_string(cd_string_slice(part, 0, pos)),
+              )
+              let param_value = cd_trim_string(
+                cd_string_slice_from(part, pos + 1),
+              )
               match param_name {
                 "filename" => {
                   let parse_result = cd_parse_param_value(param_value)
                   match parse_result {
-                    Ok(value) => {
+                    Ok(value) =>
                       cd = {
                         disposition_type: cd.disposition_type,
                         filename: Some(value),
                         filename_ext: cd.filename_ext,
                         name: cd.name,
-                        parameters: cd.parameters
+                        parameters: cd.parameters,
                       }
-                    }
                     Err(e) => return Err(e)
                   }
                 }
                 "filename*" => {
                   let parse_result = cd_parse_ext_value(param_value)
                   match parse_result {
-                    Ok(value) => {
+                    Ok(value) =>
                       cd = {
                         disposition_type: cd.disposition_type,
                         filename: cd.filename,
                         filename_ext: Some(value),
                         name: cd.name,
-                        parameters: cd.parameters
+                        parameters: cd.parameters,
                       }
-                    }
                     Err(e) => return Err(e)
                   }
                 }
                 "name" => {
                   let parse_result = cd_parse_param_value(param_value)
                   match parse_result {
-                    Ok(value) => {
+                    Ok(value) =>
                       cd = {
                         disposition_type: cd.disposition_type,
                         filename: cd.filename,
                         filename_ext: cd.filename_ext,
                         name: Some(value),
-                        parameters: cd.parameters
+                        parameters: cd.parameters,
                       }
-                    }
                     Err(e) => return Err(e)
                   }
                 }
@@ -133,7 +131,7 @@ pub fn ContentDisposition::parse(input : String) -> Result[ContentDisposition, C
                         filename: cd.filename,
                         filename_ext: cd.filename_ext,
                         name: cd.name,
-                        parameters: new_params
+                        parameters: new_params,
                       }
                     }
                     Err(e) => return Err(e)
@@ -141,30 +139,36 @@ pub fn ContentDisposition::parse(input : String) -> Result[ContentDisposition, C
                 }
               }
             }
-            None => { let _ = () }
+            None => {
+              let _ = ()
+
+            }
           }
         }
         part_idx = part_idx + 1
       }
-
       Ok(cd)
     }
   }
 }
 
 ///|
-pub fn ContentDisposition::new(disposition_type : DispositionType) -> ContentDisposition {
+pub fn ContentDisposition::new(
+  disposition_type : DispositionType,
+) -> ContentDisposition {
   {
     disposition_type,
     filename: None,
     filename_ext: None,
     name: None,
-    parameters: []
+    parameters: [],
   }
 }
 
 ///|
-pub fn ContentDisposition::disposition_type(self : ContentDisposition) -> DispositionType {
+pub fn ContentDisposition::disposition_type(
+  self : ContentDisposition,
+) -> DispositionType {
   self.disposition_type
 }
 
@@ -192,7 +196,10 @@ pub fn ContentDisposition::name(self : ContentDisposition) -> String? {
 }
 
 ///|
-pub fn ContentDisposition::parameter(self : ContentDisposition, name : String) -> String? {
+pub fn ContentDisposition::parameter(
+  self : ContentDisposition,
+  name : String,
+) -> String? {
   let name_lower = cd_to_lower_case(name)
   let mut idx = 0
   while idx < self.parameters.length() {
@@ -230,64 +237,84 @@ pub fn ContentDisposition::is_form_data(self : ContentDisposition) -> Bool {
 }
 
 ///|
-pub fn ContentDisposition::with_filename(self : ContentDisposition, filename : String) -> ContentDisposition {
+pub fn ContentDisposition::with_filename(
+  self : ContentDisposition,
+  filename : String,
+) -> ContentDisposition {
   {
     disposition_type: self.disposition_type,
     filename: Some(filename),
     filename_ext: self.filename_ext,
     name: self.name,
-    parameters: self.parameters
+    parameters: self.parameters,
   }
 }
 
 ///|
-pub fn ContentDisposition::with_filename_ext(self : ContentDisposition, filename_ext : String) -> ContentDisposition {
+pub fn ContentDisposition::with_filename_ext(
+  self : ContentDisposition,
+  filename_ext : String,
+) -> ContentDisposition {
   {
     disposition_type: self.disposition_type,
     filename: self.filename,
     filename_ext: Some(filename_ext),
     name: self.name,
-    parameters: self.parameters
+    parameters: self.parameters,
   }
 }
 
 ///|
-pub fn ContentDisposition::with_name(self : ContentDisposition, name : String) -> ContentDisposition {
+pub fn ContentDisposition::with_name(
+  self : ContentDisposition,
+  name : String,
+) -> ContentDisposition {
   {
     disposition_type: self.disposition_type,
     filename: self.filename,
     filename_ext: self.filename_ext,
     name: Some(name),
-    parameters: self.parameters
+    parameters: self.parameters,
   }
 }
 
 ///|
 pub fn ContentDisposition::to_string(self : ContentDisposition) -> String {
   let mut result = self.disposition_type.to_string()
-
   match self.name {
     Some(n) => result = result + "; name=\"" + cd_escape_quoted_string(n) + "\""
-    None => { let _ = () }
-  }
+    None => {
+      let _ = ()
 
+    }
+  }
   match self.filename {
-    Some(f) => result = result + "; filename=\"" + cd_escape_quoted_string(f) + "\""
-    None => { let _ = () }
-  }
+    Some(f) =>
+      result = result + "; filename=\"" + cd_escape_quoted_string(f) + "\""
+    None => {
+      let _ = ()
 
+    }
+  }
   match self.filename_ext {
-    Some(fe) => result = result + "; filename*=UTF-8''" + cd_encode_ext_value(fe)
-    None => { let _ = () }
-  }
+    Some(fe) =>
+      result = result + "; filename*=UTF-8''" + cd_encode_ext_value(fe)
+    None => {
+      let _ = ()
 
+    }
+  }
   let mut idx = 0
   while idx < self.parameters.length() {
     let (name, value) = self.parameters[idx]
-    result = result + "; " + name + "=\"" + cd_escape_quoted_string(value) + "\""
+    result = result +
+      "; " +
+      name +
+      "=\"" +
+      cd_escape_quoted_string(value) +
+      "\""
     idx = idx + 1
   }
-
   result
 }
 
@@ -296,7 +323,9 @@ pub fn ContentDisposition::to_string(self : ContentDisposition) -> String {
 ///
 
 ///|
-fn cd_parse_disposition_type(s : String) -> Result[DispositionType, ContentDispositionError] {
+fn cd_parse_disposition_type(
+  s : String,
+) -> Result[DispositionType, ContentDispositionError] {
   match s {
     "inline" => Ok(Inline)
     "attachment" => Ok(Attachment)
@@ -313,40 +342,36 @@ fn cd_split_params(input : String) -> Array[String] {
   let mut escape_next = false
   let mut idx = 0
   let len = input.length()
-
   while idx < len {
     let ch = cd_char_at(input, idx)
     if escape_next {
       current = current + Int::unsafe_to_char(ch).to_string()
       escape_next = false
       idx = idx + 1
-    } else {
-      if ch == 92 && in_quotes {  // \
-        current = current + "\\"
-        escape_next = true
-        idx = idx + 1
-      } else if ch == 34 {  // "
-        current = current + "\""
-        in_quotes = !in_quotes
-        idx = idx + 1
-      } else if ch == 59 && !in_quotes {  // ;
-        let new_result = []
-        let mut j = 0
-        while j < result.length() {
-          new_result.push(result[j])
-          j = j + 1
-        }
-        new_result.push(current)
-        result = new_result
-        current = ""
-        idx = idx + 1
-      } else {
-        current = current + Int::unsafe_to_char(ch).to_string()
-        idx = idx + 1
+    } else if ch == 92 && in_quotes { // \
+      current = current + "\\"
+      escape_next = true
+      idx = idx + 1
+    } else if ch == 34 { // "
+      current = current + "\""
+      in_quotes = !in_quotes
+      idx = idx + 1
+    } else if ch == 59 && !in_quotes { // ;
+      let new_result = []
+      let mut j = 0
+      while j < result.length() {
+        new_result.push(result[j])
+        j = j + 1
       }
+      new_result.push(current)
+      result = new_result
+      current = ""
+      idx = idx + 1
+    } else {
+      current = current + Int::unsafe_to_char(ch).to_string()
+      idx = idx + 1
     }
   }
-
   if current.length() > 0 {
     let new_result = []
     let mut j = 0
@@ -357,14 +382,15 @@ fn cd_split_params(input : String) -> Array[String] {
     new_result.push(current)
     result = new_result
   }
-
   result
 }
 
 ///|
-fn cd_parse_param_value(value : String) -> Result[String, ContentDispositionError] {
+fn cd_parse_param_value(
+  value : String,
+) -> Result[String, ContentDispositionError] {
   let s = cd_trim_string(value)
-  if s.length() > 0 && cd_char_at(s, 0) == 34 {  // "
+  if s.length() > 0 && cd_char_at(s, 0) == 34 { // "
     if s.length() >= 2 && cd_char_at(s, s.length() - 1) == 34 {
       cd_parse_quoted_string(cd_string_slice(s, 1, s.length() - 1))
     } else {
@@ -376,16 +402,18 @@ fn cd_parse_param_value(value : String) -> Result[String, ContentDispositionErro
 }
 
 ///|
-fn cd_parse_quoted_string(s : String) -> Result[String, ContentDispositionError] {
+fn cd_parse_quoted_string(
+  s : String,
+) -> Result[String, ContentDispositionError] {
   let mut result = ""
   let mut idx = 0
   let len = s.length()
-
   while idx < len {
     let ch = cd_char_at(s, idx)
-    if ch == 92 {  // \
+    if ch == 92 { // \
       if idx + 1 < len {
-        result = result + Int::unsafe_to_char(cd_char_at(s, idx + 1)).to_string()
+        result = result +
+          Int::unsafe_to_char(cd_char_at(s, idx + 1)).to_string()
         idx = idx + 2
       } else {
         return Err(InvalidParameter)
@@ -395,16 +423,17 @@ fn cd_parse_quoted_string(s : String) -> Result[String, ContentDispositionError]
       idx = idx + 1
     }
   }
-
   Ok(result)
 }
 
 ///|
-fn cd_parse_ext_value(value : String) -> Result[String, ContentDispositionError] {
+fn cd_parse_ext_value(
+  value : String,
+) -> Result[String, ContentDispositionError] {
   let s = cd_trim_string(value)
 
   // Find first '
-  let first_quote = cd_find_char(s, 39)  // '
+  let first_quote = cd_find_char(s, 39) // '
   match first_quote {
     None => return Err(InvalidExtValue)
     Some(pos) => {
@@ -423,7 +452,6 @@ fn cd_parse_ext_value(value : String) -> Result[String, ContentDispositionError]
           if cd_to_upper_case(charset) != "UTF-8" {
             return Err(InvalidExtValue)
           }
-
           cd_percent_decode(encoded_value)
         }
       }
@@ -436,10 +464,9 @@ fn cd_percent_decode(s : String) -> Result[String, ContentDispositionError] {
   let mut bytes : Array[Int] = []
   let mut idx = 0
   let len = s.length()
-
   while idx < len {
     let ch = cd_char_at(s, idx)
-    if ch == 37 {  // %
+    if ch == 37 { // %
       if idx + 2 < len {
         let hex = cd_string_slice(s, idx + 1, idx + 3)
         let byte_result = cd_parse_hex(hex)
@@ -472,15 +499,15 @@ fn cd_percent_decode(s : String) -> Result[String, ContentDispositionError] {
       idx = idx + 1
     }
   }
-
   cd_utf8_from_bytes(bytes)
 }
 
 ///|
-fn cd_utf8_from_bytes(bytes : Array[Int]) -> Result[String, ContentDispositionError] {
+fn cd_utf8_from_bytes(
+  bytes : Array[Int],
+) -> Result[String, ContentDispositionError] {
   let mut result = ""
   let mut idx = 0
-
   while idx < bytes.length() {
     let b = bytes[idx]
     if b < 128 {
@@ -492,7 +519,7 @@ fn cd_utf8_from_bytes(bytes : Array[Int]) -> Result[String, ContentDispositionEr
       if idx + 1 < bytes.length() {
         let b2 = bytes[idx + 1]
         if b2 >= 128 && b2 < 192 {
-          let code = ((b - 192) * 64) + (b2 - 128)
+          let code = (b - 192) * 64 + (b2 - 128)
           result = result + Int::unsafe_to_char(code).to_string()
           idx = idx + 2
         } else {
@@ -507,7 +534,7 @@ fn cd_utf8_from_bytes(bytes : Array[Int]) -> Result[String, ContentDispositionEr
         let b2 = bytes[idx + 1]
         let b3 = bytes[idx + 2]
         if b2 >= 128 && b2 < 192 && b3 >= 128 && b3 < 192 {
-          let code = ((b - 224) * 4096) + ((b2 - 128) * 64) + (b3 - 128)
+          let code = (b - 224) * 4096 + (b2 - 128) * 64 + (b3 - 128)
           result = result + Int::unsafe_to_char(code).to_string()
           idx = idx + 3
         } else {
@@ -522,8 +549,16 @@ fn cd_utf8_from_bytes(bytes : Array[Int]) -> Result[String, ContentDispositionEr
         let b2 = bytes[idx + 1]
         let b3 = bytes[idx + 2]
         let b4 = bytes[idx + 3]
-        if b2 >= 128 && b2 < 192 && b3 >= 128 && b3 < 192 && b4 >= 128 && b4 < 192 {
-          let code = ((b - 240) * 262144) + ((b2 - 128) * 4096) + ((b3 - 128) * 64) + (b4 - 128)
+        if b2 >= 128 &&
+          b2 < 192 &&
+          b3 >= 128 &&
+          b3 < 192 &&
+          b4 >= 128 &&
+          b4 < 192 {
+          let code = (b - 240) * 262144 +
+            (b2 - 128) * 4096 +
+            (b3 - 128) * 64 +
+            (b4 - 128)
           result = result + Int::unsafe_to_char(code).to_string()
           idx = idx + 4
         } else {
@@ -536,7 +571,6 @@ fn cd_utf8_from_bytes(bytes : Array[Int]) -> Result[String, ContentDispositionEr
       return Err(InvalidExtValue)
     }
   }
-
   Ok(result)
 }
 
@@ -546,11 +580,11 @@ fn cd_parse_hex(s : String) -> Result[Int, ContentDispositionError] {
   let mut idx = 0
   while idx < s.length() {
     let ch = cd_char_at(s, idx)
-    let digit = if ch >= 48 && ch <= 57 {  // 0-9
+    let digit = if ch >= 48 && ch <= 57 { // 0-9
       ch - 48
-    } else if ch >= 65 && ch <= 70 {  // A-F
+    } else if ch >= 65 && ch <= 70 { // A-F
       ch - 55
-    } else if ch >= 97 && ch <= 102 {  // a-f
+    } else if ch >= 97 && ch <= 102 { // a-f
       ch - 87
     } else {
       return Err(InvalidExtValue)
@@ -579,11 +613,21 @@ fn cd_encode_ext_value(s : String) -> String {
 
 ///|
 fn cd_is_attr_char(b : Int) -> Bool {
-  (b >= 65 && b <= 90) ||  // A-Z
-  (b >= 97 && b <= 122) ||  // a-z
-  (b >= 48 && b <= 57) ||  // 0-9
-  b == 33 || b == 35 || b == 36 || b == 38 || b == 43 || b == 45 || b == 46 ||
-  b == 94 || b == 95 || b == 96 || b == 124 || b == 126
+  (b >= 65 && b <= 90) || // A-Z
+  (b >= 97 && b <= 122) || // a-z
+  (b >= 48 && b <= 57) || // 0-9
+  b == 33 ||
+  b == 35 ||
+  b == 36 ||
+  b == 38 ||
+  b == 43 ||
+  b == 45 ||
+  b == 46 ||
+  b == 94 ||
+  b == 95 ||
+  b == 96 ||
+  b == 124 ||
+  b == 126
 }
 
 ///|
@@ -592,7 +636,7 @@ fn cd_escape_quoted_string(s : String) -> String {
   let mut idx = 0
   while idx < s.length() {
     let ch = cd_char_at(s, idx)
-    if ch == 34 || ch == 92 {  // " or \
+    if ch == 34 || ch == 92 { // " or \
       result = result + "\\"
     }
     result = result + Int::unsafe_to_char(ch).to_string()
@@ -607,19 +651,16 @@ fn cd_int_to_hex(n : Int, padding : Int) -> String {
   let mut result = ""
   let mut val = n
   let mut len = 0
-
   while val > 0 {
     let digit = val % 16
     result = Int::unsafe_to_char(cd_char_at(chars, digit)).to_string() + result
     val = val / 16
     len = len + 1
   }
-
   while len < padding {
     result = "0" + result
     len = len + 1
   }
-
   if result == "" {
     "00"
   } else {
@@ -633,7 +674,7 @@ fn cd_to_upper_case(s : String) -> String {
   let mut idx = 0
   while idx < s.length() {
     let ch = cd_char_at(s, idx)
-    if ch >= 97 && ch <= 122 {  // a-z
+    if ch >= 97 && ch <= 122 { // a-z
       result = result + Int::unsafe_to_char(ch - 32).to_string()
     } else {
       result = result + Int::unsafe_to_char(ch).to_string()
@@ -649,7 +690,7 @@ fn cd_to_lower_case(s : String) -> String {
   let mut idx = 0
   while idx < s.length() {
     let ch = cd_char_at(s, idx)
-    if ch >= 65 && ch <= 90 {  // A-Z
+    if ch >= 65 && ch <= 90 { // A-Z
       result = result + Int::unsafe_to_char(ch + 32).to_string()
     } else {
       result = result + Int::unsafe_to_char(ch).to_string()

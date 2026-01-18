@@ -57,7 +57,8 @@ fn init {
   let original = BasicAuth::new("testuser", "testpass123")
   let header2 = original.to_header_value()
   let parsed = BasicAuth::parse(header2).unwrap()
-  if parsed.username() == original.username() && parsed.password() == original.password() {
+  if parsed.username() == original.username() &&
+    parsed.password() == original.password() {
     println("auth.mbt: BasicAuth roundtrip OK")
   } else {
     println("auth.mbt: BasicAuth roundtrip FAILED")
@@ -88,7 +89,9 @@ fn init {
   }
 
   // Test WwwAuthenticate::parse with charset
-  let www4 = WwwAuthenticate::parse("Basic realm=\"example.com\", charset=\"UTF-8\"").unwrap()
+  let www4 = WwwAuthenticate::parse(
+    "Basic realm=\"example.com\", charset=\"UTF-8\"",
+  ).unwrap()
   if www4.realm() == "example.com" && www4.charset() == Some("UTF-8") {
     println("auth.mbt: WwwAuthenticate::parse with charset OK")
   } else {
@@ -104,7 +107,9 @@ fn init {
   }
 
   // Test DigestAuth::parse
-  let digest = DigestAuth::parse("Digest username=\"Mufasa\", realm=\"test\", nonce=\"abc\", uri=\"/\", response=\"xyz\"").unwrap()
+  let digest = DigestAuth::parse(
+    "Digest username=\"Mufasa\", realm=\"test\", nonce=\"abc\", uri=\"/\", response=\"xyz\"",
+  ).unwrap()
   if digest.username() == Some("Mufasa") && digest.realm() == Some("test") {
     println("auth.mbt: DigestAuth::parse OK")
   } else {
@@ -148,8 +153,11 @@ fn init {
   }
 
   // Test BearerChallenge::parse
-  let b_challenge = BearerChallenge::parse("Bearer realm=\"example\", error=\"invalid_token\"").unwrap()
-  if b_challenge.param("realm") == Some("example") && b_challenge.param("error") == Some("invalid_token") {
+  let b_challenge = BearerChallenge::parse(
+    "Bearer realm=\"example\", error=\"invalid_token\"",
+  ).unwrap()
+  if b_challenge.param("realm") == Some("example") &&
+    b_challenge.param("error") == Some("invalid_token") {
     println("auth.mbt: BearerChallenge::parse OK")
   } else {
     println("auth.mbt: BearerChallenge::parse FAILED")
@@ -170,7 +178,9 @@ fn init {
   }
 
   // Test Authorization::parse Digest
-  let authz3 = Authorization::parse("Digest username=\"user\", realm=\"test\", nonce=\"abc\", uri=\"/\", response=\"xyz\"").unwrap()
+  let authz3 = Authorization::parse(
+    "Digest username=\"user\", realm=\"test\", nonce=\"abc\", uri=\"/\", response=\"xyz\"",
+  ).unwrap()
   match authz3 {
     Digest(_) => println("auth.mbt: Authorization::parse Digest OK")
     _ => println("auth.mbt: Authorization::parse Digest FAILED")
@@ -196,6 +206,5 @@ fn init {
     Basic(_) => println("auth.mbt: ProxyAuthenticate::parse OK")
     _ => println("auth.mbt: ProxyAuthenticate::parse FAILED")
   }
-
   println("auth.mbt: All basic tests completed")
 }

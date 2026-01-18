@@ -49,7 +49,9 @@ pub(all) struct IfNoneMatch {
 } derive(Eq)
 
 ///|
-pub fn IfNoneMatch::parse(input : String) -> Result[IfNoneMatch, ConditionalError] {
+pub fn IfNoneMatch::parse(
+  input : String,
+) -> Result[IfNoneMatch, ConditionalError] {
   let parse_result = parse_etag_list(input)
   match parse_result {
     Ok(list) => Ok({ etags: list })
@@ -84,7 +86,9 @@ pub(all) struct IfModifiedSince {
 } derive(Eq)
 
 ///|
-pub fn IfModifiedSince::parse(input : String) -> Result[IfModifiedSince, ConditionalError] {
+pub fn IfModifiedSince::parse(
+  input : String,
+) -> Result[IfModifiedSince, ConditionalError] {
   let parse_result = HttpDate::parse(input)
   match parse_result {
     Ok(d) => Ok({ date: d })
@@ -109,7 +113,9 @@ pub(all) struct IfUnmodifiedSince {
 } derive(Eq)
 
 ///|
-pub fn IfUnmodifiedSince::parse(input : String) -> Result[IfUnmodifiedSince, ConditionalError] {
+pub fn IfUnmodifiedSince::parse(
+  input : String,
+) -> Result[IfUnmodifiedSince, ConditionalError] {
   let parse_result = HttpDate::parse(input)
   match parse_result {
     Ok(d) => Ok({ date: d })
@@ -143,13 +149,15 @@ pub fn IfRange::parse(input : String) -> Result[IfRange, ConditionalError] {
 
   // Check if it starts with " or W/ (ETag)
   let ch = cond_char_at(s, 0)
-  if ch == 34 {  // "
+  if ch == 34 { // "
     let parse_result = EntityTag::parse(s)
     match parse_result {
       Ok(etag) => Ok(ETag(etag))
       Err(_) => Err(ETagError)
     }
-  } else if s.length() >= 2 && ((ch == 87 || ch == 119) && cond_char_at(s, 1) == 47) {  // W/ or w/
+  } else if s.length() >= 2 &&
+    (ch == 87 || ch == 119) &&
+    cond_char_at(s, 1) == 47 { // W/ or w/
     let parse_result = EntityTag::parse(s)
     match parse_result {
       Ok(etag) => Ok(ETag(etag))

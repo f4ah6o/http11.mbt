@@ -2,13 +2,12 @@
 fn init {
   // Test Vary "*"
   match Vary::parse("*") {
-    Ok(vary) => {
+    Ok(vary) =>
       if vary.is_any() {
         println("vary.mbt: Vary * OK")
       } else {
         println("vary.mbt: Vary * FAILED")
       }
-    }
     Err(_) => println("vary.mbt: Vary * FAILED")
   }
 
@@ -49,6 +48,5 @@ fn init {
     }
     Err(_) => println("vary.mbt: to_string FAILED")
   }
-
   println("vary.mbt: All basic tests completed")
 }

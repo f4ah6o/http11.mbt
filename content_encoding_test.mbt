@@ -10,7 +10,10 @@ fn init {
 
   // Test parse multiple encodings
   let ce2 = ContentEncoding::parse("gzip, deflate, identity").unwrap()
-  if ce2.has_gzip() && ce2.has_deflate() && ce2.has_identity() && ce2.encodings().length() == 3 {
+  if ce2.has_gzip() &&
+    ce2.has_deflate() &&
+    ce2.has_identity() &&
+    ce2.encodings().length() == 3 {
     println("content_encoding.mbt: Multiple encodings parse OK")
   } else {
     println("content_encoding.mbt: Multiple encodings parse FAILED")
@@ -52,13 +55,12 @@ fn init {
   // Test trailing comma (should be OK)
   let ce7 = ContentEncoding::parse("gzip,")
   match ce7 {
-    Ok(_) => {
+    Ok(_) =>
       if ce7.unwrap().has_gzip() {
         println("content_encoding.mbt: Trailing comma OK")
       } else {
         println("content_encoding.mbt: Trailing comma FAILED")
       }
-    }
     Err(_) => println("content_encoding.mbt: Trailing comma FAILED")
   }
 
@@ -81,15 +83,13 @@ fn init {
   let ce10 = ContentEncoding::parse("unknown-coding").unwrap()
   let encs = ce10.encodings()
   match encs[0] {
-    Other(s) => {
+    Other(s) =>
       if s == "unknown-coding" {
         println("content_encoding.mbt: Unknown encoding OK")
       } else {
         println("content_encoding.mbt: Unknown encoding FAILED")
       }
-    }
     _ => println("content_encoding.mbt: Unknown encoding FAILED")
   }
-
   println("content_encoding.mbt: All tests completed")
 }

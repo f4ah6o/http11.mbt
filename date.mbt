@@ -50,7 +50,7 @@ pub fn HttpDate::new(
   year : Int,
   hour : Int,
   minute : Int,
-  second : Int
+  second : Int,
 ) -> Result[HttpDate, DateError] {
   if day < 1 || day > 31 {
     return Err(InvalidDay)
@@ -70,15 +70,7 @@ pub fn HttpDate::new(
   if second > 60 {
     return Err(InvalidSecond)
   }
-  Ok({
-    day_of_week,
-    day,
-    month,
-    year,
-    hour,
-    minute,
-    second
-  })
+  Ok({ day_of_week, day, month, year, hour, minute, second })
 }
 
 ///|
@@ -102,10 +94,9 @@ pub fn HttpDate::parse(input : String) -> Result[HttpDate, DateError] {
         parse_imf_fixdate(day_name, rest)
       }
     }
-    None => {
+    None =>
       // ANSI C asctime: Sun Nov  6 08:49:37 1994
       parse_asctime(s)
-    }
   }
 }
 
@@ -169,11 +160,25 @@ pub fn HttpDate::to_string(self : HttpDate) -> String {
   } else {
     self.second.to_string()
   }
-  dow + ", " + day + " " + mon + " " + yr + " " + hr + ":" + mn + ":" + sc + " GMT"
+  dow +
+  ", " +
+  day +
+  " " +
+  mon +
+  " " +
+  yr +
+  " " +
+  hr +
+  ":" +
+  mn +
+  ":" +
+  sc +
+  " GMT"
 }
 
 ///|
 /// Helper functions
+
 ///|
 fn day_of_week_short_name(dow : DayOfWeek) -> String {
   match dow {
@@ -209,7 +214,10 @@ fn day_of_week_from_name(s : String) -> DayOfWeek? {
 }
 
 ///|
-fn parse_imf_fixdate(day_name : String, rest : String) -> Result[HttpDate, DateError] {
+fn parse_imf_fixdate(
+  day_name : String,
+  rest : String,
+) -> Result[HttpDate, DateError] {
   match day_of_week_from_name(day_name) {
     None => Err(InvalidDayName)
     Some(dow) => {
@@ -217,7 +225,6 @@ fn parse_imf_fixdate(day_name : String, rest : String) -> Result[HttpDate, DateE
       if parts.length() != 5 {
         return Err(InvalidFormat)
       }
-
       let day = match date_parse_int(parts[0]) {
         Some(d) => d
         None => return Err(InvalidDay)
@@ -234,18 +241,19 @@ fn parse_imf_fixdate(day_name : String, rest : String) -> Result[HttpDate, DateE
         Some(t) => t
         None => return Err(InvalidFormat)
       }
-
       if parts[4] != "GMT" {
         return Err(NotGmt)
       }
-
       HttpDate::new(dow, day, month, year, hour, minute, second)
     }
   }
 }
 
 ///|
-fn parse_rfc850(day_name : String, rest : String) -> Result[HttpDate, DateError] {
+fn parse_rfc850(
+  day_name : String,
+  rest : String,
+) -> Result[HttpDate, DateError] {
   match day_of_week_from_name(day_name) {
     None => Err(InvalidDayName)
     Some(dow) => {
@@ -259,7 +267,6 @@ fn parse_rfc850(day_name : String, rest : String) -> Result[HttpDate, DateError]
       if date_parts.length() != 3 {
         return Err(InvalidFormat)
       }
-
       let day = match date_parse_int(date_parts[0]) {
         Some(d) => d
         None => return Err(InvalidDay)
@@ -276,22 +283,15 @@ fn parse_rfc850(day_name : String, rest : String) -> Result[HttpDate, DateError]
       // RFC 2616 Section 19.3: 2-digit year correction
       // 00-49 -> 2000-2049, 50-99 -> 1950-1999
       if year < 100 {
-        year = if year < 50 {
-          2000 + year
-        } else {
-          1900 + year
-        }
+        year = if year < 50 { 2000 + year } else { 1900 + year }
       }
-
       let (hour, minute, second) = match parse_time(parts[1]) {
         Some(t) => t
         None => return Err(InvalidFormat)
       }
-
       if parts[2] != "GMT" {
         return Err(NotGmt)
       }
-
       HttpDate::new(dow, day, month, year, hour, minute, second)
     }
   }
@@ -303,7 +303,6 @@ fn parse_asctime(input : String) -> Result[HttpDate, DateError] {
   if parts.length() != 5 {
     return Err(InvalidFormat)
   }
-
   match day_of_week_from_name(parts[0]) {
     None => Err(InvalidDayName)
     Some(dow) => {
@@ -323,7 +322,6 @@ fn parse_asctime(input : String) -> Result[HttpDate, DateError] {
         Some(y) => y
         None => return Err(InvalidYear)
       }
-
       HttpDate::new(dow, day, month, year, hour, minute, second)
     }
   }
@@ -373,7 +371,6 @@ fn parse_time(s : String) -> (Int, Int, Int)? {
   if parts.length() != 3 {
     return None
   }
-
   let hour = match date_parse_int(parts[0]) {
     Some(h) => h
     None => return None
@@ -386,7 +383,6 @@ fn parse_time(s : String) -> (Int, Int, Int)? {
     Some(s) => s
     None => return None
   }
-
   if hour > 23 {
     return None
   }
@@ -396,7 +392,6 @@ fn parse_time(s : String) -> (Int, Int, Int)? {
   if second > 60 {
     return None
   }
-
   Some((hour, minute, second))
 }
 
@@ -460,7 +455,6 @@ fn split_whitespace(s : String) -> Array[String] {
   let mut in_ws = false
   let mut idx = 0
   let len = s.length()
-
   while idx < len {
     let ch = s[idx]
     let ci = ch.to_int()
@@ -477,11 +471,9 @@ fn split_whitespace(s : String) -> Array[String] {
     }
     idx = idx + 1
   }
-
   if current.length() > 0 {
     result.push(current)
   }
-
   result
 }
 
@@ -491,7 +483,6 @@ fn split_string(s : String, sep : String) -> Array[String] {
   let mut start = 0
   let sep_len = sep.length()
   let mut idx = 0
-
   while idx <= s.length() - sep_len {
     let mut is_match = true
     let mut j = 0
@@ -519,7 +510,9 @@ fn date_parse_int(s : String) -> Int? {
   let mut result = 0
   let mut idx = 0
   let len = s.length()
-  if len == 0 { return None }
+  if len == 0 {
+    return None
+  }
   while idx < len {
     let c = s[idx]
     let ci = c.to_int()

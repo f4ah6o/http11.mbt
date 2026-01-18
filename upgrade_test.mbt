@@ -2,13 +2,12 @@
 fn init {
   // Test simple protocol
   match Upgrade::parse("websocket") {
-    Ok(upgrade) => {
+    Ok(upgrade) =>
       if upgrade.has_protocol("websocket") && upgrade.protocols().length() == 1 {
         println("upgrade.mbt: simple protocol OK")
       } else {
         println("upgrade.mbt: simple protocol FAILED")
       }
-    }
     Err(_) => println("upgrade.mbt: simple protocol FAILED")
   }
 
@@ -66,6 +65,5 @@ fn init {
     }
     Err(_) => println("upgrade.mbt: to_string FAILED")
   }
-
   println("upgrade.mbt: All basic tests completed")
 }

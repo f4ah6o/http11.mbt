@@ -33,7 +33,9 @@ fn init {
   }
 
   // Test parse filename with escape
-  let cd5 = ContentDisposition::parse("attachment; filename=\"file\\\"name.txt\"").unwrap()
+  let cd5 = ContentDisposition::parse(
+    "attachment; filename=\"file\\\"name.txt\"",
+  ).unwrap()
   if cd5.filename().unwrap() == "file\"name.txt" {
     println("content_disposition.mbt: Filename with escape OK")
   } else {
@@ -49,8 +51,12 @@ fn init {
   }
 
   // Test parse form-data with filename
-  let cd7 = ContentDisposition::parse("form-data; name=\"file\"; filename=\"image.png\"").unwrap()
-  if cd7.is_form_data() && cd7.name().unwrap() == "file" && cd7.filename().unwrap() == "image.png" {
+  let cd7 = ContentDisposition::parse(
+    "form-data; name=\"file\"; filename=\"image.png\"",
+  ).unwrap()
+  if cd7.is_form_data() &&
+    cd7.name().unwrap() == "file" &&
+    cd7.filename().unwrap() == "image.png" {
     println("content_disposition.mbt: Form-data with filename OK")
   } else {
     println("content_disposition.mbt: Form-data with filename FAILED")
@@ -93,6 +99,5 @@ fn init {
   } else {
     println("content_disposition.mbt: Builder FAILED")
   }
-
   println("content_disposition.mbt: All tests completed")
 }

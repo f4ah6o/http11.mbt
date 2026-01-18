@@ -3,7 +3,9 @@ fn init {
   // Test Accept::parse simple
   let accept1 = Accept::parse("text/html").unwrap()
   let item1 = accept1.items()[0]
-  if item1.media_type() == "text" && item1.subtype() == "html" && item1.qvalue().value() == 1000 {
+  if item1.media_type() == "text" &&
+    item1.subtype() == "html" &&
+    item1.qvalue().value() == 1000 {
     println("accept.mbt: Accept simple parse OK")
   } else {
     println("accept.mbt: Accept simple parse FAILED")
@@ -21,7 +23,9 @@ fn init {
   // Test Accept::parse with params
   let accept3 = Accept::parse("text/html; level=1; q=0.7").unwrap()
   let item3 = accept3.items()[0]
-  if item3.parameters()[0].0 == "level" && item3.parameters()[0].1 == "1" && item3.qvalue().value() == 700 {
+  if item3.parameters()[0].0 == "level" &&
+    item3.parameters()[0].1 == "1" &&
+    item3.qvalue().value() == 700 {
     println("accept.mbt: Accept with params OK")
   } else {
     println("accept.mbt: Accept with params FAILED")
@@ -54,7 +58,8 @@ fn init {
 
   // Test AcceptLanguage::parse
   let al = AcceptLanguage::parse("en-US, ja;q=0.8").unwrap()
-  if al.items()[0].language() == "en-US" && al.items()[1].qvalue().value() == 800 {
+  if al.items()[0].language() == "en-US" &&
+    al.items()[1].qvalue().value() == 800 {
     println("accept.mbt: AcceptLanguage parse OK")
   } else {
     println("accept.mbt: AcceptLanguage parse FAILED")
@@ -74,7 +79,9 @@ fn init {
   let q4 = QValue::parse("0.500").unwrap()
   let q5 = QValue::parse("0.050").unwrap()
   let q6 = QValue::parse("0.005").unwrap()
-  if q4.to_string() == "0.5" && q5.to_string() == "0.05" && q6.to_string() == "0.005" {
+  if q4.to_string() == "0.5" &&
+    q5.to_string() == "0.05" &&
+    q6.to_string() == "0.005" {
     println("accept.mbt: QValue to_string OK")
   } else {
     println("accept.mbt: QValue to_string FAILED")
@@ -110,6 +117,5 @@ fn init {
   } else {
     println("accept.mbt: Wildcard charset FAILED")
   }
-
   println("accept.mbt: All tests completed")
 }

@@ -12,12 +12,13 @@ pub(all) struct ContentLocation {
 } derive(Eq)
 
 ///|
-pub fn ContentLocation::parse(input : String) -> Result[ContentLocation, ContentLocationError] {
+pub fn ContentLocation::parse(
+  input : String,
+) -> Result[ContentLocation, ContentLocationError] {
   let s = clo_trim_string(input)
   if s.length() == 0 {
     return Err(Empty)
   }
-
   let uri_result = Uri::parse(s)
   match uri_result {
     Ok(uri) => Ok({ uri, })

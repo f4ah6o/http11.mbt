@@ -10,7 +10,9 @@ fn init {
 
   // Test parse multiple language tags
   let cl2 = ContentLanguage::parse("en-US, ja").unwrap()
-  if cl2.tags().length() == 2 && cl2.tags()[0] == "en-US" && cl2.tags()[1] == "ja" {
+  if cl2.tags().length() == 2 &&
+    cl2.tags()[0] == "en-US" &&
+    cl2.tags()[1] == "ja" {
     println("content_language.mbt: Multiple tags parse OK")
   } else {
     println("content_language.mbt: Multiple tags parse FAILED")
@@ -36,7 +38,8 @@ fn init {
   // Test invalid tag (trailing hyphen)
   let cl5 = ContentLanguage::parse("en-")
   match cl5 {
-    Ok(_) => println("content_language.mbt: Invalid tag (trailing hyphen) FAILED")
+    Ok(_) =>
+      println("content_language.mbt: Invalid tag (trailing hyphen) FAILED")
     Err(_) => println("content_language.mbt: Invalid tag (trailing hyphen) OK")
   }
 
@@ -58,13 +61,12 @@ fn init {
   // Test trailing comma handling
   let cl8 = ContentLanguage::parse("en,")
   match cl8 {
-    Ok(cl) => {
+    Ok(cl) =>
       if cl.tags().length() == 1 && cl.tags()[0] == "en" {
         println("content_language.mbt: Trailing comma OK")
       } else {
         println("content_language.mbt: Trailing comma FAILED")
       }
-    }
     Err(_) => println("content_language.mbt: Trailing comma FAILED")
   }
 
@@ -75,6 +77,5 @@ fn init {
   } else {
     println("content_language.mbt: Case preservation FAILED")
   }
-
   println("content_language.mbt: All tests completed")
 }

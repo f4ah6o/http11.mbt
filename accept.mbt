@@ -22,11 +22,9 @@ pub fn QValue::parse(input : String) -> Result[QValue, AcceptError] {
   if s.length() == 0 {
     return Err(InvalidQValue)
   }
-
   if s == "1" {
     return Ok({ value: 1000 })
   }
-
   if acc_string_starts_with(s, "1.") {
     let rest = acc_string_slice_from(s, 2)
     if rest.length() == 0 {
@@ -35,18 +33,16 @@ pub fn QValue::parse(input : String) -> Result[QValue, AcceptError] {
     // Must be all zeros
     let mut idx = 0
     while idx < rest.length() {
-      if acc_char_at(rest, idx) != 48 {  // not '0'
+      if acc_char_at(rest, idx) != 48 { // not '0'
         return Err(InvalidQValue)
       }
       idx = idx + 1
     }
     return Ok({ value: 1000 })
   }
-
   if s == "0" {
     return Ok({ value: 0 })
   }
-
   if acc_string_starts_with(s, "0.") {
     let rest = acc_string_slice_from(s, 2)
     if rest.length() > 3 || rest.length() == 0 {
@@ -56,7 +52,7 @@ pub fn QValue::parse(input : String) -> Result[QValue, AcceptError] {
     let mut idx = 0
     while idx < rest.length() {
       let ch = acc_char_at(rest, idx)
-      if ch < 48 || ch > 57 {  // not '0'-'9'
+      if ch < 48 || ch > 57 { // not '0'-'9'
         return Err(InvalidQValue)
       }
       idx = idx + 1
@@ -70,9 +66,8 @@ pub fn QValue::parse(input : String) -> Result[QValue, AcceptError] {
       value = value + digit * multiplier
       idx = idx + 1
     }
-    return Ok({ value })
+    return Ok({ value, })
   }
-
   Err(InvalidQValue)
 }
 
@@ -122,11 +117,9 @@ pub fn Accept::parse(input : String) -> Result[Accept, AcceptError] {
   if s.length() == 0 {
     return Err(Empty)
   }
-
-  let parts = acc_split_with_quotes(s, 44)  // ,
+  let parts = acc_split_with_quotes(s, 44) // ,
   let mut items : Array[MediaRange] = []
   let mut part_idx = 0
-
   while part_idx < parts.length() {
     let part = acc_trim_string(parts[part_idx])
     if part.length() > 0 {
@@ -147,12 +140,10 @@ pub fn Accept::parse(input : String) -> Result[Accept, AcceptError] {
     }
     part_idx = part_idx + 1
   }
-
   if items.length() == 0 {
     return Err(Empty)
   }
-
-  Ok({ items })
+  Ok({ items, })
 }
 
 ///|
@@ -221,7 +212,9 @@ pub(all) struct AcceptCharset {
 } derive(Eq)
 
 ///|
-pub fn AcceptCharset::parse(input : String) -> Result[AcceptCharset, AcceptError] {
+pub fn AcceptCharset::parse(
+  input : String,
+) -> Result[AcceptCharset, AcceptError] {
   let parse_result = acc_parse_weighted_tokens(input, true, true)
   match parse_result {
     Err(e) => Err(e)
@@ -240,7 +233,7 @@ pub fn AcceptCharset::parse(input : String) -> Result[AcceptCharset, AcceptError
         items = new_items
         idx = idx + 1
       }
-      Ok({ items })
+      Ok({ items, })
     }
   }
 }
@@ -283,7 +276,9 @@ pub(all) struct AcceptEncoding {
 } derive(Eq)
 
 ///|
-pub fn AcceptEncoding::parse(input : String) -> Result[AcceptEncoding, AcceptError] {
+pub fn AcceptEncoding::parse(
+  input : String,
+) -> Result[AcceptEncoding, AcceptError] {
   let parse_result = acc_parse_weighted_tokens(input, true, true)
   match parse_result {
     Err(e) => Err(e)
@@ -302,7 +297,7 @@ pub fn AcceptEncoding::parse(input : String) -> Result[AcceptEncoding, AcceptErr
         items = new_items
         idx = idx + 1
       }
-      Ok({ items })
+      Ok({ items, })
     }
   }
 }
@@ -345,8 +340,12 @@ pub(all) struct AcceptLanguage {
 } derive(Eq)
 
 ///|
-pub fn AcceptLanguage::parse(input : String) -> Result[AcceptLanguage, AcceptError] {
-  let parse_result = acc_parse_weighted_tokens_with_validator(input, false, true, acc_validate_language_range)
+pub fn AcceptLanguage::parse(
+  input : String,
+) -> Result[AcceptLanguage, AcceptError] {
+  let parse_result = acc_parse_weighted_tokens_with_validator(
+    input, false, true, acc_validate_language_range,
+  )
   match parse_result {
     Err(e) => Err(e)
     Ok(pairs) => {
@@ -364,7 +363,7 @@ pub fn AcceptLanguage::parse(input : String) -> Result[AcceptLanguage, AcceptErr
         items = new_items
         idx = idx + 1
       }
-      Ok({ items })
+      Ok({ items, })
     }
   }
 }
@@ -405,108 +404,102 @@ pub fn LanguageRange::to_string(self : LanguageRange) -> String {
 ///
 
 ///|
-fn acc_parse_media_range_item(input : String) -> Result[MediaRange, AcceptError] {
-  let parts = acc_split_with_quotes(input, 59)  // ;
+fn acc_parse_media_range_item(
+  input : String,
+) -> Result[MediaRange, AcceptError] {
+  let parts = acc_split_with_quotes(input, 59) // ;
   if parts.length() == 0 {
     return Err(InvalidMediaRange)
   }
-
   let media = acc_trim_string(parts[0])
   let parse_result = acc_parse_media_range(media)
   match parse_result {
     Err(e) => return Err(e)
     Ok((mt, st)) => {
       let mut params : Array[(String, String)] = []
-  let mut qvalue = { value: 1000 }
-  let mut q_seen = false
-  let mut param_idx = 1
-
-  while param_idx < parts.length() {
-    let param = acc_trim_string(parts[param_idx])
-    if param.length() > 0 {
-      let eq_pos = acc_find_char(param, 61)  // =
-      match eq_pos {
-        None => return Err(InvalidParameter)
-        Some(pos) => {
-          let name = acc_to_lower_case(acc_trim_string(acc_string_slice(param, 0, pos)))
-          let value_str = acc_trim_string(acc_string_slice_from(param, pos + 1))
-
-          if name == "q" {
-            if q_seen {
-              return Err(InvalidQValue)
-            }
-            let q_result = QValue::parse(value_str)
-            match q_result {
-              Ok(q) => {
-                qvalue = q
-                q_seen = true
-              }
-              Err(e) => return Err(e)
-            }
-          } else {
-            let value_result = acc_parse_param_value(value_str)
-            match value_result {
-              Ok(value) => {
-                let new_params = []
-                let mut j = 0
-                while j < params.length() {
-                  new_params.push(params[j])
-                  j = j + 1
+      let mut qvalue = { value: 1000 }
+      let mut q_seen = false
+      let mut param_idx = 1
+      while param_idx < parts.length() {
+        let param = acc_trim_string(parts[param_idx])
+        if param.length() > 0 {
+          let eq_pos = acc_find_char(param, 61) // =
+          match eq_pos {
+            None => return Err(InvalidParameter)
+            Some(pos) => {
+              let name = acc_to_lower_case(
+                acc_trim_string(acc_string_slice(param, 0, pos)),
+              )
+              let value_str = acc_trim_string(
+                acc_string_slice_from(param, pos + 1),
+              )
+              if name == "q" {
+                if q_seen {
+                  return Err(InvalidQValue)
                 }
-                new_params.push((name, value))
-                params = new_params
+                let q_result = QValue::parse(value_str)
+                match q_result {
+                  Ok(q) => {
+                    qvalue = q
+                    q_seen = true
+                  }
+                  Err(e) => return Err(e)
+                }
+              } else {
+                let value_result = acc_parse_param_value(value_str)
+                match value_result {
+                  Ok(value) => {
+                    let new_params = []
+                    let mut j = 0
+                    while j < params.length() {
+                      new_params.push(params[j])
+                      j = j + 1
+                    }
+                    new_params.push((name, value))
+                    params = new_params
+                  }
+                  Err(e) => return Err(e)
+                }
               }
-              Err(e) => return Err(e)
             }
           }
         }
+        param_idx = param_idx + 1
       }
-    }
-    param_idx = param_idx + 1
-  }
-
-  Ok({
-    media_type: mt,
-    subtype: st,
-    parameters: params,
-    q: qvalue
-  })
+      Ok({ media_type: mt, subtype: st, parameters: params, q: qvalue })
     }
   }
 }
 
 ///|
-fn acc_parse_media_range(input : String) -> Result[(String, String), AcceptError] {
+fn acc_parse_media_range(
+  input : String,
+) -> Result[(String, String), AcceptError] {
   let s = acc_trim_string(input)
   if s == "*/*" {
     return Ok(("*", "*"))
   }
-
-  let slash_pos = acc_find_char(s, 47)  // /
+  let slash_pos = acc_find_char(s, 47) // /
   match slash_pos {
     None => return Err(InvalidMediaRange)
     Some(pos) => {
       let mt = acc_trim_string(acc_string_slice(s, 0, pos))
       let st = acc_trim_string(acc_string_slice_from(s, pos + 1))
-
       if mt == "*" {
         if st != "*" {
           return Err(InvalidMediaRange)
         }
         return Ok(("*", "*"))
       }
-
       if st == "*" {
         if !acc_is_valid_token(mt) {
           return Err(InvalidMediaRange)
         }
         return Ok((acc_to_lower_case(mt), "*"))
       }
-
       if !acc_is_valid_token(mt) || !acc_is_valid_token(st) {
         return Err(InvalidMediaRange)
       }
-
       Ok((acc_to_lower_case(mt), acc_to_lower_case(st)))
     }
   }
@@ -515,8 +508,15 @@ fn acc_parse_media_range(input : String) -> Result[(String, String), AcceptError
 ///|
 type WeightedToken = (String, QValue)
 
-fn acc_parse_weighted_tokens(input : String, lowercase : Bool, allow_wildcard : Bool) -> Result[Array[WeightedToken], AcceptError] {
-  acc_parse_weighted_tokens_with_validator(input, lowercase, allow_wildcard, acc_validate_token_or_star)
+///|
+fn acc_parse_weighted_tokens(
+  input : String,
+  lowercase : Bool,
+  allow_wildcard : Bool,
+) -> Result[Array[WeightedToken], AcceptError] {
+  acc_parse_weighted_tokens_with_validator(
+    input, lowercase, allow_wildcard, acc_validate_token_or_star,
+  )
 }
 
 ///|
@@ -524,25 +524,22 @@ fn acc_parse_weighted_tokens_with_validator(
   input : String,
   lowercase : Bool,
   allow_wildcard : Bool,
-  validator : (String) -> Bool
+  validator : (String) -> Bool,
 ) -> Result[Array[WeightedToken], AcceptError] {
   let s = acc_trim_string(input)
   if s.length() == 0 {
     return Err(Empty)
   }
-
-  let parts = acc_split_with_quotes(s, 44)  // ,
+  let parts = acc_split_with_quotes(s, 44) // ,
   let mut items : Array[WeightedToken] = []
   let mut part_idx = 0
-
   while part_idx < parts.length() {
     let part = acc_trim_string(parts[part_idx])
     if part.length() > 0 {
-      let subparts = acc_split_with_quotes(part, 59)  // ;
+      let subparts = acc_split_with_quotes(part, 59) // ;
       if subparts.length() == 0 {
         return Err(InvalidFormat)
       }
-
       let token = acc_trim_string(subparts[0])
       if token.length() == 0 {
         return Err(InvalidFormat)
@@ -553,15 +550,13 @@ fn acc_parse_weighted_tokens_with_validator(
       if token != "*" && !validator(token) {
         return Err(InvalidToken)
       }
-
       let mut qvalue = { value: 1000 }
       let mut q_seen = false
       let mut sub_idx = 1
-
       while sub_idx < subparts.length() {
         let param = acc_trim_string(subparts[sub_idx])
         if param.length() > 0 {
-          let eq_pos = acc_find_char(param, 61)  // =
+          let eq_pos = acc_find_char(param, 61) // =
           match eq_pos {
             Some(pos) => {
               let name = acc_trim_string(acc_string_slice(param, 0, pos))
@@ -569,7 +564,9 @@ fn acc_parse_weighted_tokens_with_validator(
                 if q_seen {
                   return Err(InvalidQValue)
                 }
-                let value = acc_trim_string(acc_string_slice_from(param, pos + 1))
+                let value = acc_trim_string(
+                  acc_string_slice_from(param, pos + 1),
+                )
                 let q_result = QValue::parse(value)
                 match q_result {
                   Ok(q) => {
@@ -582,18 +579,19 @@ fn acc_parse_weighted_tokens_with_validator(
                 return Err(InvalidParameter)
               }
             }
-            None => { let _ = () }
+            None => {
+              let _ = ()
+
+            }
           }
         }
         sub_idx = sub_idx + 1
       }
-
       let token_value = if lowercase && token != "*" {
         acc_to_lower_case(token)
       } else {
         token
       }
-
       let new_items = []
       let mut idx = 0
       while idx < items.length() {
@@ -605,18 +603,16 @@ fn acc_parse_weighted_tokens_with_validator(
     }
     part_idx = part_idx + 1
   }
-
   if items.length() == 0 {
     return Err(Empty)
   }
-
   Ok(items)
 }
 
 ///|
 fn acc_parse_param_value(input : String) -> Result[String, AcceptError] {
   let s = acc_trim_string(input)
-  if s.length() > 0 && acc_char_at(s, 0) == 34 {  // "
+  if s.length() > 0 && acc_char_at(s, 0) == 34 { // "
     let after_quote = acc_string_slice_from(s, 1)
     let parse_result = acc_parse_quoted_string(after_quote)
     match parse_result {
@@ -638,29 +634,29 @@ fn acc_parse_param_value(input : String) -> Result[String, AcceptError] {
 }
 
 ///|
-fn acc_parse_quoted_string(input : String) -> Result[(String, String), AcceptError] {
+fn acc_parse_quoted_string(
+  input : String,
+) -> Result[(String, String), AcceptError] {
   let mut result = ""
   let mut escaped = false
   let mut idx = 0
   let len = input.length()
-
   while idx < len {
     let ch = acc_char_at(input, idx)
     if escaped {
       result = result + Int::unsafe_to_char(ch).to_string()
       escaped = false
       idx = idx + 1
-    } else if ch == 92 {  // \
+    } else if ch == 92 { // \
       escaped = true
       idx = idx + 1
-    } else if ch == 34 {  // "
+    } else if ch == 34 { // "
       return Ok((result, acc_string_slice_from(input, idx + 1)))
     } else {
       result = result + Int::unsafe_to_char(ch).to_string()
       idx = idx + 1
     }
   }
-
   Err(InvalidParameter)
 }
 
@@ -722,20 +718,31 @@ fn acc_is_valid_token(s : String) -> Bool {
 
 ///|
 fn acc_is_token_char(b : Int) -> Bool {
-  b == 33 || b == 35 || b == 36 || b == 37 || b == 38 || b == 39 ||
-  b == 42 || b == 43 || b == 45 || b == 46 ||
-  (b >= 48 && b <= 57) ||  // 0-9
-  (b >= 65 && b <= 90) ||  // A-Z
-  b == 94 || b == 95 || b == 96 ||
-  (b >= 97 && b <= 122) ||  // a-z
-  b == 124 || b == 126
+  b == 33 ||
+  b == 35 ||
+  b == 36 ||
+  b == 37 ||
+  b == 38 ||
+  b == 39 ||
+  b == 42 ||
+  b == 43 ||
+  b == 45 ||
+  b == 46 ||
+  (b >= 48 && b <= 57) || // 0-9
+  (b >= 65 && b <= 90) || // A-Z
+  b == 94 ||
+  b == 95 ||
+  b == 96 ||
+  (b >= 97 && b <= 122) || // a-z
+  b == 124 ||
+  b == 126
 }
 
 ///|
 fn acc_is_alnum(b : Int) -> Bool {
-  (b >= 48 && b <= 57) ||  // 0-9
-  (b >= 65 && b <= 90) ||  // A-Z
-  (b >= 97 && b <= 122)    // a-z
+  (b >= 48 && b <= 57) || // 0-9
+  (b >= 65 && b <= 90) || // A-Z
+  (b >= 97 && b <= 122) // a-z
 }
 
 ///|
@@ -756,9 +763,9 @@ fn acc_escape_quotes(s : String) -> String {
   let mut idx = 0
   while idx < s.length() {
     let ch = acc_char_at(s, idx)
-    if ch == 92 {  // \
+    if ch == 92 { // \
       result = result + "\\\\"
-    } else if ch == 34 {  // "
+    } else if ch == 34 { // "
       result = result + "\\\""
     } else {
       result = result + Int::unsafe_to_char(ch).to_string()
@@ -774,7 +781,7 @@ fn acc_to_lower_case(s : String) -> String {
   let mut idx = 0
   while idx < s.length() {
     let ch = acc_char_at(s, idx)
-    if ch >= 65 && ch <= 90 {  // A-Z
+    if ch >= 65 && ch <= 90 { // A-Z
       result = result + Int::unsafe_to_char(ch + 32).to_string()
     } else {
       result = result + Int::unsafe_to_char(ch).to_string()
@@ -811,7 +818,7 @@ fn acc_trim_string(s : String) -> String {
 ///|
 fn acc_trim_trailing_zeros(s : String) -> String {
   let len = s.length()
-  if len > 0 && acc_char_at(s, len - 1) == 48 {  // '0'
+  if len > 0 && acc_char_at(s, len - 1) == 48 { // '0'
     acc_string_slice(s, 0, len - 1)
   } else {
     s
@@ -902,7 +909,6 @@ fn acc_split_string(s : String, sep : String) -> Array[String] {
   let mut start = 0
   let sep_len = sep.length()
   let mut idx = 0
-
   while idx <= s.length() - sep_len {
     let mut is_match = true
     let mut j = 0
@@ -933,7 +939,6 @@ fn acc_split_with_quotes(input : String, delimiter : Int) -> Array[String] {
   let mut escaped = false
   let mut idx = 0
   let len = input.length()
-
   while idx < len {
     let ch = acc_char_at(input, idx)
     if escaped {
@@ -941,12 +946,12 @@ fn acc_split_with_quotes(input : String, delimiter : Int) -> Array[String] {
       idx = idx + 1
       continue
     }
-    if ch == 92 && in_quote {  // \
+    if ch == 92 && in_quote { // \
       escaped = true
       idx = idx + 1
       continue
     }
-    if ch == 34 {  // "
+    if ch == 34 { // "
       in_quote = !in_quote
       idx = idx + 1
       continue

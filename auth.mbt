@@ -1,6 +1,7 @@
 ///|
 /// HTTP Authentication (Basic / Digest / Bearer)
 /// RFC 7617 (Basic), RFC 7616 (Digest), RFC 6750 (Bearer)
+
 ///|
 
 ///|
@@ -28,7 +29,7 @@ pub(all) struct BasicAuth {
 
 ///|
 pub fn BasicAuth::new(username : String, password : String) -> BasicAuth {
-  { username, password, }
+  { username, password }
 }
 
 ///|
@@ -46,7 +47,6 @@ pub fn BasicAuth::parse(input : String) -> Result[BasicAuth, AuthError] {
   } else {
     return Err(NotBasicScheme)
   }
-
   let credentials = au_trim_string(credentials)
   if credentials.length() == 0 {
     return Err(InvalidFormat)
@@ -63,7 +63,7 @@ pub fn BasicAuth::parse(input : String) -> Result[BasicAuth, AuthError] {
         Some(pos) => {
           let username = au_string_slice(decoded, 0, pos)
           let password = au_string_slice_from(decoded, pos + 1)
-          Ok({ username: username, password: password, })
+          Ok({ username, password })
         }
       }
     }
@@ -100,16 +100,21 @@ pub(all) struct WwwAuthenticate {
 
 ///|
 pub fn WwwAuthenticate::basic(realm : String) -> WwwAuthenticate {
-  { realm: realm, charset: None, }
+  { realm, charset: None }
 }
 
 ///|
-pub fn WwwAuthenticate::with_charset(self : WwwAuthenticate, charset : String) -> WwwAuthenticate {
-  { realm: self.realm, charset: Some(charset), }
+pub fn WwwAuthenticate::with_charset(
+  self : WwwAuthenticate,
+  charset : String,
+) -> WwwAuthenticate {
+  { realm: self.realm, charset: Some(charset) }
 }
 
 ///|
-pub fn WwwAuthenticate::parse(input : String) -> Result[WwwAuthenticate, AuthError] {
+pub fn WwwAuthenticate::parse(
+  input : String,
+) -> Result[WwwAuthenticate, AuthError] {
   let s = au_trim_string(input)
   if s.length() == 0 {
     return Err(Empty)
@@ -123,7 +128,6 @@ pub fn WwwAuthenticate::parse(input : String) -> Result[WwwAuthenticate, AuthErr
   } else {
     return Err(NotBasicScheme)
   }
-
   let params = au_trim_string(params)
   let mut realm : String? = None
   let mut char_set : String? = None
@@ -136,18 +140,19 @@ pub fn WwwAuthenticate::parse(input : String) -> Result[WwwAuthenticate, AuthErr
     let eq_pos = au_find_char(part, 61)
     match eq_pos {
       Some(pos) => {
-        let key = au_to_lower_case(au_trim_string(au_string_slice(part, 0, pos)))
+        let key = au_to_lower_case(
+          au_trim_string(au_string_slice(part, 0, pos)),
+        )
         let value = au_trim_string(au_string_slice_from(part, pos + 1))
 
         // Remove quotes
         let value = if value.length() >= 2 &&
-                      au_char_at(value, 0) == 34 &&
-                      au_char_at(value, value.length() - 1) == 34 {
+          au_char_at(value, 0) == 34 &&
+          au_char_at(value, value.length() - 1) == 34 {
           au_string_slice(value, 1, value.length() - 1)
         } else {
           value
         }
-
         if key == "realm" {
           realm = Some(value)
         } else if key == "charset" {
@@ -158,10 +163,9 @@ pub fn WwwAuthenticate::parse(input : String) -> Result[WwwAuthenticate, AuthErr
     }
     idx = idx + 1
   }
-
   match realm {
     None => Err(InvalidFormat)
-    Some(r) => Ok({ realm: r, charset: char_set, })
+    Some(r) => Ok({ realm: r, charset: char_set })
   }
 }
 
@@ -202,32 +206,25 @@ pub fn DigestAuth::parse(input : String) -> Result[DigestAuth, AuthError] {
   if s.length() == 0 {
     return Err(Empty)
   }
-
   let params_str = match au_strip_scheme(s, "Digest") {
     None => Err(NotDigestScheme)
-    Some(p) => {
-      if p.length() == 0 {
-        Err(InvalidFormat)
-      } else {
-        Ok(p)
-      }
-    }
+    Some(p) => if p.length() == 0 { Err(InvalidFormat) } else { Ok(p) }
   }
-
   match params_str {
     Err(e) => Err(e)
-    Ok(ps) => {
+    Ok(ps) =>
       match au_parse_auth_params(ps) {
         Err(e) => Err(e)
         Ok(params) => {
           // Check required params: username, realm, nonce, uri, response
-          if !au_has_required_params(params, ["username", "realm", "nonce", "uri", "response"]) {
+          if !au_has_required_params(params, [
+              "username", "realm", "nonce", "uri", "response",
+            ]) {
             return Err(MissingParameter)
           }
-          Ok({ params: params, })
+          Ok({ params, })
         }
       }
-    }
   }
 }
 
@@ -287,26 +284,20 @@ pub(all) struct DigestChallenge {
 } derive(Eq)
 
 ///|
-pub fn DigestChallenge::parse(input : String) -> Result[DigestChallenge, AuthError] {
+pub fn DigestChallenge::parse(
+  input : String,
+) -> Result[DigestChallenge, AuthError] {
   let s = au_trim_string(input)
   if s.length() == 0 {
     return Err(Empty)
   }
-
   let params_str = match au_strip_scheme(s, "Digest") {
     None => Err(NotDigestScheme)
-    Some(p) => {
-      if p.length() == 0 {
-        Err(InvalidFormat)
-      } else {
-        Ok(p)
-      }
-    }
+    Some(p) => if p.length() == 0 { Err(InvalidFormat) } else { Ok(p) }
   }
-
   match params_str {
     Err(e) => Err(e)
-    Ok(ps) => {
+    Ok(ps) =>
       match au_parse_auth_params(ps) {
         Err(e) => Err(e)
         Ok(params) => {
@@ -314,10 +305,9 @@ pub fn DigestChallenge::parse(input : String) -> Result[DigestChallenge, AuthErr
           if !au_has_required_params(params, ["realm", "nonce"]) {
             return Err(MissingParameter)
           }
-          Ok({ params: params, })
+          Ok({ params, })
         }
       }
-    }
   }
 }
 
@@ -375,25 +365,20 @@ pub fn BearerToken::parse(input : String) -> Result[BearerToken, AuthError] {
   } else {
     false
   }
-
   if !is_bearer {
     return Err(NotBearerScheme)
   }
-
   let token = match au_strip_scheme(s, "Bearer") {
     None => ""
     Some(t) => t
   }
-
   if token.length() == 0 {
     return Err(InvalidFormat)
   }
-
   if !au_is_token68(token) {
     return Err(InvalidToken)
   }
-
-  Ok({ token: token, })
+  Ok({ token, })
 }
 
 ///|
@@ -418,31 +403,24 @@ pub(all) struct BearerChallenge {
 } derive(Eq)
 
 ///|
-pub fn BearerChallenge::parse(input : String) -> Result[BearerChallenge, AuthError] {
+pub fn BearerChallenge::parse(
+  input : String,
+) -> Result[BearerChallenge, AuthError] {
   let s = au_trim_string(input)
   if s.length() == 0 {
     return Err(Empty)
   }
-
   let params_str = match au_strip_scheme(s, "Bearer") {
     None => Err(NotBearerScheme)
-    Some(p) => {
-      if p.length() == 0 {
-        Err(InvalidFormat)
-      } else {
-        Ok(p)
-      }
-    }
+    Some(p) => if p.length() == 0 { Err(InvalidFormat) } else { Ok(p) }
   }
-
   match params_str {
     Err(e) => Err(e)
-    Ok(ps) => {
+    Ok(ps) =>
       match au_parse_auth_params(ps) {
         Err(e) => Err(e)
-        Ok(params) => Ok({ params: params, })
+        Ok(params) => Ok({ params, })
       }
-    }
   }
 }
 
@@ -484,7 +462,6 @@ pub fn Authorization::parse(input : String) -> Result[Authorization, AuthError] 
   if s.length() == 0 {
     return Err(Empty)
   }
-
   if au_starts_with_ignore_case(s, "Basic ") {
     match BasicAuth::parse(s) {
       Ok(auth) => Ok(Basic(auth))
@@ -533,7 +510,6 @@ pub fn AuthChallenge::parse(input : String) -> Result[AuthChallenge, AuthError] 
   if s.length() == 0 {
     return Err(Empty)
   }
-
   if au_starts_with_ignore_case(s, "Basic ") {
     match WwwAuthenticate::parse(s) {
       Ok(auth) => Ok(Basic(auth))
@@ -575,15 +551,19 @@ pub(all) struct ProxyAuthorization {
 } derive(Eq)
 
 ///|
-pub fn ProxyAuthorization::parse(input : String) -> Result[ProxyAuthorization, AuthError] {
+pub fn ProxyAuthorization::parse(
+  input : String,
+) -> Result[ProxyAuthorization, AuthError] {
   match Authorization::parse(input) {
-    Ok(auth) => Ok({ auth: auth, })
+    Ok(auth) => Ok({ auth, })
     Err(e) => Err(e)
   }
 }
 
 ///|
-pub fn ProxyAuthorization::authorization(self : ProxyAuthorization) -> Authorization {
+pub fn ProxyAuthorization::authorization(
+  self : ProxyAuthorization,
+) -> Authorization {
   self.auth
 }
 
@@ -604,9 +584,11 @@ pub(all) struct ProxyAuthenticate {
 } derive(Eq)
 
 ///|
-pub fn ProxyAuthenticate::parse(input : String) -> Result[ProxyAuthenticate, AuthError] {
+pub fn ProxyAuthenticate::parse(
+  input : String,
+) -> Result[ProxyAuthenticate, AuthError] {
   match AuthChallenge::parse(input) {
-    Ok(challenge) => Ok({ challenge: challenge, })
+    Ok(challenge) => Ok({ challenge, })
     Err(e) => Err(e)
   }
 }
@@ -627,9 +609,12 @@ pub fn ProxyAuthenticate::to_string(self : ProxyAuthenticate) -> String {
 }
 
 ///|
+
 ///|
 /// Helper functions
+
 ///|
+
 ///|
 
 ///|
@@ -667,14 +652,20 @@ fn au_char_at(s : String, idx : Int) -> Int {
 
 ///|
 fn au_string_slice(s : String, start : Int, end : Int) -> String {
-  if start < 0 { return "" }
-  if end > s.length() { return au_string_slice_from(s, start) }
-  if start >= end { return "" }
+  if start < 0 {
+    return ""
+  }
+  if end > s.length() {
+    return au_string_slice_from(s, start)
+  }
+  if start >= end {
+    return ""
+  }
   let mut result = ""
   let mut idx = start
   while idx < end {
     let ch = s[idx]
-    result = result + ch.to_string()
+    result = result + Int::unsafe_to_char(ch.to_int()).to_string()
     idx = idx + 1
   }
   result
@@ -682,13 +673,15 @@ fn au_string_slice(s : String, start : Int, end : Int) -> String {
 
 ///|
 fn au_string_slice_from(s : String, start : Int) -> String {
-  if start < 0 { return s }
+  if start < 0 {
+    return s
+  }
   let mut result = ""
   let mut idx = start
   let len = s.length()
   while idx < len {
     let ch = s[idx]
-    result = result + ch.to_string()
+    result = result + Int::unsafe_to_char(ch.to_int()).to_string()
     idx = idx + 1
   }
   result
@@ -712,7 +705,6 @@ fn au_split_string(s : String, sep : String) -> Array[String] {
   let mut start = 0
   let sep_len = sep.length()
   let mut idx = 0
-
   while idx <= s.length() - sep_len {
     let mut is_match = true
     let mut j = 0
@@ -741,11 +733,7 @@ fn au_to_lower_case(s : String) -> String {
   let mut idx = 0
   while idx < s.length() {
     let ch = au_char_at(s, idx)
-    let new_ch = if ch >= 65 && ch <= 90 {
-      ch + 32
-    } else {
-      ch
-    }
+    let new_ch = if ch >= 65 && ch <= 90 { ch + 32 } else { ch }
     result = result + Int::unsafe_to_char(new_ch).to_string()
     idx = idx + 1
   }
@@ -783,17 +771,14 @@ fn au_strip_scheme(input : String, scheme : String) -> String? {
   if !au_starts_with_ignore_case(prefix, scheme) {
     return None
   }
-
   let rest = au_string_slice_from(s, scheme_len)
   if rest.length() == 0 {
     return None
   }
-
   let first_char = au_char_at(rest, 0)
   if first_char != 32 && first_char != 9 {
     return None
   }
-
   Some(au_trim_string(au_string_slice_from(rest, 1)))
 }
 
@@ -804,21 +789,37 @@ fn au_is_ows(b : Int) -> Bool {
 
 ///|
 fn au_is_token_char(b : Int) -> Bool {
-  b == 33 || b == 35 || b == 36 || b == 37 || b == 38 || b == 39 ||
-  b == 42 || b == 43 || b == 45 || b == 46 ||
-  (b >= 48 && b <= 57) ||  // 0-9
-  (b >= 65 && b <= 90) ||  // A-Z
-  b == 94 || b == 95 || b == 96 ||
+  b == 33 ||
+  b == 35 ||
+  b == 36 ||
+  b == 37 ||
+  b == 38 ||
+  b == 39 ||
+  b == 42 ||
+  b == 43 ||
+  b == 45 ||
+  b == 46 ||
+  (b >= 48 && b <= 57) || // 0-9
+  (b >= 65 && b <= 90) || // A-Z
+  b == 94 ||
+  b == 95 ||
+  b == 96 ||
   (b >= 97 && b <= 122) || // a-z
-  b == 124 || b == 126
+  b == 124 ||
+  b == 126
 }
 
 ///|
 fn au_is_token68_char(b : Int) -> Bool {
-  (b >= 65 && b <= 90) ||  // A-Z
+  (b >= 65 && b <= 90) || // A-Z
   (b >= 97 && b <= 122) || // a-z
-  (b >= 48 && b <= 57) ||  // 0-9
-  b == 45 || b == 46 || b == 95 || b == 126 || b == 43 || b == 47
+  (b >= 48 && b <= 57) || // 0-9
+  b == 45 ||
+  b == 46 ||
+  b == 95 ||
+  b == 126 ||
+  b == 43 ||
+  b == 47
 }
 
 ///|
@@ -838,10 +839,11 @@ fn au_is_token68(value : String) -> Bool {
 }
 
 ///|
-fn au_parse_auth_params(input : String) -> Result[Array[(String, String)], AuthError] {
+fn au_parse_auth_params(
+  input : String,
+) -> Result[Array[(String, String)], AuthError] {
   let params : Array[(String, String)] = []
   let mut i = 0
-
   while i < input.length() {
     // Skip OWS
     while i < input.length() && au_is_ows(au_char_at(input, i)) {
@@ -917,7 +919,9 @@ fn au_parse_auth_params(input : String) -> Result[Array[(String, String)], AuthE
     } else {
       // Token
       let value_start = i
-      while i < input.length() && !au_is_ows(au_char_at(input, i)) && au_char_at(input, i) != 44 {
+      while i < input.length() &&
+            !au_is_ows(au_char_at(input, i)) &&
+            au_char_at(input, i) != 44 {
         i = i + 1
       }
       let token = au_string_slice(input, value_start, i)
@@ -926,7 +930,6 @@ fn au_parse_auth_params(input : String) -> Result[Array[(String, String)], AuthE
       }
       token
     }
-
     params.push((name, value))
 
     // Skip OWS
@@ -937,11 +940,9 @@ fn au_parse_auth_params(input : String) -> Result[Array[(String, String)], AuthE
       i = i + 1
     }
   }
-
   if params.length() == 0 {
     return Err(InvalidFormat)
   }
-
   Ok(params)
 }
 
@@ -961,7 +962,10 @@ fn au_is_valid_token(value : String) -> Bool {
 }
 
 ///|
-fn au_has_required_params(params : Array[(String, String)], required : Array[String]) -> Bool {
+fn au_has_required_params(
+  params : Array[(String, String)],
+  required : Array[String],
+) -> Bool {
   let mut idx = 0
   let mut found = 0
   while idx < required.length() {
@@ -1013,7 +1017,7 @@ fn au_escape_quotes(value : String) -> String {
       // quote
       result = result + "\\\""
     } else {
-      result = result + ch.to_string()
+      result = result + Int::unsafe_to_char(ch_int).to_string()
     }
     idx = idx + 1
   }
@@ -1040,51 +1044,48 @@ fn au_format_auth_params(params : Array[(String, String)]) -> String {
 }
 
 ///|
+
 ///|
 /// Base64 encoding/decoding (RFC 4648)
+
 ///|
 
 ///|
 fn au_base64_encode(input : String) -> String {
   // Base64 alphabet
   let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-
   let mut result = ""
   let mut i = 0
   let len = input.length()
-
   while i < len {
     let b0 = au_char_at(input, i)
     let b1 = if i + 1 < len { au_char_at(input, i + 1) } else { 0 }
     let b2 = if i + 2 < len { au_char_at(input, i + 2) } else { 0 }
 
-    // Combine 3 bytes into 24-bit number
-    let n = (b0 * 65536) + (b1 * 256) + b2
+    // Combine 3 bytes into 24-bit number by shifting
+    // b0 << 16 | b1 << 8 | b2
+    let i0 = b0 >> 2
+    let i1 = ((b0 & 3) << 4) | (b1 >> 4)
+    let i2 = if i + 1 < len { ((b1 & 15) << 2) | (b2 >> 6) } else { -1 }
+    let i3 = if i + 2 < len { b2 & 63 } else { -1 }
 
-    // Extract 6-bit indices
-    let i0 = n / 1048576  // 2^20 = 1048576
-    let i1 = (n / 4096) % 64  // 2^12 = 4096
-    let i2 = (n / 64) % 64
-    let i3 = n % 64
-
-    result = result + Int::unsafe_to_char(alphabet[i0].to_int()).to_string()
-    result = result + Int::unsafe_to_char(alphabet[i1].to_int()).to_string()
-
-    if i + 1 < len {
-      result = result + Int::unsafe_to_char(alphabet[i2].to_int()).to_string()
+    // Get the character from alphabet at the calculated indices
+    result = result + Int::unsafe_to_char(au_char_at(alphabet, i0)).to_string()
+    result = result + Int::unsafe_to_char(au_char_at(alphabet, i1)).to_string()
+    if i2 >= 0 {
+      result = result +
+        Int::unsafe_to_char(au_char_at(alphabet, i2)).to_string()
     } else {
       result = result + "="
     }
-
-    if i + 2 < len {
-      result = result + Int::unsafe_to_char(alphabet[i3].to_int()).to_string()
+    if i3 >= 0 {
+      result = result +
+        Int::unsafe_to_char(au_char_at(alphabet, i3)).to_string()
     } else {
       result = result + "="
     }
-
     i = i + 3
   }
-
   result
 }
 
@@ -1105,6 +1106,9 @@ fn au_base64_decode_char(c : Int) -> Int? {
   } else if c == 47 {
     // /
     Some(63)
+  } else if c == 61 {
+    // = (padding) - handled in decode loop
+    Some(-2)
   } else if c == 32 || c == 9 || c == 10 || c == 13 {
     // Whitespace (skip in decoding loop)
     Some(-1)
@@ -1118,17 +1122,18 @@ fn au_base64_decode(input : String) -> Result[String, AuthError] {
   let mut result = ""
   let mut buf = 0
   let mut bits = 0
-
   let mut idx = 0
   while idx < input.length() {
     let ch = au_char_at(input, idx)
     match au_base64_decode_char(ch) {
       None => return Err(Base64DecodeError)
-      Some(-1) => ()  // Skip whitespace
+      Some(-1) => () // Skip whitespace
+      Some(-2) =>
+        // Padding character - end of input
+        break
       Some(val) => {
         buf = buf * 64 + val
         bits = bits + 6
-
         if bits >= 8 {
           bits = bits - 8
           let byte = buf / au_pow2(bits)
@@ -1139,32 +1144,54 @@ fn au_base64_decode(input : String) -> Result[String, AuthError] {
     }
     idx = idx + 1
   }
-
   Ok(result)
 }
 
 ///|
 fn au_pow2(n : Int) -> Int {
-  if n == 0 { 1 }
-  else if n == 1 { 2 }
-  else if n == 2 { 4 }
-  else if n == 3 { 8 }
-  else if n == 4 { 16 }
-  else if n == 5 { 32 }
-  else if n == 6 { 64 }
-  else if n == 7 { 128 }
-  else if n == 8 { 256 }
-  else if n == 9 { 512 }
-  else if n == 10 { 1024 }
-  else if n == 11 { 2048 }
-  else if n == 12 { 4096 }
-  else if n == 13 { 8192 }
-  else if n == 14 { 16384 }
-  else if n == 15 { 32768 }
-  else if n == 16 { 65536 }
-  else if n == 17 { 131072 }
-  else if n == 18 { 262144 }
-  else if n == 19 { 524288 }
-  else if n == 20 { 1048576 }
-  else { 1 }
+  if n == 0 {
+    1
+  } else if n == 1 {
+    2
+  } else if n == 2 {
+    4
+  } else if n == 3 {
+    8
+  } else if n == 4 {
+    16
+  } else if n == 5 {
+    32
+  } else if n == 6 {
+    64
+  } else if n == 7 {
+    128
+  } else if n == 8 {
+    256
+  } else if n == 9 {
+    512
+  } else if n == 10 {
+    1024
+  } else if n == 11 {
+    2048
+  } else if n == 12 {
+    4096
+  } else if n == 13 {
+    8192
+  } else if n == 14 {
+    16384
+  } else if n == 15 {
+    32768
+  } else if n == 16 {
+    65536
+  } else if n == 17 {
+    131072
+  } else if n == 18 {
+    262144
+  } else if n == 19 {
+    524288
+  } else if n == 20 {
+    1048576
+  } else {
+    1
+  }
 }

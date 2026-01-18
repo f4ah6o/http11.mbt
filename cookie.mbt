@@ -19,7 +19,10 @@ pub(all) struct Cookie {
 } derive(Eq)
 
 ///|
-pub fn Cookie::new(name : String, value : String) -> Result[Cookie, CookieError] {
+pub fn Cookie::new(
+  name : String,
+  value : String,
+) -> Result[Cookie, CookieError] {
   if name.length() == 0 || !ck_is_valid_cookie_name(name) {
     return Err(InvalidName)
   }
@@ -35,10 +38,8 @@ pub fn Cookie::parse(input : String) -> Result[Array[Cookie], CookieError] {
   if s.length() == 0 {
     return Err(Empty)
   }
-
   let mut cookies : Array[Cookie] = []
-  let parts = ck_split_string(s, 59)  // ;
-
+  let parts = ck_split_string(s, 59) // ;
   let mut idx = 0
   while idx < parts.length() {
     let pair = ck_trim_string(parts[idx])
@@ -60,11 +61,9 @@ pub fn Cookie::parse(input : String) -> Result[Array[Cookie], CookieError] {
     }
     idx = idx + 1
   }
-
   if cookies.length() == 0 {
     return Err(Empty)
   }
-
   Ok(cookies)
 }
 
@@ -115,7 +114,10 @@ pub(all) struct SetCookie {
 } derive(Eq)
 
 ///|
-pub fn SetCookie::new(name : String, value : String) -> Result[SetCookie, CookieError] {
+pub fn SetCookie::new(
+  name : String,
+  value : String,
+) -> Result[SetCookie, CookieError] {
   if name.length() == 0 || !ck_is_valid_cookie_name(name) {
     return Err(InvalidName)
   }
@@ -131,7 +133,7 @@ pub fn SetCookie::new(name : String, value : String) -> Result[SetCookie, Cookie
     path: None,
     secure: false,
     http_only: false,
-    same_site: None
+    same_site: None,
   })
 }
 
@@ -141,12 +143,10 @@ pub fn SetCookie::parse(input : String) -> Result[SetCookie, CookieError] {
   if s.length() == 0 {
     return Err(Empty)
   }
-
   let parts = ck_split_params(s)
   if parts.length() == 0 {
     return Err(InvalidFormat)
   }
-
   let first = ck_trim_string(parts[0])
   let parse_result = ck_parse_cookie_pair(first)
   match parse_result {
@@ -161,24 +161,26 @@ pub fn SetCookie::parse(input : String) -> Result[SetCookie, CookieError] {
         path: None,
         secure: false,
         http_only: false,
-        same_site: None
+        same_site: None,
       }
-
       let mut part_idx = 1
       while part_idx < parts.length() {
         let part = ck_trim_string(parts[part_idx])
         if part.length() > 0 {
-          let eq_pos = ck_find_char(part, 61)  // =
+          let eq_pos = ck_find_char(part, 61) // =
           match eq_pos {
             Some(pos) => {
-              let attr_name = ck_to_lower_case(ck_trim_string(ck_string_slice(part, 0, pos)))
-              let attr_value = ck_trim_string(ck_string_slice_from(part, pos + 1))
-
+              let attr_name = ck_to_lower_case(
+                ck_trim_string(ck_string_slice(part, 0, pos)),
+              )
+              let attr_value = ck_trim_string(
+                ck_string_slice_from(part, pos + 1),
+              )
               match attr_name {
                 "expires" => {
                   let date_result = HttpDate::parse(attr_value)
                   match date_result {
-                    Ok(d) => {
+                    Ok(d) =>
                       set_cookie = {
                         name: set_cookie.name,
                         value: set_cookie.value,
@@ -188,16 +190,15 @@ pub fn SetCookie::parse(input : String) -> Result[SetCookie, CookieError] {
                         path: set_cookie.path,
                         secure: set_cookie.secure,
                         http_only: set_cookie.http_only,
-                        same_site: set_cookie.same_site
+                        same_site: set_cookie.same_site,
                       }
-                    }
                     Err(_) => return Err(InvalidExpires)
                   }
                 }
                 "max-age" => {
                   let age_result = ck_parse_i64(attr_value)
                   match age_result {
-                    Some(a) => {
+                    Some(a) =>
                       set_cookie = {
                         name: set_cookie.name,
                         value: set_cookie.value,
@@ -207,13 +208,12 @@ pub fn SetCookie::parse(input : String) -> Result[SetCookie, CookieError] {
                         path: set_cookie.path,
                         secure: set_cookie.secure,
                         http_only: set_cookie.http_only,
-                        same_site: set_cookie.same_site
+                        same_site: set_cookie.same_site,
                       }
-                    }
                     None => return Err(InvalidMaxAge)
                   }
                 }
-                "domain" => {
+                "domain" =>
                   set_cookie = {
                     name: set_cookie.name,
                     value: set_cookie.value,
@@ -223,10 +223,9 @@ pub fn SetCookie::parse(input : String) -> Result[SetCookie, CookieError] {
                     path: set_cookie.path,
                     secure: set_cookie.secure,
                     http_only: set_cookie.http_only,
-                    same_site: set_cookie.same_site
+                    same_site: set_cookie.same_site,
                   }
-                }
-                "path" => {
+                "path" =>
                   set_cookie = {
                     name: set_cookie.name,
                     value: set_cookie.value,
@@ -236,13 +235,12 @@ pub fn SetCookie::parse(input : String) -> Result[SetCookie, CookieError] {
                     path: Some(attr_value),
                     secure: set_cookie.secure,
                     http_only: set_cookie.http_only,
-                    same_site: set_cookie.same_site
+                    same_site: set_cookie.same_site,
                   }
-                }
                 "samesite" => {
                   let ss_result = ck_parse_same_site(attr_value)
                   match ss_result {
-                    Ok(ss) => {
+                    Ok(ss) =>
                       set_cookie = {
                         name: set_cookie.name,
                         value: set_cookie.value,
@@ -252,19 +250,21 @@ pub fn SetCookie::parse(input : String) -> Result[SetCookie, CookieError] {
                         path: set_cookie.path,
                         secure: set_cookie.secure,
                         http_only: set_cookie.http_only,
-                        same_site: Some(ss)
+                        same_site: Some(ss),
                       }
-                    }
                     Err(_) => return Err(InvalidSameSite)
                   }
                 }
-                _ => { let _ = () }
+                _ => {
+                  let _ = ()
+
+                }
               }
             }
             None => {
               let part_lower = ck_to_lower_case(part)
               match part_lower {
-                "secure" => {
+                "secure" =>
                   set_cookie = {
                     name: set_cookie.name,
                     value: set_cookie.value,
@@ -274,10 +274,9 @@ pub fn SetCookie::parse(input : String) -> Result[SetCookie, CookieError] {
                     path: set_cookie.path,
                     secure: true,
                     http_only: set_cookie.http_only,
-                    same_site: set_cookie.same_site
+                    same_site: set_cookie.same_site,
                   }
-                }
-                "httponly" => {
+                "httponly" =>
                   set_cookie = {
                     name: set_cookie.name,
                     value: set_cookie.value,
@@ -287,17 +286,18 @@ pub fn SetCookie::parse(input : String) -> Result[SetCookie, CookieError] {
                     path: set_cookie.path,
                     secure: set_cookie.secure,
                     http_only: true,
-                    same_site: set_cookie.same_site
+                    same_site: set_cookie.same_site,
                   }
+                _ => {
+                  let _ = ()
+
                 }
-                _ => { let _ = () }
               }
             }
           }
         }
         part_idx = part_idx + 1
       }
-
       Ok(set_cookie)
     }
   }
@@ -349,7 +349,10 @@ pub fn SetCookie::same_site(self : SetCookie) -> SameSite? {
 }
 
 ///|
-pub fn SetCookie::with_expires(self : SetCookie, expires : HttpDate) -> SetCookie {
+pub fn SetCookie::with_expires(
+  self : SetCookie,
+  expires : HttpDate,
+) -> SetCookie {
   {
     name: self.name,
     value: self.value,
@@ -359,7 +362,7 @@ pub fn SetCookie::with_expires(self : SetCookie, expires : HttpDate) -> SetCooki
     path: self.path,
     secure: self.secure,
     http_only: self.http_only,
-    same_site: self.same_site
+    same_site: self.same_site,
   }
 }
 
@@ -374,7 +377,7 @@ pub fn SetCookie::with_max_age(self : SetCookie, max_age : Int) -> SetCookie {
     path: self.path,
     secure: self.secure,
     http_only: self.http_only,
-    same_site: self.same_site
+    same_site: self.same_site,
   }
 }
 
@@ -389,7 +392,7 @@ pub fn SetCookie::with_domain(self : SetCookie, domain : String) -> SetCookie {
     path: self.path,
     secure: self.secure,
     http_only: self.http_only,
-    same_site: self.same_site
+    same_site: self.same_site,
   }
 }
 
@@ -404,7 +407,7 @@ pub fn SetCookie::with_path(self : SetCookie, path : String) -> SetCookie {
     path: Some(path),
     secure: self.secure,
     http_only: self.http_only,
-    same_site: self.same_site
+    same_site: self.same_site,
   }
 }
 
@@ -417,14 +420,17 @@ pub fn SetCookie::with_secure(self : SetCookie, secure : Bool) -> SetCookie {
     max_age: self.max_age,
     domain: self.domain,
     path: self.path,
-    secure: secure,
+    secure,
     http_only: self.http_only,
-    same_site: self.same_site
+    same_site: self.same_site,
   }
 }
 
 ///|
-pub fn SetCookie::with_http_only(self : SetCookie, http_only : Bool) -> SetCookie {
+pub fn SetCookie::with_http_only(
+  self : SetCookie,
+  http_only : Bool,
+) -> SetCookie {
   {
     name: self.name,
     value: self.value,
@@ -433,13 +439,16 @@ pub fn SetCookie::with_http_only(self : SetCookie, http_only : Bool) -> SetCooki
     domain: self.domain,
     path: self.path,
     secure: self.secure,
-    http_only: http_only,
-    same_site: self.same_site
+    http_only,
+    same_site: self.same_site,
   }
 }
 
 ///|
-pub fn SetCookie::with_same_site(self : SetCookie, same_site : SameSite) -> SetCookie {
+pub fn SetCookie::with_same_site(
+  self : SetCookie,
+  same_site : SameSite,
+) -> SetCookie {
   {
     name: self.name,
     value: self.value,
@@ -449,79 +458,83 @@ pub fn SetCookie::with_same_site(self : SetCookie, same_site : SameSite) -> SetC
     path: self.path,
     secure: self.secure,
     http_only: self.http_only,
-    same_site: Some(same_site)
+    same_site: Some(same_site),
   }
 }
 
 ///|
 pub fn SetCookie::to_string(self : SetCookie) -> String {
   let mut result = self.name + "=" + self.value
-
   match self.expires {
     Some(e) => result = result + "; Expires=" + e.to_string()
-    None => { let _ = () }
-  }
+    None => {
+      let _ = ()
 
+    }
+  }
   match self.max_age {
     Some(a) => result = result + "; Max-Age=" + a.to_string()
-    None => { let _ = () }
-  }
+    None => {
+      let _ = ()
 
+    }
+  }
   match self.domain {
     Some(d) => result = result + "; Domain=" + d
-    None => { let _ = () }
-  }
+    None => {
+      let _ = ()
 
+    }
+  }
   match self.path {
     Some(p) => result = result + "; Path=" + p
-    None => { let _ = () }
-  }
+    None => {
+      let _ = ()
 
+    }
+  }
   if self.secure {
     result = result + "; Secure"
   }
-
   if self.http_only {
     result = result + "; HttpOnly"
   }
-
   match self.same_site {
     Some(ss) => result = result + "; SameSite=" + ss.to_string()
-    None => { let _ = () }
-  }
+    None => {
+      let _ = ()
 
+    }
+  }
   result
 }
 
 ///|
 /// Helper functions
+
 ///|
 
 ///|
 fn ck_parse_cookie_pair(pair : String) -> Result[(String, String), CookieError] {
-  let eq_pos = ck_find_char(pair, 61)  // =
+  let eq_pos = ck_find_char(pair, 61) // =
   match eq_pos {
     None => return Err(InvalidFormat)
     Some(pos) => {
       let name = ck_trim_string(ck_string_slice(pair, 0, pos))
       let value = ck_trim_string(ck_string_slice_from(pair, pos + 1))
-
       if name.length() == 0 {
         return Err(InvalidName)
       }
-
       if !ck_is_valid_cookie_name(name) {
         return Err(InvalidName)
       }
-
       let value = if value.length() >= 2 &&
-                     ck_char_at(value, 0) == 34 &&
-                     ck_char_at(value, value.length() - 1) == 34 {  // "
+        ck_char_at(value, 0) == 34 &&
+        ck_char_at(value, value.length() - 1) == 34 { // "
         ck_string_slice(value, 1, value.length() - 1)
       } else {
         value
       }
-
       Ok((name, value))
     }
   }
@@ -558,9 +571,24 @@ fn ck_is_valid_cookie_value(s : String) -> Bool {
 
 ///|
 fn ck_is_token_char(b : Int) -> Bool {
-  b == 33 || b == 35 || b == 36 || b == 37 || b == 38 || b == 39 || b == 42 ||
-  b == 43 || b == 45 || b == 46 || b == 94 || b == 95 || b == 96 || b == 124 ||
-  b == 126 || (b >= 48 && b <= 57) || (b >= 65 && b <= 90) || (b >= 97 && b <= 122)
+  b == 33 ||
+  b == 35 ||
+  b == 36 ||
+  b == 37 ||
+  b == 38 ||
+  b == 39 ||
+  b == 42 ||
+  b == 43 ||
+  b == 45 ||
+  b == 46 ||
+  b == 94 ||
+  b == 95 ||
+  b == 96 ||
+  b == 124 ||
+  b == 126 ||
+  (b >= 48 && b <= 57) ||
+  (b >= 65 && b <= 90) ||
+  (b >= 97 && b <= 122)
 }
 
 ///|
@@ -590,14 +618,13 @@ fn ck_split_params(input : String) -> Array[String] {
   let mut in_quotes = false
   let mut idx = 0
   let len = input.length()
-
   while idx < len {
     let ch = ck_char_at(input, idx)
-    if ch == 34 {  // "
+    if ch == 34 { // "
       current = current + "\""
       in_quotes = !in_quotes
       idx = idx + 1
-    } else if ch == 59 && !in_quotes {  // ;
+    } else if ch == 59 && !in_quotes { // ;
       let new_result = []
       let mut j = 0
       while j < result.length() {
@@ -613,7 +640,6 @@ fn ck_split_params(input : String) -> Array[String] {
       idx = idx + 1
     }
   }
-
   if current.length() > 0 {
     let new_result = []
     let mut j = 0
@@ -624,7 +650,6 @@ fn ck_split_params(input : String) -> Array[String] {
     new_result.push(current)
     result = new_result
   }
-
   result
 }
 
@@ -634,26 +659,22 @@ fn ck_parse_i64(s : String) -> Int? {
   let mut idx = 0
   let len = s.length()
   let mut is_negative = false
-
   if len == 0 {
     return None
   }
-
-  if ck_char_at(s, 0) == 45 {  // -
+  if ck_char_at(s, 0) == 45 { // -
     is_negative = true
     idx = 1
   }
-
   while idx < len {
     let ch = ck_char_at(s, idx)
-    if ch >= 48 && ch <= 57 {  // 0-9
+    if ch >= 48 && ch <= 57 { // 0-9
       result = result * 10 + (ch - 48)
     } else {
       return None
     }
     idx = idx + 1
   }
-
   if is_negative {
     Some(-result)
   } else {
@@ -736,7 +757,6 @@ fn ck_split_string(s : String, sep : Int) -> Array[String] {
   let mut result = []
   let mut start = 0
   let mut idx = 0
-
   while idx < s.length() {
     let ch = ck_char_at(s, idx)
     if ch == sep {
@@ -752,7 +772,6 @@ fn ck_split_string(s : String, sep : Int) -> Array[String] {
     }
     idx = idx + 1
   }
-
   let new_result = []
   let mut j = 0
   while j < result.length() {
@@ -770,7 +789,7 @@ fn ck_to_lower_case(s : String) -> String {
   let mut idx = 0
   while idx < s.length() {
     let ch = ck_char_at(s, idx)
-    if ch >= 65 && ch <= 90 {  // A-Z
+    if ch >= 65 && ch <= 90 { // A-Z
       result = result + Int::unsafe_to_char(ch + 32).to_string()
     } else {
       result = result + Int::unsafe_to_char(ch).to_string()

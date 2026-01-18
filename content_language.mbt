@@ -13,16 +13,16 @@ pub(all) struct ContentLanguage {
 } derive(Eq)
 
 ///|
-pub fn ContentLanguage::parse(input : String) -> Result[ContentLanguage, ContentLanguageError] {
+pub fn ContentLanguage::parse(
+  input : String,
+) -> Result[ContentLanguage, ContentLanguageError] {
   let s = cl_trim_string(input)
   if s.length() == 0 {
     return Err(Empty)
   }
-
   let parts = cl_split_string(s, ",")
   let tags : Array[String] = []
   let mut part_idx = 0
-
   while part_idx < parts.length() {
     let tag = cl_trim_string(parts[part_idx])
     if tag.length() > 0 {
@@ -33,11 +33,9 @@ pub fn ContentLanguage::parse(input : String) -> Result[ContentLanguage, Content
     }
     part_idx = part_idx + 1
   }
-
   if tags.length() == 0 {
     return Err(Empty)
   }
-
   Ok({ tags, })
 }
 
@@ -65,7 +63,6 @@ fn cl_is_valid_language_tag(tag : String) -> Bool {
   let parts = cl_split_string(tag, "-")
   let mut has_part = false
   let mut idx = 0
-
   while idx < parts.length() {
     let part = parts[idx]
     has_part = true
@@ -83,15 +80,14 @@ fn cl_is_valid_language_tag(tag : String) -> Bool {
     }
     idx = idx + 1
   }
-
   has_part
 }
 
 ///|
 fn cl_is_alnum(b : Int) -> Bool {
-  (b >= 48 && b <= 57) ||  // 0-9
-  (b >= 65 && b <= 90) ||  // A-Z
-  (b >= 97 && b <= 122)    // a-z
+  (b >= 48 && b <= 57) || // 0-9
+  (b >= 65 && b <= 90) || // A-Z
+  (b >= 97 && b <= 122) // a-z
 }
 
 ///|
@@ -145,7 +141,6 @@ fn cl_split_string(s : String, sep : String) -> Array[String] {
   let mut start = 0
   let sep_len = sep.length()
   let mut idx = 0
-
   while idx <= s.length() - sep_len {
     let mut is_match = true
     let mut j = 0

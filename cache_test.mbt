@@ -10,13 +10,12 @@ fn init {
   // Test CacheControl::parse with multiple directives
   let cc2 = CacheControl::parse("max-age=3600, public, no-transform").unwrap()
   match cc2.max_age() {
-    Some(3600) => {
+    Some(3600) =>
       if cc2.is_public() && cc2.is_no_transform() {
         println("cache.mbt: Parse multiple directives OK")
       } else {
         println("cache.mbt: Parse multiple directives FAILED")
       }
-    }
     _ => println("cache.mbt: Parse multiple directives FAILED")
   }
 
@@ -31,65 +30,60 @@ fn init {
   // Test CacheControl::parse with private
   let cc4 = CacheControl::parse("private, max-age=600").unwrap()
   match cc4.max_age() {
-    Some(600) => {
+    Some(600) =>
       if cc4.is_private() {
         println("cache.mbt: Parse private OK")
       } else {
         println("cache.mbt: Parse private FAILED")
       }
-    }
     _ => println("cache.mbt: Parse private FAILED")
   }
 
   // Test CacheControl::parse with s-maxage
   let cc5 = CacheControl::parse("public, s-maxage=86400").unwrap()
   match cc5.s_maxage() {
-    Some(86400) => {
+    Some(86400) =>
       if cc5.is_public() {
         println("cache.mbt: Parse s-maxage OK")
       } else {
         println("cache.mbt: Parse s-maxage FAILED")
       }
-    }
     _ => println("cache.mbt: Parse s-maxage FAILED")
   }
 
   // Test CacheControl::parse with must-revalidate
   let cc6 = CacheControl::parse("max-age=0, must-revalidate").unwrap()
   match cc6.max_age() {
-    Some(0) => {
+    Some(0) =>
       if cc6.is_must_revalidate() {
         println("cache.mbt: Parse must-revalidate OK")
       } else {
         println("cache.mbt: Parse must-revalidate FAILED")
       }
-    }
     _ => println("cache.mbt: Parse must-revalidate FAILED")
   }
 
   // Test CacheControl::parse with immutable
   let cc7 = CacheControl::parse("max-age=31536000, immutable").unwrap()
   match cc7.max_age() {
-    Some(31536000) => {
+    Some(31536000) =>
       if cc7.is_immutable() {
         println("cache.mbt: Parse immutable OK")
       } else {
         println("cache.mbt: Parse immutable FAILED")
       }
-    }
     _ => println("cache.mbt: Parse immutable FAILED")
   }
 
   // Test CacheControl::parse with empty string
   let cc8 = CacheControl::parse("").unwrap()
   match cc8.max_age() {
-    None => {
+    None =>
       if !cc8.is_public() {
         println("cache.mbt: Parse empty string OK")
       } else {
         println("cache.mbt: Parse empty string FAILED")
       }
-    }
     _ => println("cache.mbt: Parse empty string FAILED")
   }
 
@@ -98,22 +92,21 @@ fn init {
     .with_max_age(3600)
     .with_public()
     .with_no_transform()
-
   match cc9.max_age() {
-    Some(3600) => {
+    Some(3600) =>
       if cc9.is_public() && cc9.is_no_transform() {
         println("cache.mbt: Builder pattern OK")
       } else {
         println("cache.mbt: Builder pattern FAILED")
       }
-    }
     _ => println("cache.mbt: Builder pattern FAILED")
   }
 
   // Test CacheControl::to_string
   let cc10 = CacheControl::new().with_max_age(3600).with_public()
   let str10 = cc10.to_string()
-  if cc_string_contains(str10, "max-age=3600") && cc_string_contains(str10, "public") {
+  if cc_string_contains(str10, "max-age=3600") &&
+    cc_string_contains(str10, "public") {
     println("cache.mbt: to_string OK")
   } else {
     println("cache.mbt: to_string FAILED")
@@ -126,7 +119,6 @@ fn init {
   } else {
     println("cache.mbt: is_cacheable (true) FAILED")
   }
-
   let cc12 = CacheControl::new().with_no_store()
   if !cc12.is_cacheable() {
     println("cache.mbt: is_cacheable (false) OK")
@@ -209,18 +201,15 @@ fn init {
     .with_max_age(3600)
     .with_public()
     .with_must_revalidate()
-
   let header = original.to_string()
   let reparsed = CacheControl::parse(header).unwrap()
-
   match reparsed.max_age() {
-    Some(3600) => {
+    Some(3600) =>
       if reparsed.is_public() && reparsed.is_must_revalidate() {
         println("cache.mbt: CacheControl roundtrip OK")
       } else {
         println("cache.mbt: CacheControl roundtrip FAILED")
       }
-    }
     _ => println("cache.mbt: CacheControl roundtrip FAILED")
   }
 
@@ -240,34 +229,42 @@ fn init {
   let exp_reparsed = Expires::parse(exp_header).unwrap()
   let orig_date = exp_orig.date()
   let rep_date = exp_reparsed.date()
-  if orig_date.year() == rep_date.year() && orig_date.month() == rep_date.month() && orig_date.day() == rep_date.day() {
+  if orig_date.year() == rep_date.year() &&
+    orig_date.month() == rep_date.month() &&
+    orig_date.day() == rep_date.day() {
     println("cache.mbt: Expires roundtrip OK")
   } else {
     println("cache.mbt: Expires roundtrip FAILED")
   }
 
   // Test CacheControl with all delta-seconds directives
-  let cc_all = CacheControl::parse("max-age=100, s-maxage=200, max-stale=300, min-fresh=400, stale-while-revalidate=500, stale-if-error=600").unwrap()
+  let cc_all = CacheControl::parse(
+    "max-age=100, s-maxage=200, max-stale=300, min-fresh=400, stale-while-revalidate=500, stale-if-error=600",
+  ).unwrap()
   let test_all = match cc_all.max_age() {
-    Some(100) => match cc_all.s_maxage() {
-      Some(200) => match cc_all.max_stale() {
-        Some(300) => match cc_all.min_fresh() {
-          Some(400) => match cc_all.stale_while_revalidate() {
-            Some(500) => match cc_all.stale_if_error() {
-              Some(600) => true
-              _ => false
-            }
+    Some(100) =>
+      match cc_all.s_maxage() {
+        Some(200) =>
+          match cc_all.max_stale() {
+            Some(300) =>
+              match cc_all.min_fresh() {
+                Some(400) =>
+                  match cc_all.stale_while_revalidate() {
+                    Some(500) =>
+                      match cc_all.stale_if_error() {
+                        Some(600) => true
+                        _ => false
+                      }
+                    _ => false
+                  }
+                _ => false
+              }
             _ => false
           }
-          _ => false
-        }
         _ => false
       }
-      _ => false
-    }
     _ => false
   }
-
   if test_all {
     println("cache.mbt: All delta-seconds directives OK")
   } else {
@@ -275,15 +272,24 @@ fn init {
   }
 
   // Test CacheControl with all boolean flags
-  let cc_flags = CacheControl::parse("no-cache, no-store, no-transform, only-if-cached, must-revalidate, proxy-revalidate, must-understand, public, private, immutable").unwrap()
-  let test_flags = cc_flags.is_no_cache() && cc_flags.is_no_store() && cc_flags.is_no_transform() && cc_flags.is_only_if_cached() && cc_flags.is_must_revalidate() && cc_flags.is_proxy_revalidate() && cc_flags.is_must_understand() && cc_flags.is_public() && cc_flags.is_private() && cc_flags.is_immutable()
-
+  let cc_flags = CacheControl::parse(
+    "no-cache, no-store, no-transform, only-if-cached, must-revalidate, proxy-revalidate, must-understand, public, private, immutable",
+  ).unwrap()
+  let test_flags = cc_flags.is_no_cache() &&
+    cc_flags.is_no_store() &&
+    cc_flags.is_no_transform() &&
+    cc_flags.is_only_if_cached() &&
+    cc_flags.is_must_revalidate() &&
+    cc_flags.is_proxy_revalidate() &&
+    cc_flags.is_must_understand() &&
+    cc_flags.is_public() &&
+    cc_flags.is_private() &&
+    cc_flags.is_immutable()
   if test_flags {
     println("cache.mbt: All boolean flags OK")
   } else {
     println("cache.mbt: All boolean flags FAILED")
   }
-
   println("cache.mbt: All tests completed")
 }
 

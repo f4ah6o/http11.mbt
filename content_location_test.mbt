@@ -44,7 +44,9 @@ fn init {
   // Test URI with query and fragment
   let cl6 = ContentLocation::parse("/path?query=value#fragment").unwrap()
   let uri6 = cl6.uri()
-  if uri6.path() == "/path" && uri6.query().unwrap() == "query=value" && uri6.fragment().unwrap() == "fragment" {
+  if uri6.path() == "/path" &&
+    uri6.query().unwrap() == "query=value" &&
+    uri6.fragment().unwrap() == "fragment" {
     println("content_location.mbt: URI with query and fragment OK")
   } else {
     println("content_location.mbt: URI with query and fragment FAILED")
@@ -58,6 +60,5 @@ fn init {
   } else {
     println("content_location.mbt: URI accessor FAILED")
   }
-
   println("content_location.mbt: All tests completed")
 }

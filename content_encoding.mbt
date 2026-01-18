@@ -38,16 +38,16 @@ pub(all) struct ContentEncoding {
 } derive(Eq)
 
 ///|
-pub fn ContentEncoding::parse(input : String) -> Result[ContentEncoding, ContentEncodingError] {
+pub fn ContentEncoding::parse(
+  input : String,
+) -> Result[ContentEncoding, ContentEncodingError] {
   let s = ce_trim_string(input)
   if s.length() == 0 {
     return Err(Empty)
   }
-
   let parts = ce_split_string(s, ",")
   let encodings : Array[ContentCoding] = []
   let mut part_idx = 0
-
   while part_idx < parts.length() {
     let part = ce_trim_string(parts[part_idx])
     if part.length() > 0 {
@@ -59,16 +59,16 @@ pub fn ContentEncoding::parse(input : String) -> Result[ContentEncoding, Content
     }
     part_idx = part_idx + 1
   }
-
   if encodings.length() == 0 {
     return Err(Empty)
   }
-
   Ok({ encodings, })
 }
 
 ///|
-pub fn ContentEncoding::encodings(self : ContentEncoding) -> Array[ContentCoding] {
+pub fn ContentEncoding::encodings(
+  self : ContentEncoding,
+) -> Array[ContentCoding] {
   self.encodings
 }
 
@@ -126,16 +126,16 @@ fn ce_contains(encoding : ContentEncoding, target : ContentCoding) -> Bool {
 }
 
 ///|
-fn ce_parse_coding(token : String) -> Result[ContentCoding, ContentEncodingError] {
+fn ce_parse_coding(
+  token : String,
+) -> Result[ContentCoding, ContentEncodingError] {
   let trimmed = ce_trim_string(token)
   if trimmed.length() == 0 {
     return Err(InvalidFormat)
   }
-
   if !ce_is_valid_token(trimmed) {
     return Err(InvalidEncoding)
   }
-
   let lower = ce_to_lower_case(trimmed)
   match lower {
     "gzip" => Ok(Gzip)
@@ -165,13 +165,24 @@ fn ce_is_valid_token(s : String) -> Bool {
 
 ///|
 fn ce_is_token_char(b : Int) -> Bool {
-  b == 33 || b == 35 || b == 36 || b == 37 || b == 38 || b == 39 ||
-  b == 42 || b == 43 || b == 45 || b == 46 ||
-  (b >= 48 && b <= 57) ||  // 0-9
-  (b >= 65 && b <= 90) ||  // A-Z
-  b == 94 || b == 95 || b == 96 ||
-  (b >= 97 && b <= 122) ||  // a-z
-  b == 124 || b == 126
+  b == 33 ||
+  b == 35 ||
+  b == 36 ||
+  b == 37 ||
+  b == 38 ||
+  b == 39 ||
+  b == 42 ||
+  b == 43 ||
+  b == 45 ||
+  b == 46 ||
+  (b >= 48 && b <= 57) || // 0-9
+  (b >= 65 && b <= 90) || // A-Z
+  b == 94 ||
+  b == 95 ||
+  b == 96 ||
+  (b >= 97 && b <= 122) || // a-z
+  b == 124 ||
+  b == 126
 }
 
 ///|
@@ -189,7 +200,7 @@ fn ce_to_lower_case(s : String) -> String {
   let mut idx = 0
   while idx < s.length() {
     let ch = ce_char_at(s, idx)
-    if ch >= 65 && ch <= 90 {  // A-Z
+    if ch >= 65 && ch <= 90 { // A-Z
       result = result + Int::unsafe_to_char(ch + 32).to_string()
     } else {
       result = result + Int::unsafe_to_char(ch).to_string()
@@ -254,7 +265,6 @@ fn ce_split_string(s : String, sep : String) -> Array[String] {
   let mut start = 0
   let sep_len = sep.length()
   let mut idx = 0
-
   while idx <= s.length() - sep_len {
     let mut is_match = true
     let mut j = 0
