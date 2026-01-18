@@ -90,6 +90,5 @@ fn init {
     Ok(_) => println("etag.mbt: Empty parse FAILED")
     Err(_) => println("etag.mbt: Empty parse OK")
   }
-
   println("etag.mbt: All basic tests completed")
 }

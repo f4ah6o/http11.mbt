@@ -37,6 +37,5 @@ fn init {
     }
     Err(_) => println("trailer.mbt: to_string FAILED")
   }
-
   println("trailer.mbt: All basic tests completed")
 }

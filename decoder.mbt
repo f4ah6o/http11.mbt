@@ -41,7 +41,7 @@ pub fn RequestDecoder::new() -> RequestDecoder {
     headers: [],
     body_buf: [],
     content_length: None,
-    limits: DecoderLimits::default()
+    limits: DecoderLimits::default(),
   }
 }
 
@@ -56,12 +56,15 @@ pub fn RequestDecoder::with_limits(limits : DecoderLimits) -> RequestDecoder {
     headers: [],
     body_buf: [],
     content_length: None,
-    limits
+    limits,
   }
 }
 
 ///|
-pub fn RequestDecoder::feed(self : RequestDecoder, data : Array[Byte]) -> Result[Unit, HttpError] {
+pub fn RequestDecoder::feed(
+  self : RequestDecoder,
+  data : Array[Byte],
+) -> Result[Unit, HttpError] {
   let new_len = self.buf.length() + data.length()
   if new_len > self.limits.max_buffer_size {
     return Err(BufferOverflow(new_len, self.limits.max_buffer_size))
@@ -71,21 +74,22 @@ pub fn RequestDecoder::feed(self : RequestDecoder, data : Array[Byte]) -> Result
 }
 
 ///|
-pub fn RequestDecoder::decode(self : RequestDecoder) -> Result[Request?, HttpError] {
+pub fn RequestDecoder::decode(
+  self : RequestDecoder,
+) -> Result[Request?, HttpError] {
   match self.state {
-    Complete => {
+    Complete =>
       if self.buf.length() > 0 {
         self.reset()
         self.decode()
       } else {
         Ok(None)
       }
-    }
     Start => {
       self.state = StartLine
       self.decode()
     }
-    StartLine => {
+    StartLine =>
       match read_crlf_line(self.buf, self.limits.max_header_line_size) {
         Err(e) => Err(e)
         Ok(line_and_rest) => {
@@ -108,8 +112,7 @@ pub fn RequestDecoder::decode(self : RequestDecoder) -> Result[Request?, HttpErr
           }
         }
       }
-    }
-    Headers => {
+    Headers =>
       match read_crlf_line(self.buf, self.limits.max_header_line_size) {
         Err(e) => Err(e)
         Ok(line_and_rest) => {
@@ -118,7 +121,7 @@ pub fn RequestDecoder::decode(self : RequestDecoder) -> Result[Request?, HttpErr
           if line.length() == 0 {
             match determine_body_mode(self.headers) {
               Err(e) => Err(e)
-              Ok(mode) => {
+              Ok(mode) =>
                 match mode {
                   None => {
                     self.state = Complete
@@ -134,7 +137,6 @@ pub fn RequestDecoder::decode(self : RequestDecoder) -> Result[Request?, HttpErr
                     self.build_request()
                   }
                 }
-              }
             }
           } else {
             match parse_header_line(line) {
@@ -143,7 +145,12 @@ pub fn RequestDecoder::decode(self : RequestDecoder) -> Result[Request?, HttpErr
                 let (name, value) = header
                 self.headers.push((name, value))
                 if self.headers.length() > self.limits.max_headers_count {
-                  Err(TooManyHeaders(self.headers.length(), self.limits.max_headers_count))
+                  Err(
+                    TooManyHeaders(
+                      self.headers.length(),
+                      self.limits.max_headers_count,
+                    ),
+                  )
                 } else {
                   self.decode()
                 }
@@ -152,18 +159,15 @@ pub fn RequestDecoder::decode(self : RequestDecoder) -> Result[Request?, HttpErr
           }
         }
       }
-    }
     Body(content_length) => {
       let have = self.body_buf.length()
       let needed = content_length - have
       let available = self.buf.length()
       let take = if needed < available { needed } else { available }
-
       let split_result = split_at(self.buf, take)
       let (to_take, rest) = split_result
       self.body_buf = decoder_array_append(self.body_buf, to_take)
       self.buf = rest
-
       if self.body_buf.length() >= content_length {
         self.state = Complete
         self.build_request()
@@ -192,7 +196,9 @@ pub fn RequestDecoder::remaining(self : RequestDecoder) -> Array[Byte] {
 }
 
 ///|
-fn RequestDecoder::build_request(self : RequestDecoder) -> Result[Request?, HttpError] {
+fn RequestDecoder::build_request(
+  self : RequestDecoder,
+) -> Result[Request?, HttpError] {
   match (self.parsed_method, self.parsed_uri) {
     (Some(http_method), Some(uri)) => {
       let version = match self.parsed_version {
@@ -236,7 +242,7 @@ pub fn ResponseDecoder::new() -> ResponseDecoder {
     headers: [],
     body_buf: [],
     content_length: None,
-    limits: DecoderLimits::default()
+    limits: DecoderLimits::default(),
   }
 }
 
@@ -251,12 +257,15 @@ pub fn ResponseDecoder::with_limits(limits : DecoderLimits) -> ResponseDecoder {
     headers: [],
     body_buf: [],
     content_length: None,
-    limits
+    limits,
   }
 }
 
 ///|
-pub fn ResponseDecoder::feed(self : ResponseDecoder, data : Array[Byte]) -> Result[Unit, HttpError] {
+pub fn ResponseDecoder::feed(
+  self : ResponseDecoder,
+  data : Array[Byte],
+) -> Result[Unit, HttpError] {
   let new_len = self.buf.length() + data.length()
   if new_len > self.limits.max_buffer_size {
     return Err(BufferOverflow(new_len, self.limits.max_buffer_size))
@@ -266,21 +275,22 @@ pub fn ResponseDecoder::feed(self : ResponseDecoder, data : Array[Byte]) -> Resu
 }
 
 ///|
-pub fn ResponseDecoder::decode(self : ResponseDecoder) -> Result[Response?, HttpError] {
+pub fn ResponseDecoder::decode(
+  self : ResponseDecoder,
+) -> Result[Response?, HttpError] {
   match self.state {
-    Complete => {
+    Complete =>
       if self.buf.length() > 0 {
         self.reset()
         self.decode()
       } else {
         Ok(None)
       }
-    }
     Start => {
       self.state = StartLine
       self.decode()
     }
-    StartLine => {
+    StartLine =>
       match read_crlf_line(self.buf, self.limits.max_header_line_size) {
         Err(e) => Err(e)
         Ok(line_and_rest) => {
@@ -303,8 +313,7 @@ pub fn ResponseDecoder::decode(self : ResponseDecoder) -> Result[Response?, Http
           }
         }
       }
-    }
-    Headers => {
+    Headers =>
       match read_crlf_line(self.buf, self.limits.max_header_line_size) {
         Err(e) => Err(e)
         Ok(line_and_rest) => {
@@ -313,7 +322,7 @@ pub fn ResponseDecoder::decode(self : ResponseDecoder) -> Result[Response?, Http
           if line.length() == 0 {
             match determine_body_mode(self.headers) {
               Err(e) => Err(e)
-              Ok(mode) => {
+              Ok(mode) =>
                 match mode {
                   None => {
                     self.state = Complete
@@ -329,7 +338,6 @@ pub fn ResponseDecoder::decode(self : ResponseDecoder) -> Result[Response?, Http
                     self.build_response()
                   }
                 }
-              }
             }
           } else {
             match parse_header_line(line) {
@@ -338,7 +346,12 @@ pub fn ResponseDecoder::decode(self : ResponseDecoder) -> Result[Response?, Http
                 let (name, value) = header
                 self.headers.push((name, value))
                 if self.headers.length() > self.limits.max_headers_count {
-                  Err(TooManyHeaders(self.headers.length(), self.limits.max_headers_count))
+                  Err(
+                    TooManyHeaders(
+                      self.headers.length(),
+                      self.limits.max_headers_count,
+                    ),
+                  )
                 } else {
                   self.decode()
                 }
@@ -347,18 +360,15 @@ pub fn ResponseDecoder::decode(self : ResponseDecoder) -> Result[Response?, Http
           }
         }
       }
-    }
     Body(content_length) => {
       let have = self.body_buf.length()
       let needed = content_length - have
       let available = self.buf.length()
       let take = if needed < available { needed } else { available }
-
       let split_result = split_at(self.buf, take)
       let (to_take, rest) = split_result
       self.body_buf = decoder_array_append(self.body_buf, to_take)
       self.buf = rest
-
       if self.body_buf.length() >= content_length {
         self.state = Complete
         self.build_response()
@@ -387,7 +397,9 @@ pub fn ResponseDecoder::remaining(self : ResponseDecoder) -> Array[Byte] {
 }
 
 ///|
-fn ResponseDecoder::build_response(self : ResponseDecoder) -> Result[Response?, HttpError] {
+fn ResponseDecoder::build_response(
+  self : ResponseDecoder,
+) -> Result[Response?, HttpError] {
   match (self.parsed_version, self.parsed_status_code) {
     (Some(version), Some(status_code)) => {
       let reason = match self.parsed_reason {
@@ -408,6 +420,7 @@ fn ResponseDecoder::build_response(self : ResponseDecoder) -> Result[Response?, 
 
 ///|
 /// Helper functions
+
 ///|
 fn decoder_array_append(a : Array[Byte], b : Array[Byte]) -> Array[Byte] {
   let result = a
@@ -434,7 +447,10 @@ fn split_at(arr : Array[Byte], n : Int) -> (Array[Byte], Array[Byte]) {
 }
 
 ///|
-fn read_crlf_line(buf : Array[Byte], max_size : Int) -> Result[(String, Array[Byte]), HttpError] {
+fn read_crlf_line(
+  buf : Array[Byte],
+  max_size : Int,
+) -> Result[(String, Array[Byte]), HttpError] {
   let mut i = 0
   let len = buf.length()
   while i < len - 1 {
@@ -452,7 +468,11 @@ fn read_crlf_line(buf : Array[Byte], max_size : Int) -> Result[(String, Array[By
 }
 
 ///|
-fn decoder_bytes_to_string_slice(arr : Array[Byte], start : Int, end : Int) -> String {
+fn decoder_bytes_to_string_slice(
+  arr : Array[Byte],
+  start : Int,
+  end : Int,
+) -> String {
   let mut result = ""
   let mut i = start
   while i < end {
@@ -463,7 +483,11 @@ fn decoder_bytes_to_string_slice(arr : Array[Byte], start : Int, end : Int) -> S
 }
 
 ///|
-fn decoder_bytes_slice(arr : Array[Byte], start : Int, end : Int) -> Array[Byte] {
+fn decoder_bytes_slice(
+  arr : Array[Byte],
+  start : Int,
+  end : Int,
+) -> Array[Byte] {
   let result = []
   let mut i = start
   while i < end {
@@ -474,7 +498,9 @@ fn decoder_bytes_slice(arr : Array[Byte], start : Int, end : Int) -> Array[Byte]
 }
 
 ///|
-fn parse_request_line(line : String) -> Result[(String, String, String), HttpError] {
+fn parse_request_line(
+  line : String,
+) -> Result[(String, String, String), HttpError] {
   let parts = split_to_array(line, " ")
   if parts.length() < 2 {
     return Err(InvalidData("Invalid request line"))
@@ -500,7 +526,9 @@ fn parse_status_line(line : String) -> Result[(String, Int, String), HttpError] 
     let mut r = ""
     let mut i = 2
     while i < parts.length() {
-      if i > 2 { r = r + " " }
+      if i > 2 {
+        r = r + " "
+      }
       r = r + parts[i]
       i = i + 1
     }
@@ -550,20 +578,22 @@ fn trim_whitespace(s : String) -> String {
       break
     }
   }
-  s.substring(start=start, end=end)
+  s.substring(start~, end~)
 }
 
 ///|
-fn determine_body_mode(headers : Array[(String, String)]) -> Result[BodyMode, HttpError] {
+fn determine_body_mode(
+  headers : Array[(String, String)],
+) -> Result[BodyMode, HttpError] {
   let mut idx = 0
   while idx < headers.length() {
     let (name, value) = headers[idx]
-    if decoder_string_to_lower(name) == "transfer-encoding" && decoder_string_to_lower(value) == "chunked" {
+    if decoder_string_to_lower(name) == "transfer-encoding" &&
+      decoder_string_to_lower(value) == "chunked" {
       return Ok(Chunked)
     }
     idx = idx + 1
   }
-
   idx = 0
   while idx < headers.length() {
     let (name, value) = headers[idx]
@@ -580,7 +610,6 @@ fn determine_body_mode(headers : Array[(String, String)]) -> Result[BodyMode, Ht
     }
     idx = idx + 1
   }
-
   Ok(None)
 }
 
@@ -634,7 +663,9 @@ fn decoder_parse_int(s : String) -> Int? {
   let mut result = 0
   let mut idx = 0
   let len = s.length()
-  if len == 0 { return None }
+  if len == 0 {
+    return None
+  }
   while idx < len {
     let c = s[idx]
     let ci = c.to_int()
@@ -666,13 +697,13 @@ fn split_to_array(s : String, sep : String) -> Array[String] {
       j = j + 1
     }
     if is_match {
-      result.push(s.substring(start=start, end=idx))
+      result.push(s.substring(start~, end=idx))
       start = idx + sep_len
       idx = start
     } else {
       idx = idx + 1
     }
   }
-  result.push(s.substring(start=start, end=s.length()))
+  result.push(s.substring(start~, end=s.length()))
   result
 }

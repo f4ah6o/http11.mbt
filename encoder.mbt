@@ -17,7 +17,12 @@ pub fn encode_response(response : Response) -> Array[Byte] {
 ///|
 /// Encode only the headers part of an HTTP request
 pub fn encode_request_headers(request : Request) -> Array[Byte] {
-  let line = request.http_method + " " + request.uri + " " + request.version + "\r\n"
+  let line = request.http_method +
+    " " +
+    request.uri +
+    " " +
+    request.version +
+    "\r\n"
   let mut result = string_to_bytes(line)
   for item in request.headers {
     let (name, value) = item
@@ -31,7 +36,12 @@ pub fn encode_request_headers(request : Request) -> Array[Byte] {
 ///|
 /// Encode only the headers part of an HTTP response
 pub fn encode_response_headers(response : Response) -> Array[Byte] {
-  let line = response.version + " " + response.status_code.to_string() + " " + response.reason_phrase + "\r\n"
+  let line = response.version +
+    " " +
+    response.status_code.to_string() +
+    " " +
+    response.reason_phrase +
+    "\r\n"
   let mut result = string_to_bytes(line)
   for item in response.headers {
     let (name, value) = item

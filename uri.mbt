@@ -38,7 +38,6 @@ pub fn Uri::parse(input : String) -> Result[Uri, UriError] {
   if s.length() == 0 {
     return Err(Empty)
   }
-
   let source = s
   let len = source.length()
   let mut pos = 0
@@ -55,7 +54,7 @@ pub fn Uri::parse(input : String) -> Result[Uri, UriError] {
       let mut idx = 1
       while idx < end {
         let ch = uri_string_char_at(source, idx)
-        if !uri_is_alnum(ch) && ch != 43 && ch != 45 && ch != 46 {  // +, -, .
+        if !uri_is_alnum(ch) && ch != 43 && ch != 45 && ch != 46 { // +, -, .
           return Err(InvalidScheme)
         }
         idx = idx + 1
@@ -66,38 +65,38 @@ pub fn Uri::parse(input : String) -> Result[Uri, UriError] {
   }
 
   // Parse authority (RFC 3986 Section 3.2)
-  let (authority_start, authority_end, host_end, port) =
-    if pos + 1 < len && uri_string_char_at(source, pos) == 47 &&
-       uri_string_char_at(source, pos + 1) == 47 {  // "//"
-      pos = pos + 2
-      let auth_start = pos
+  let (authority_start, authority_end, host_end, port) = if pos + 1 < len &&
+    uri_string_char_at(source, pos) == 47 &&
+    uri_string_char_at(source, pos + 1) == 47 { // "//"
+    pos = pos + 2
+    let auth_start = pos
 
-      // Find authority end
-      let auth_end = uri_find_char_from_set(source, pos, 47, 63, 35)  // /, ?, #
-
-      let authority = uri_string_slice(source, auth_start, auth_end)
-      let auth_result = uri_parse_authority(authority)
-      match auth_result {
-        Ok((h_end, p)) => {
-          pos = auth_end
-          (Some(auth_start), Some(auth_end), Some(auth_start + h_end), p)
-        }
-        Err(e) => return Err(e)
+    // Find authority end
+    let auth_end = uri_find_char_from_set(source, pos, 47, 63, 35) // /, ?, #
+    let authority = uri_string_slice(source, auth_start, auth_end)
+    let auth_result = uri_parse_authority(authority)
+    match auth_result {
+      Ok((h_end, p)) => {
+        pos = auth_end
+        (Some(auth_start), Some(auth_end), Some(auth_start + h_end), p)
       }
-    } else {
-      (None, None, None, None)
+      Err(e) => return Err(e)
     }
+  } else {
+    (None, None, None, None)
+  }
 
   // Parse path (RFC 3986 Section 3.3)
   let path_start = pos
-  let path_end = uri_find_char_from_set(source, pos, 63, 35, 0)  // ?, # (dummy 0)
+  let path_end = uri_find_char_from_set(source, pos, 63, 35, 0) // ?, # (dummy 0)
   pos = path_end
 
   // Parse query (RFC 3986 Section 3.4)
-  let (query_start, query_end) = if pos < len && uri_string_char_at(source, pos) == 63 {  // ?
+  let (query_start, query_end) = if pos < len &&
+    uri_string_char_at(source, pos) == 63 { // ?
     pos = pos + 1
     let start = pos
-    let end_pos = uri_find_char_in(source, pos, 35)  // #
+    let end_pos = uri_find_char_in(source, pos, 35) // #
     let actual_end = match end_pos {
       Some(e) => e
       None => len
@@ -109,12 +108,11 @@ pub fn Uri::parse(input : String) -> Result[Uri, UriError] {
   }
 
   // Parse fragment (RFC 3986 Section 3.5)
-  let fragment_start = if pos < len && uri_string_char_at(source, pos) == 35 {  // #
+  let fragment_start = if pos < len && uri_string_char_at(source, pos) == 35 { // #
     Some(pos + 1)
   } else {
     None
   }
-
   Ok({
     source,
     scheme_end,
@@ -126,7 +124,7 @@ pub fn Uri::parse(input : String) -> Result[Uri, UriError] {
     path_end,
     query_start,
     query_end,
-    fragment_start
+    fragment_start,
   })
 }
 
@@ -152,7 +150,7 @@ pub fn Uri::host(self : Uri) -> String? {
     (Some(start), Some(end)) => {
       let auth = uri_string_slice(self.source, start, end)
       // Remove userinfo
-      let at_pos = uri_find_char_in(auth, 0, 64)  // @
+      let at_pos = uri_find_char_in(auth, 0, 64) // @
       match at_pos {
         Some(pos) => Some(uri_string_slice_from(auth, pos + 1))
         None => Some(auth)
@@ -196,12 +194,7 @@ pub fn Uri::as_str(self : Uri) -> String {
 ///|
 pub fn Uri::origin_form(self : Uri) -> String {
   let path = self.path()
-  let path = if path.length() == 0 {
-    "/"
-  } else {
-    path
-  }
-
+  let path = if path.length() == 0 { "/" } else { path }
   match self.query() {
     Some(q) => path + "?" + q
     None => path
@@ -232,19 +225,17 @@ pub fn percent_encode(input : String) -> String {
   let result : Array[Int] = []
   let mut idx = 0
   let len = input.length()
-
   while idx < len {
     let byte = uri_string_char_at(input, idx)
     if uri_is_unreserved(byte) {
       result.push(byte)
     } else {
-      result.push(37)  // %
+      result.push(37) // %
       result.push(uri_to_hex_char(byte >> 4))
       result.push(uri_to_hex_char(byte & 0x0F))
     }
     idx = idx + 1
   }
-
   uri_bytes_to_string(result)
 }
 
@@ -253,19 +244,17 @@ pub fn percent_encode_path(input : String) -> String {
   let result : Array[Int] = []
   let mut idx = 0
   let len = input.length()
-
   while idx < len {
     let byte = uri_string_char_at(input, idx)
-    if uri_is_unreserved(byte) || byte == 47 {  // /
+    if uri_is_unreserved(byte) || byte == 47 { // /
       result.push(byte)
     } else {
-      result.push(37)  // %
+      result.push(37) // %
       result.push(uri_to_hex_char(byte >> 4))
       result.push(uri_to_hex_char(byte & 0x0F))
     }
     idx = idx + 1
   }
-
   uri_bytes_to_string(result)
 }
 
@@ -274,19 +263,17 @@ pub fn percent_encode_query(input : String) -> String {
   let result : Array[Int] = []
   let mut idx = 0
   let len = input.length()
-
   while idx < len {
     let byte = uri_string_char_at(input, idx)
-    if uri_is_unreserved(byte) || byte == 61 || byte == 38 {  // =, &
+    if uri_is_unreserved(byte) || byte == 61 || byte == 38 { // =, &
       result.push(byte)
     } else {
-      result.push(37)  // %
+      result.push(37) // %
       result.push(uri_to_hex_char(byte >> 4))
       result.push(uri_to_hex_char(byte & 0x0F))
     }
     idx = idx + 1
   }
-
   uri_bytes_to_string(result)
 }
 
@@ -303,10 +290,9 @@ pub fn percent_decode_bytes(input : String) -> Result[Array[Int], UriError] {
   let result : Array[Int] = []
   let mut idx = 0
   let len = input.length()
-
   while idx < len {
     let byte = uri_string_char_at(input, idx)
-    if byte == 37 {  // %
+    if byte == 37 { // %
       if idx + 2 >= len {
         return Err(InvalidPercentEncoding)
       }
@@ -326,7 +312,6 @@ pub fn percent_decode_bytes(input : String) -> Result[Array[Int], UriError] {
       idx = idx + 1
     }
   }
-
   Ok(result)
 }
 
@@ -336,7 +321,7 @@ pub fn percent_decode_bytes(input : String) -> Result[Array[Int], UriError] {
 
 ///|
 fn uri_is_unreserved(byte : Int) -> Bool {
-  uri_is_alnum(byte) || byte == 45 || byte == 46 || byte == 95 || byte == 126  // -, ., _, ~
+  uri_is_alnum(byte) || byte == 45 || byte == 46 || byte == 95 || byte == 126 // -, ., _, ~
 }
 
 ///|
@@ -346,30 +331,30 @@ fn uri_is_alnum(byte : Int) -> Bool {
 
 ///|
 fn uri_is_alpha(byte : Int) -> Bool {
-  (byte >= 65 && byte <= 90) || (byte >= 97 && byte <= 122)  // A-Z, a-z
+  (byte >= 65 && byte <= 90) || (byte >= 97 && byte <= 122) // A-Z, a-z
 }
 
 ///|
 fn uri_is_digit(byte : Int) -> Bool {
-  byte >= 48 && byte <= 57  // 0-9
+  byte >= 48 && byte <= 57 // 0-9
 }
 
 ///|
 fn uri_to_hex_char(nibble : Int) -> Int {
   if nibble >= 0 && nibble <= 9 {
-    48 + nibble  // '0' + nibble
+    48 + nibble // '0' + nibble
   } else {
-    65 + nibble - 10  // 'A' + nibble - 10
+    65 + nibble - 10 // 'A' + nibble - 10
   }
 }
 
 ///|
 fn uri_from_hex_char(byte : Int) -> Int? {
-  if byte >= 48 && byte <= 57 {  // 0-9
+  if byte >= 48 && byte <= 57 { // 0-9
     Some(byte - 48)
-  } else if byte >= 65 && byte <= 70 {  // A-F
+  } else if byte >= 65 && byte <= 70 { // A-F
     Some(byte - 65 + 10)
-  } else if byte >= 97 && byte <= 102 {  // a-f
+  } else if byte >= 97 && byte <= 102 { // a-f
     Some(byte - 97 + 10)
   } else {
     None
@@ -380,10 +365,9 @@ fn uri_from_hex_char(byte : Int) -> Int? {
 fn uri_find_scheme_end(s : String) -> (Int?, Int) {
   let mut idx = 0
   let len = s.length()
-
   while idx < len {
     let ch = uri_string_char_at(s, idx)
-    if ch == 58 {  // :
+    if ch == 58 { // :
       if idx > 0 {
         return (Some(idx), idx + 1)
       } else {
@@ -391,12 +375,11 @@ fn uri_find_scheme_end(s : String) -> (Int?, Int) {
       }
     }
     // Check if char is valid for scheme
-    if !uri_is_alnum(ch) && ch != 43 && ch != 45 && ch != 46 {  // +, -, .
+    if !uri_is_alnum(ch) && ch != 43 && ch != 45 && ch != 46 { // +, -, .
       return (None, 0)
     }
     idx = idx + 1
   }
-
   (None, 0)
 }
 
@@ -407,24 +390,25 @@ fn uri_parse_authority(authority : String) -> Result[(Int, Int?), UriError] {
   }
 
   // Remove userinfo
-  let at_pos = uri_find_char_in(authority, 0, 64)  // @
+  let at_pos = uri_find_char_in(authority, 0, 64) // @
   let host_part = match at_pos {
     Some(pos) => uri_string_slice_from(authority, pos + 1)
     None => authority
   }
 
   // IPv6 address
-  if uri_string_char_at(host_part, 0) == 91 {  // [
-    let bracket_end = uri_find_char_in(host_part, 0, 93)  // ]
+  if uri_string_char_at(host_part, 0) == 91 { // [
+    let bracket_end = uri_find_char_in(host_part, 0, 93) // ]
     match bracket_end {
       Some(end) => {
         let after_bracket = uri_string_slice_from(host_part, end + 1)
         if after_bracket.length() == 0 {
           Ok((authority.length(), None))
-        } else if uri_string_char_at(after_bracket, 0) == 58 {  // :
+        } else if uri_string_char_at(after_bracket, 0) == 58 { // :
           let port_str = uri_string_slice_from(after_bracket, 1)
           match uri_parse_port(port_str) {
-            Some(p) => Ok((authority.length() - after_bracket.length(), Some(p)))
+            Some(p) =>
+              Ok((authority.length() - after_bracket.length(), Some(p)))
             None => Err(InvalidPort)
           }
         } else {
@@ -435,7 +419,7 @@ fn uri_parse_authority(authority : String) -> Result[(Int, Int?), UriError] {
     }
   } else {
     // Regular host:port
-    let colon_pos = uri_find_char_in(host_part, 0, 58)  // :
+    let colon_pos = uri_find_char_in(host_part, 0, 58) // :
     match colon_pos {
       Some(pos) => {
         let port_str = uri_string_slice_from(host_part, pos + 1)
@@ -464,11 +448,9 @@ fn uri_parse_port(port_str : String) -> Int? {
   let mut result = 0
   let mut idx = 0
   let len = port_str.length()
-
   if len == 0 {
     return None
   }
-
   while idx < len {
     let ch = uri_string_char_at(port_str, idx)
     if !uri_is_digit(ch) {
@@ -480,15 +462,19 @@ fn uri_parse_port(port_str : String) -> Int? {
     }
     idx = idx + 1
   }
-
   Some(result)
 }
 
 ///|
-fn uri_find_char_from_set(s : String, start : Int, c1 : Int, c2 : Int, c3 : Int) -> Int {
+fn uri_find_char_from_set(
+  s : String,
+  start : Int,
+  c1 : Int,
+  c2 : Int,
+  c3 : Int,
+) -> Int {
   let mut idx = start
   let len = s.length()
-
   while idx < len {
     let ch = uri_string_char_at(s, idx)
     if ch == c1 || ch == c2 || ch == c3 {
@@ -496,7 +482,6 @@ fn uri_find_char_from_set(s : String, start : Int, c1 : Int, c2 : Int, c3 : Int)
     }
     idx = idx + 1
   }
-
   len
 }
 
@@ -504,14 +489,12 @@ fn uri_find_char_from_set(s : String, start : Int, c1 : Int, c2 : Int, c3 : Int)
 fn uri_find_char_in(s : String, start : Int, target : Int) -> Int? {
   let mut idx = start
   let len = s.length()
-
   while idx < len {
     if uri_string_char_at(s, idx) == target {
       return Some(idx)
     }
     idx = idx + 1
   }
-
   None
 }
 

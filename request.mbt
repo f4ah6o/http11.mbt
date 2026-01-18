@@ -14,12 +14,20 @@ pub fn Request::new(http_method : String, uri : String) -> Request {
 }
 
 ///|
-pub fn Request::with_version(http_method : String, uri : String, version : String) -> Request {
+pub fn Request::with_version(
+  http_method : String,
+  uri : String,
+  version : String,
+) -> Request {
   { http_method, uri, version, headers: [], body: [] }
 }
 
 ///|
-pub fn Request::header(self : Request, name : String, value : String) -> Request {
+pub fn Request::header(
+  self : Request,
+  name : String,
+  value : String,
+) -> Request {
   let new_headers = []
   for h in self.headers {
     new_headers.push(h)
@@ -30,7 +38,7 @@ pub fn Request::header(self : Request, name : String, value : String) -> Request
 
 ///|
 pub fn Request::body(self : Request, body : Array[Byte]) -> Request {
-  { ..self, body }
+  { ..self, body, }
 }
 
 ///|
@@ -122,7 +130,9 @@ fn request_parse_int(s : String) -> Int? {
   let mut result = 0
   let mut idx = 0
   let len = s.length()
-  if len == 0 { return None }
+  if len == 0 {
+    return None
+  }
   while idx < len {
     let c = s[idx]
     let ci = c.to_int()

@@ -30,13 +30,11 @@ fn init {
     Ok(_) => println("date.mbt: Invalid format FAILED")
     Err(_) => println("date.mbt: Invalid format OK")
   }
-
   let date3 = HttpDate::parse("Sun, 06 Nov 1994 23:59:60 GMT").unwrap()
   if date3.second() == 60 {
     println("date.mbt: Leap second OK")
   } else {
     println("date.mbt: Leap second FAILED")
   }
-
   println("date.mbt: All basic tests completed")
 }

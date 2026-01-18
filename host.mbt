@@ -30,12 +30,11 @@ pub fn Host::parse(input : String) -> Result[Host, HostError] {
   if host_string_starts_with(s, "[") {
     return host_parse_ipv6(s)
   }
-
   let split_result = host_split_host_port(s)
   match split_result {
     Err(e) => return Err(e)
     Ok((host_part, port)) => {
-      if host_part.length() == 0 || host_contains(host_part, 64) {  // @
+      if host_part.length() == 0 || host_contains(host_part, 64) { // @
         return Err(InvalidHost)
       }
 
@@ -43,11 +42,7 @@ pub fn Host::parse(input : String) -> Result[Host, HostError] {
       if !host_is_valid_ipv4_or_reg_name(host_part) {
         return Err(InvalidHost)
       }
-
-      Ok({
-        host: host_part,
-        port
-      })
+      Ok({ host: host_part, port })
     }
   }
 }
@@ -81,13 +76,12 @@ pub fn Host::to_string(self : Host) -> String {
 
 ///|
 fn host_parse_ipv6(input : String) -> Result[Host, HostError] {
-  let end = host_find_char_in(input, 0, 93)  // ]
+  let end = host_find_char_in(input, 0, 93) // ]
   match end {
     None => Err(InvalidHost)
     Some(e) => {
       let host_inner = host_string_slice(input, 1, e)
       let rest = host_string_slice_from(input, e + 1)
-
       let port : Int? = if rest.length() == 0 {
         None
       } else if host_string_starts_with(rest, ":") {
@@ -99,7 +93,6 @@ fn host_parse_ipv6(input : String) -> Result[Host, HostError] {
       } else {
         return Err(InvalidHost)
       }
-
       if host_inner.length() == 0 {
         return Err(InvalidHost)
       }
@@ -108,18 +101,14 @@ fn host_parse_ipv6(input : String) -> Result[Host, HostError] {
       if !host_is_valid_ipv6_content(host_inner) {
         return Err(InvalidHost)
       }
-
-      Ok({
-        host: host_string_slice(input, 0, e + 1),
-        port
-      })
+      Ok({ host: host_string_slice(input, 0, e + 1), port })
     }
   }
 }
 
 ///|
 fn host_split_host_port(input : String) -> Result[(String, Int?), HostError] {
-  let colon_pos = host_find_last_char_in(input, 58)  // :
+  let colon_pos = host_find_last_char_in(input, 58) // :
   match colon_pos {
     Some(pos) => {
       let host_part = host_string_slice(input, 0, pos)
@@ -129,11 +118,9 @@ fn host_split_host_port(input : String) -> Result[(String, Int?), HostError] {
       if host_contains(host_part, 58) {
         return Err(InvalidHost)
       }
-
       if port_str.length() == 0 {
         return Err(InvalidPort)
       }
-
       match host_parse_port(port_str) {
         Some(p) => Ok((host_part, Some(p)))
         None => Err(InvalidPort)
@@ -148,11 +135,9 @@ fn host_parse_port(input : String) -> Int? {
   if input.length() == 0 {
     return None
   }
-
   let mut result = 0
   let mut idx = 0
   let len = input.length()
-
   while idx < len {
     let ch = host_char_at(input, idx)
     if !host_is_digit(ch) {
@@ -164,7 +149,6 @@ fn host_parse_port(input : String) -> Int? {
     }
     idx = idx + 1
   }
-
   Some(result)
 }
 
@@ -185,7 +169,6 @@ fn host_is_valid_ipv4(input : String) -> Bool {
   if parts.length() != 4 {
     return false
   }
-
   let mut idx = 0
   while idx < parts.length() {
     let part = parts[idx]
@@ -194,7 +177,6 @@ fn host_is_valid_ipv4(input : String) -> Bool {
     }
     idx = idx + 1
   }
-
   true
 }
 
@@ -203,7 +185,6 @@ fn host_is_valid_ipv4_part(input : String) -> Bool {
   if input.length() == 0 || input.length() > 3 {
     return false
   }
-
   let mut idx = 0
   while idx < input.length() {
     let ch = host_char_at(input, idx)
@@ -226,7 +207,6 @@ fn host_parse_int(input : String) -> Int? {
   let mut result = 0
   let mut idx = 0
   let len = input.length()
-
   while idx < len {
     let ch = host_char_at(input, idx)
     if !host_is_digit(ch) {
@@ -235,7 +215,6 @@ fn host_parse_int(input : String) -> Int? {
     result = result * 10 + (ch - 48)
     idx = idx + 1
   }
-
   Some(result)
 }
 
@@ -244,7 +223,6 @@ fn host_is_valid_reg_name(input : String) -> Bool {
   if input.length() == 0 {
     return false
   }
-
   let mut idx = 0
   while idx < input.length() {
     let b = host_char_at(input, idx)
@@ -252,7 +230,7 @@ fn host_is_valid_reg_name(input : String) -> Bool {
       idx = idx + 1
       continue
     }
-    if b == 37 {  // %
+    if b == 37 { // %
       if idx + 2 >= input.length() {
         return false
       }
@@ -266,7 +244,6 @@ fn host_is_valid_reg_name(input : String) -> Bool {
     }
     return false
   }
-
   true
 }
 
@@ -278,7 +255,7 @@ fn host_is_valid_ipv6_content(input : String) -> Bool {
 
   // Check for IPvFuture (v or V prefix)
   let first = host_char_at(input, 0)
-  if first == 118 || first == 86 {  // v or V
+  if first == 118 || first == 86 { // v or V
     return host_is_valid_ipvfuture(input)
   }
 
@@ -286,12 +263,11 @@ fn host_is_valid_ipv6_content(input : String) -> Bool {
   let mut idx = 0
   while idx < input.length() {
     let ch = host_char_at(input, idx)
-    if !host_is_hexdig(ch) && ch != 58 {  // :
+    if !host_is_hexdig(ch) && ch != 58 { // :
       return false
     }
     idx = idx + 1
   }
-
   true
 }
 
@@ -300,28 +276,23 @@ fn host_is_valid_ipvfuture(input : String) -> Bool {
   if input.length() < 3 {
     return false
   }
-
   let first = host_char_at(input, 0)
-  if first != 118 && first != 86 {  // v or V
+  if first != 118 && first != 86 { // v or V
     return false
   }
-
   let mut idx = 1
   let mut hex_len = 0
   while idx < input.length() && host_is_hexdig(host_char_at(input, idx)) {
     hex_len = hex_len + 1
     idx = idx + 1
   }
-
-  if hex_len == 0 || idx >= input.length() || host_char_at(input, idx) != 46 {  // .
+  if hex_len == 0 || idx >= input.length() || host_char_at(input, idx) != 46 { // .
     return false
   }
   idx = idx + 1
-
   if idx >= input.length() {
     return false
   }
-
   while idx < input.length() {
     let b = host_char_at(input, idx)
     if !host_is_ipvfuture_char(b) {
@@ -329,18 +300,17 @@ fn host_is_valid_ipvfuture(input : String) -> Bool {
     }
     idx = idx + 1
   }
-
   true
 }
 
 ///|
 fn host_is_ipvfuture_char(b : Int) -> Bool {
-  host_is_unreserved(b) || host_is_sub_delim(b) || b == 58  // :
+  host_is_unreserved(b) || host_is_sub_delim(b) || b == 58 // :
 }
 
 ///|
 fn host_is_unreserved(b : Int) -> Bool {
-  host_is_alnum(b) || b == 45 || b == 46 || b == 95 || b == 126  // -, ., _, ~
+  host_is_alnum(b) || b == 45 || b == 46 || b == 95 || b == 126 // -, ., _, ~
 }
 
 ///|
@@ -350,23 +320,32 @@ fn host_is_alnum(b : Int) -> Bool {
 
 ///|
 fn host_is_alpha(b : Int) -> Bool {
-  (b >= 65 && b <= 90) || (b >= 97 && b <= 122)  // A-Z, a-z
+  (b >= 65 && b <= 90) || (b >= 97 && b <= 122) // A-Z, a-z
 }
 
 ///|
 fn host_is_digit(b : Int) -> Bool {
-  b >= 48 && b <= 57  // 0-9
+  b >= 48 && b <= 57 // 0-9
 }
 
 ///|
 fn host_is_hexdig(b : Int) -> Bool {
-  host_is_digit(b) || (b >= 65 && b <= 70) || (b >= 97 && b <= 102)  // A-F, a-f
+  host_is_digit(b) || (b >= 65 && b <= 70) || (b >= 97 && b <= 102) // A-F, a-f
 }
 
 ///|
 fn host_is_sub_delim(b : Int) -> Bool {
-  b == 33 || b == 36 || b == 38 || b == 39 || b == 40 || b == 41 ||
-  b == 42 || b == 43 || b == 44 || b == 59 || b == 61  // !, $, &, ', (, ), *, +, ,, ;, =
+  b == 33 ||
+  b == 36 ||
+  b == 38 ||
+  b == 39 ||
+  b == 40 ||
+  b == 41 ||
+  b == 42 ||
+  b == 43 ||
+  b == 44 ||
+  b == 59 ||
+  b == 61 // !, $, &, ', (, ), *, +, ,, ;, =
 }
 
 ///|
@@ -374,7 +353,7 @@ fn host_has_whitespace(s : String) -> Bool {
   let mut idx = 0
   while idx < s.length() {
     let ch = host_char_at(s, idx)
-    if ch == 32 || ch == 9 || ch == 10 || ch == 13 {  // space, tab, LF, CR
+    if ch == 32 || ch == 9 || ch == 10 || ch == 13 { // space, tab, LF, CR
       return true
     }
     idx = idx + 1
@@ -472,7 +451,6 @@ fn host_split_string(s : String, sep : String) -> Array[String] {
   let mut start = 0
   let sep_len = sep.length()
   let mut idx = 0
-
   while idx <= s.length() - sep_len {
     let mut is_match = true
     let mut j = 0

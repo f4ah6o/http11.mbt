@@ -2,19 +2,18 @@
 fn init {
   // Test simple 100-continue
   match Expect::parse("100-continue") {
-    Ok(exp) => {
+    Ok(exp) =>
       if exp.has_100_continue() && exp.items().length() == 1 {
         println("expect.mbt: simple 100-continue OK")
       } else {
         println("expect.mbt: simple 100-continue FAILED")
       }
-    }
     Err(_) => println("expect.mbt: simple 100-continue FAILED")
   }
 
   // Test extension
   match Expect::parse("foo=bar, 100-continue") {
-    Ok(exp) => {
+    Ok(exp) =>
       if exp.items().length() == 2 {
         let first = exp.items()[0]
         if first.token() == "foo" && first.value() == Some("bar") {
@@ -25,7 +24,6 @@ fn init {
       } else {
         println("expect.mbt: extension parse FAILED")
       }
-    }
     Err(_) => println("expect.mbt: extension parse FAILED")
   }
 
@@ -62,13 +60,12 @@ fn init {
 
   // Test to_string
   match Expect::parse("foo=bar, 100-continue") {
-    Ok(exp) => {
+    Ok(exp) =>
       if exp.to_string() == "foo=bar, 100-continue" {
         println("expect.mbt: to_string OK")
       } else {
         println("expect.mbt: to_string FAILED")
       }
-    }
     Err(_) => println("expect.mbt: to_string FAILED")
   }
 
@@ -84,6 +81,5 @@ fn init {
     }
     Err(_) => println("expect.mbt: empty value FAILED")
   }
-
   println("expect.mbt: All basic tests completed")
 }

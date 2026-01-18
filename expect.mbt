@@ -33,13 +33,12 @@ pub fn Expectation::is_100_continue(self : Expectation) -> Bool {
 ///|
 pub fn Expectation::to_string(self : Expectation) -> String {
   match self.value {
-    Some(v) => {
+    Some(v) =>
       if exp_needs_quoting(v) {
         self.token + "=\"" + exp_escape_quotes(v) + "\""
       } else {
         self.token + "=" + v
       }
-    }
     None => self.token
   }
 }
@@ -56,17 +55,14 @@ pub fn Expect::parse(input : String) -> Result[Expect, ExpectError] {
   if s.length() == 0 {
     return Err(Empty)
   }
-
-  let parts = exp_split_with_quotes(s, 44)  // ,
+  let parts = exp_split_with_quotes(s, 44) // ,
   let items : Array[Expectation] = []
   let mut part_idx = 0
-
   while part_idx < parts.length() {
     let part = exp_trim_string(parts[part_idx])
     if part.length() == 0 {
       return Err(InvalidFormat)
     }
-
     let parse_result = exp_parse_expectation(part)
     match parse_result {
       Err(e) => return Err(e)
@@ -74,22 +70,16 @@ pub fn Expect::parse(input : String) -> Result[Expect, ExpectError] {
         if !exp_is_valid_token(token) {
           return Err(InvalidToken)
         }
-
         let lower_token = exp_to_lower_case(token)
-        items.push({
-          token: lower_token,
-          value
-        })
+        items.push({ token: lower_token, value })
         part_idx = part_idx + 1
       }
     }
   }
-
   if items.length() == 0 {
     return Err(Empty)
   }
-
-  Ok({ items })
+  Ok({ items, })
 }
 
 ///|
@@ -121,8 +111,10 @@ pub fn Expect::to_string(self : Expect) -> String {
 ///
 
 ///|
-fn exp_parse_expectation(input : String) -> Result[(String, String?), ExpectError] {
-  let eq_pos = exp_find_char_in(input, 0, 61)  // =
+fn exp_parse_expectation(
+  input : String,
+) -> Result[(String, String?), ExpectError] {
+  let eq_pos = exp_find_char_in(input, 0, 61) // =
   match eq_pos {
     Some(pos) => {
       let token = exp_trim_string(exp_string_slice(input, 0, pos))
@@ -146,8 +138,7 @@ fn exp_parse_value(input : String) -> Result[String, ExpectError] {
   if s.length() == 0 {
     return Err(InvalidValue)
   }
-
-  if exp_char_at(s, 0) == 34 {  // "
+  if exp_char_at(s, 0) == 34 { // "
     let result = exp_parse_quoted_string(exp_string_slice_from(s, 1))
     match result {
       Ok((value, remaining)) => {
@@ -168,29 +159,29 @@ fn exp_parse_value(input : String) -> Result[String, ExpectError] {
 }
 
 ///|
-fn exp_parse_quoted_string(input : String) -> Result[(String, String), ExpectError] {
+fn exp_parse_quoted_string(
+  input : String,
+) -> Result[(String, String), ExpectError] {
   let mut result = ""
   let mut escaped = false
   let mut idx = 0
   let len = input.length()
-
   while idx < len {
     let ch = exp_char_at(input, idx)
     if escaped {
       result = result + Int::unsafe_to_char(ch).to_string()
       escaped = false
       idx = idx + 1
-    } else if ch == 92 {  // \
+    } else if ch == 92 { // \
       escaped = true
       idx = idx + 1
-    } else if ch == 34 {  // "
+    } else if ch == 34 { // "
       return Ok((result, exp_string_slice_from(input, idx + 1)))
     } else {
       result = result + Int::unsafe_to_char(ch).to_string()
       idx = idx + 1
     }
   }
-
   Err(InvalidValue)
 }
 
@@ -202,7 +193,6 @@ fn exp_split_with_quotes(input : String, delimiter : Int) -> Array[String] {
   let mut escaped = false
   let mut idx = 0
   let len = input.length()
-
   while idx < len {
     let ch = exp_char_at(input, idx)
     if escaped {
@@ -210,12 +200,12 @@ fn exp_split_with_quotes(input : String, delimiter : Int) -> Array[String] {
       idx = idx + 1
       continue
     }
-    if ch == 92 && in_quote {  // \
+    if ch == 92 && in_quote { // \
       escaped = true
       idx = idx + 1
       continue
     }
-    if ch == 34 {  // "
+    if ch == 34 { // "
       in_quote = !in_quote
       idx = idx + 1
       continue
@@ -247,11 +237,33 @@ fn exp_is_valid_token(s : String) -> Bool {
 
 ///|
 fn exp_is_token_char(b : Int) -> Bool {
-  b == 33 || b == 35 || b == 36 || b == 37 || b == 38 || b == 39 ||
-  b == 42 || b == 43 || b == 45 || b == 46 || b == 48 || b == 49 ||
-  b == 50 || b == 51 || b == 52 || b == 53 || b == 54 || b == 55 ||
-  b == 56 || b == 57 || (b >= 65 && b <= 90) || b == 94 || b == 95 ||
-  b == 96 || (b >= 97 && b <= 122) || b == 124 || b == 126
+  b == 33 ||
+  b == 35 ||
+  b == 36 ||
+  b == 37 ||
+  b == 38 ||
+  b == 39 ||
+  b == 42 ||
+  b == 43 ||
+  b == 45 ||
+  b == 46 ||
+  b == 48 ||
+  b == 49 ||
+  b == 50 ||
+  b == 51 ||
+  b == 52 ||
+  b == 53 ||
+  b == 54 ||
+  b == 55 ||
+  b == 56 ||
+  b == 57 ||
+  (b >= 65 && b <= 90) ||
+  b == 94 ||
+  b == 95 ||
+  b == 96 ||
+  (b >= 97 && b <= 122) ||
+  b == 124 ||
+  b == 126
 }
 
 ///|
@@ -275,9 +287,9 @@ fn exp_escape_quotes(s : String) -> String {
   let mut idx = 0
   while idx < s.length() {
     let ch = exp_char_at(s, idx)
-    if ch == 92 {  // \
+    if ch == 92 { // \
       result = result + "\\\\"
-    } else if ch == 34 {  // "
+    } else if ch == 34 { // "
       result = result + "\\\""
     } else {
       result = result + Int::unsafe_to_char(ch).to_string()
@@ -293,7 +305,7 @@ fn exp_to_lower_case(s : String) -> String {
   let mut idx = 0
   while idx < s.length() {
     let ch = exp_char_at(s, idx)
-    if ch >= 65 && ch <= 90 {  // A-Z
+    if ch >= 65 && ch <= 90 { // A-Z
       result = result + Int::unsafe_to_char(ch + 32).to_string()
     } else {
       result = result + Int::unsafe_to_char(ch).to_string()

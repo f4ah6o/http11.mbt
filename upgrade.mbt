@@ -44,17 +44,14 @@ pub fn Upgrade::parse(input : String) -> Result[Upgrade, UpgradeError] {
   if s.length() == 0 {
     return Err(Empty)
   }
-
   let parts = upgrade_split_string(s, ",")
   let protocols : Array[Protocol] = []
   let mut idx = 0
-
   while idx < parts.length() {
     let part = upgrade_trim_string(parts[idx])
     if part.length() == 0 {
       return Err(InvalidFormat)
     }
-
     let parse_result = upgrade_parse_protocol(part)
     match parse_result {
       Err(e) => return Err(e)
@@ -62,12 +59,10 @@ pub fn Upgrade::parse(input : String) -> Result[Upgrade, UpgradeError] {
     }
     idx = idx + 1
   }
-
   if protocols.length() == 0 {
     return Err(Empty)
   }
-
-  Ok({ protocols })
+  Ok({ protocols, })
 }
 
 ///|
@@ -100,20 +95,17 @@ pub fn Upgrade::to_string(self : Upgrade) -> String {
 
 ///|
 fn upgrade_parse_protocol(input : String) -> Result[Protocol, UpgradeError] {
-  let slash_pos = upgrade_find_char_in(input, 0, 47)  // /
-
+  let slash_pos = upgrade_find_char_in(input, 0, 47) // /
   match slash_pos {
     Some(pos) => {
       let name = upgrade_trim_string(upgrade_string_slice(input, 0, pos))
       let rest = upgrade_string_slice_from(input, pos + 1)
 
       // Check for second slash (invalid)
-      if upgrade_find_char_in(rest, 0, 47) != None {  // /
+      if upgrade_find_char_in(rest, 0, 47) != None { // /
         return Err(InvalidFormat)
       }
-
       let version = upgrade_trim_string(rest)
-
       if name.length() == 0 {
         return Err(InvalidProtocol)
       }
@@ -126,20 +118,16 @@ fn upgrade_parse_protocol(input : String) -> Result[Protocol, UpgradeError] {
       if !upgrade_is_valid_token(version) {
         return Err(InvalidVersion)
       }
-
       Ok({
         name: upgrade_to_lower_case(name),
-        version: Some(upgrade_to_lower_case(version))
+        version: Some(upgrade_to_lower_case(version)),
       })
     }
     None => {
       if !upgrade_is_valid_token(input) {
         return Err(InvalidProtocol)
       }
-      Ok({
-        name: upgrade_to_lower_case(input),
-        version: None
-      })
+      Ok({ name: upgrade_to_lower_case(input), version: None })
     }
   }
 }
@@ -161,11 +149,33 @@ fn upgrade_is_valid_token(s : String) -> Bool {
 
 ///|
 fn upgrade_is_token_char(b : Int) -> Bool {
-  b == 33 || b == 35 || b == 36 || b == 37 || b == 38 || b == 39 ||
-  b == 42 || b == 43 || b == 45 || b == 46 || b == 48 || b == 49 ||
-  b == 50 || b == 51 || b == 52 || b == 53 || b == 54 || b == 55 ||
-  b == 56 || b == 57 || (b >= 65 && b <= 90) || b == 94 || b == 95 ||
-  b == 96 || (b >= 97 && b <= 122) || b == 124 || b == 126
+  b == 33 ||
+  b == 35 ||
+  b == 36 ||
+  b == 37 ||
+  b == 38 ||
+  b == 39 ||
+  b == 42 ||
+  b == 43 ||
+  b == 45 ||
+  b == 46 ||
+  b == 48 ||
+  b == 49 ||
+  b == 50 ||
+  b == 51 ||
+  b == 52 ||
+  b == 53 ||
+  b == 54 ||
+  b == 55 ||
+  b == 56 ||
+  b == 57 ||
+  (b >= 65 && b <= 90) ||
+  b == 94 ||
+  b == 95 ||
+  b == 96 ||
+  (b >= 97 && b <= 122) ||
+  b == 124 ||
+  b == 126
 }
 
 ///|
@@ -183,7 +193,7 @@ fn upgrade_to_lower_case(s : String) -> String {
   let mut idx = 0
   while idx < s.length() {
     let ch = upgrade_char_at(s, idx)
-    if ch >= 65 && ch <= 90 {  // A-Z
+    if ch >= 65 && ch <= 90 { // A-Z
       result = result + Int::unsafe_to_char(ch + 32).to_string()
     } else {
       result = result + Int::unsafe_to_char(ch).to_string()
@@ -235,7 +245,6 @@ fn upgrade_split_string(s : String, sep : String) -> Array[String] {
   let mut start = 0
   let sep_len = sep.length()
   let mut idx = 0
-
   while idx <= s.length() - sep_len {
     let mut is_match = true
     let mut j = 0
