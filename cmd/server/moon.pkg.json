@@ -1,8 +1,0 @@
-{
-  "is-main": true,
-  "import": [
-    { "path": "f4ah6o/http11", "alias": "lib" },
-    { "path": "moonbitlang/async" },
-    { "path": "moonbitlang/async/socket", "alias": "socket" }
-  ]
-}
