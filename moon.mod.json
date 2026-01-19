@@ -8,5 +8,6 @@
   "description": "",
   "deps": {
     "moonbitlang/async": "0.16.1"
-  }
+  },
+  "preferred-target":"native"
 }
