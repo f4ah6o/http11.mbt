@@ -2,6 +2,7 @@
 /// Property-Based Tests for Cookie module
 
 // Test: Cookie round-trip (new -> to_string -> parse)
+
 ///|
 test "prop_cookie_roundtrip" {
   let test_cases = [
@@ -10,7 +11,6 @@ test "prop_cookie_roundtrip" {
     ("token", "xyz"),
     ("name", "John Doe"),
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -21,14 +21,13 @@ test "prop_cookie_roundtrip" {
         let str = c.to_string()
         let reparsed = Cookie::parse(str)
         match reparsed {
-          Ok(cookies) => {
+          Ok(cookies) =>
             if cookies.length() > 0 {
               let first = cookies[0]
               if first.name() == name && first.value() == value {
                 passed = passed + 1
               }
             }
-          }
           Err(_) => ()
         }
       }
@@ -36,33 +35,29 @@ test "prop_cookie_roundtrip" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: Cookie parse handles multiple cookies
+
 ///|
 test "prop_cookie_multiple_preserved" {
   let input = "session=abc123; user_id=12345; token=xyz"
   let parsed = Cookie::parse(input)
   match parsed {
-    Ok(cookies) => {
-      assert_true(cookies.length() == 3)
-    }
-    Err(_) => {
-      assert_true(false)
-    }
+    Ok(cookies) => assert_true(cookies.length() == 3)
+    Err(_) => assert_true(false)
   }
 }
 
 // Test: Cookie invalid names are rejected
+
 ///|
 test "prop_cookie_invalid_names_rejected" {
   let test_cases = [
-    "",  // Empty name
-    "=value",  // Empty name
-  ]
-
+    "", // Empty name
+     "=value",
+  ] // Empty name
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -74,18 +69,14 @@ test "prop_cookie_invalid_names_rejected" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: SetCookie round-trip
+
 ///|
 test "prop_set_cookie_roundtrip" {
-  let test_cases = [
-    ("session", "abc123"),
-    ("user", "john"),
-  ]
-
+  let test_cases = [("session", "abc123"), ("user", "john")]
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -102,11 +93,11 @@ test "prop_set_cookie_roundtrip" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: SetCookie with HttpOnly flag
+
 ///|
 test "prop_set_cookie_httponly_preserved" {
   let cookie = SetCookie::new("session", "abc")
@@ -117,13 +108,12 @@ test "prop_set_cookie_httponly_preserved" {
       // Should contain HttpOnly
       assert_true(str.length() > 0)
     }
-    Err(_) => {
-      assert_true(false)
-    }
+    Err(_) => assert_true(false)
   }
 }
 
 // Test: SameSite to_string
+
 ///|
 test "prop_samesite_to_string" {
   let test_cases = [
@@ -131,7 +121,6 @@ test "prop_samesite_to_string" {
     (SameSite::Lax, "Lax"),
     (SameSite::SameSiteNone, "None"),
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -142,6 +131,5 @@ test "prop_samesite_to_string" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }

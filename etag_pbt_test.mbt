@@ -2,15 +2,12 @@
 /// Property-Based Tests for ETag module
 
 // Test: EntityTag strong round-trip (strong -> to_string -> parse)
+
 ///|
 test "prop_entity_tag_strong_roundtrip" {
   let test_cases = [
-    "abc123",
-    "xyz789",
-    "v1.0.0",
-    "33a64df551425fcc55e4d42a148795d9f25f89d4",
+    "abc123", "xyz789", "v1.0.0", "33a64df551425fcc55e4d42a148795d9f25f89d4",
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -21,11 +18,7 @@ test "prop_entity_tag_strong_roundtrip" {
         let str = e.to_string()
         let reparsed = EntityTag::parse(str)
         match reparsed {
-          Ok(r) => {
-            if !r.is_weak() && r.tag() == tag {
-              passed = passed + 1
-            }
-          }
+          Ok(r) => if !r.is_weak() && r.tag() == tag { passed = passed + 1 }
           Err(_) => ()
         }
       }
@@ -33,19 +26,14 @@ test "prop_entity_tag_strong_roundtrip" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: EntityTag weak round-trip (weak -> to_string -> parse)
+
 ///|
 test "prop_entity_tag_weak_roundtrip" {
-  let test_cases = [
-    "abc123",
-    "xyz789",
-    "v1.0.0",
-  ]
-
+  let test_cases = ["abc123", "xyz789", "v1.0.0"]
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -56,11 +44,7 @@ test "prop_entity_tag_weak_roundtrip" {
         let str = e.to_string()
         let reparsed = EntityTag::parse(str)
         match reparsed {
-          Ok(r) => {
-            if r.is_weak() && r.tag() == tag {
-              passed = passed + 1
-            }
-          }
+          Ok(r) => if r.is_weak() && r.tag() == tag { passed = passed + 1 }
           Err(_) => ()
         }
       }
@@ -68,17 +52,16 @@ test "prop_entity_tag_weak_roundtrip" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: EntityTag strong_compare
+
 ///|
 test "prop_entity_tag_strong_compare" {
   let tag1 = EntityTag::strong("abc123")
   let tag2 = EntityTag::strong("abc123")
   let tag3 = EntityTag::strong("xyz789")
-
   match (tag1, tag2, tag3) {
     (Ok(t1), Ok(t2), Ok(t3)) => {
       // Same tags should match
@@ -91,12 +74,12 @@ test "prop_entity_tag_strong_compare" {
 }
 
 // Test: EntityTag weak_compare
+
 ///|
 test "prop_entity_tag_weak_compare" {
   let tag1 = EntityTag::strong("abc123")
   let tag2 = EntityTag::weak("abc123")
   let tag3 = EntityTag::weak("xyz789")
-
   match (tag1, tag2, tag3) {
     (Ok(t1), Ok(t2), Ok(t3)) => {
       // Same tag, different strength should match for weak compare
@@ -109,11 +92,11 @@ test "prop_entity_tag_weak_compare" {
 }
 
 // Test: EntityTag to_string format
+
 ///|
 test "prop_entity_tag_to_string_format" {
   let strong = EntityTag::strong("abc123")
   let weak = EntityTag::weak("abc123")
-
   match (strong, weak) {
     (Ok(s), Ok(w)) => {
       let s_str = s.to_string()
@@ -128,14 +111,10 @@ test "prop_entity_tag_to_string_format" {
 }
 
 // Test: ETagList parse
+
 ///|
 test "prop_etag_list_parse" {
-  let test_cases = [
-    "\"abc123\", \"xyz789\"",
-    "W/\"v1\", \"v2\"",
-    "*",
-  ]
-
+  let test_cases = ["\"abc123\", \"xyz789\"", "W/\"v1\", \"v2\"", "*"]
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -147,16 +126,15 @@ test "prop_etag_list_parse" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: ETagList is_any
+
 ///|
 test "prop_etag_list_is_any" {
   let any_list = parse_etag_list("*")
   let tags_list = parse_etag_list("\"abc123\"")
-
   match (any_list, tags_list) {
     (Ok(any), Ok(tags)) => {
       assert_true(any.is_any())
@@ -167,14 +145,14 @@ test "prop_etag_list_is_any" {
 }
 
 // Test: EntityTag invalid inputs are rejected
+
 ///|
 test "prop_entity_tag_invalid_inputs_rejected" {
   let test_cases = [
-    "",           // Empty
-    "abc",        // No quotes
-    "\"a bc\"",   // Invalid character (space)
-  ]
-
+    "", // Empty
+     "abc", // No quotes
+     "\"a bc\"",
+  ] // Invalid character (space)
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -186,6 +164,5 @@ test "prop_entity_tag_invalid_inputs_rejected" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }

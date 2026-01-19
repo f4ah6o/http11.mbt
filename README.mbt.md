@@ -245,6 +245,7 @@ match decoder.decode() {
 
 ```moonbit
 // URI パース
+
 ///|
 let uri = Uri::parse("https://example.com:8080/path?query=value#fragment")
 
@@ -283,9 +284,12 @@ ct.is_json()     // true
 
 ```moonbit
 // Cookie ヘッダー
+///|
 let cookies = Cookie::parse("name1=value1; name2=value2")
 
 // Set-Cookie ヘッダー
+
+///|
 let set_cookie = SetCookie::new("session", "abc123")
   .with_domain("example.com")
   .with_path("/")
@@ -297,11 +301,18 @@ let set_cookie = SetCookie::new("session", "abc123")
 
 ```moonbit
 // Basic 認証
+///|
 let auth = BasicAuth::new("username", "password")
+
+///|
 let header_value = auth.to_header_value() // "Basic base64(...)"
+
+///|
 let parsed = BasicAuth::parse(header_value)
 
 // Bearer トークン
+
+///|
 let token = BearerToken::parse("Bearer abc123")
 ```
 

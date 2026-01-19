@@ -2,6 +2,7 @@
 /// Property-Based Tests for URI module
 
 // Test: Uri parse extracts components correctly
+
 ///|
 test "prop_uri_parse_components" {
   let test_cases = [
@@ -9,9 +10,8 @@ test "prop_uri_parse_components" {
     ("http://example.com/path", Some("http"), Some("example.com")),
     ("https://example.com:8080/path", Some("https"), Some("example.com")),
     ("ftp://ftp.example.com/files", Some("ftp"), Some("ftp.example.com")),
-    ("/path/to/resource", None, None),  // Relative URI
+    ("/path/to/resource", None, None), // Relative URI
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -37,11 +37,11 @@ test "prop_uri_parse_components" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: Uri port extraction
+
 ///|
 test "prop_uri_port_extraction" {
   let test_cases = [
@@ -49,35 +49,27 @@ test "prop_uri_port_extraction" {
     ("http://example.com/path", None),
     ("https://example.com:443/path", Some(443)),
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
     let (input, expected_port) = test_cases[idx]
     let parsed = Uri::parse(input)
     match parsed {
-      Ok(uri) => {
-        if uri.port() == expected_port {
-          passed = passed + 1
-        }
-      }
+      Ok(uri) => if uri.port() == expected_port { passed = passed + 1 }
       Err(_) => ()
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: Uri path extraction
+
 ///|
 test "prop_uri_path_extraction" {
   let test_cases = [
-    "http://example.com/path/to/resource",
-    "/path/to/resource",
-    "http://example.com/",
+    "http://example.com/path/to/resource", "/path/to/resource", "http://example.com/",
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -94,64 +86,58 @@ test "prop_uri_path_extraction" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: Uri query extraction
+
 ///|
 test "prop_uri_query_extraction" {
   let test_cases = [
-    "http://example.com/path?key=value",
-    "http://example.com/path?key1=val1&key2=val2",
-    "http://example.com/path",  // No query
+    "http://example.com/path?key=value", "http://example.com/path?key1=val1&key2=val2",
+    "http://example.com/path", // No query
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
     let parsed = Uri::parse(input)
     match parsed {
-      Ok(uri) => {
+      Ok(uri) =>
         // Should successfully parse
         passed = passed + 1
-      }
       Err(_) => ()
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: Uri fragment extraction
+
 ///|
 test "prop_uri_fragment_extraction" {
   let test_cases = [
-    "http://example.com/path#section",
-    "http://example.com/path",  // No fragment
+    "http://example.com/path#section", "http://example.com/path", // No fragment
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
     let parsed = Uri::parse(input)
     match parsed {
-      Ok(uri) => {
+      Ok(uri) =>
         // Should successfully parse
         passed = passed + 1
-      }
       Err(_) => ()
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: Uri empty input is rejected
+
 ///|
 test "prop_uri_empty_rejected" {
   let parsed = Uri::parse("")
@@ -162,37 +148,34 @@ test "prop_uri_empty_rejected" {
 }
 
 // Test: Uri percent encoding
+
 ///|
 test "prop_uri_percent_encoding" {
   let test_cases = [
-    "http://example.com/path%20with%20spaces",
-    "http://example.com/path?key=value%20with%20spaces",
+    "http://example.com/path%20with%20spaces", "http://example.com/path?key=value%20with%20spaces",
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
     let parsed = Uri::parse(input)
     match parsed {
-      Ok(uri) => {
+      Ok(uri) =>
         // Should successfully parse
         passed = passed + 1
-      }
       Err(_) => ()
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: Uri absolute vs relative
+
 ///|
 test "prop_uri_absolute_vs_relative" {
   let absolute = Uri::parse("http://example.com/path")
   let relative = Uri::parse("/path/to/resource")
-
   match (absolute, relative) {
     (Ok(abs), Ok(rel)) => {
       // Absolute URI should have scheme

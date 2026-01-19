@@ -3,12 +3,13 @@
 /// Simple implementation without external framework
 
 // Test: QValue round-trip (parse -> to_string -> parse)
+
 ///|
 test "prop_qvalue_roundtrip" {
   let test_cases = [
-    "1", "0.5", "0.123", "0.001", "0.999", "0", "0.1", "0.01", "0.100", "0.500", "1.0", "1.00"
+    "1", "0.5", "0.123", "0.001", "0.999", "0", "0.1", "0.01", "0.100", "0.500",
+    "1.0", "1.00",
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -19,11 +20,7 @@ test "prop_qvalue_roundtrip" {
         let str = qv.to_string()
         let reparsed = QValue::parse(str)
         match reparsed {
-          Ok(r) => {
-            if r.value() == qv.value() {
-              passed = passed + 1
-            }
-          }
+          Ok(r) => if r.value() == qv.value() { passed = passed + 1 }
           Err(_) => ()
         }
       }
@@ -31,23 +28,17 @@ test "prop_qvalue_roundtrip" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: Accept round-trip (parse -> to_string -> parse)
+
 ///|
 test "prop_accept_roundtrip" {
   let test_cases = [
-    "text/html",
-    "text/*; q=0.5",
-    "application/json",
-    "*/*",
-    "text/html; level=1",
-    "text/html; q=0.5",
-    "application/json; charset=utf-8",
+    "text/html", "text/*; q=0.5", "application/json", "*/*", "text/html; level=1",
+    "text/html; q=0.5", "application/json; charset=utf-8",
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -66,20 +57,14 @@ test "prop_accept_roundtrip" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: AcceptCharset preserves items through parse
+
 ///|
 test "prop_accept_charset_preserves_items" {
-  let test_cases = [
-    "utf-8",
-    "iso-8859-1;q=0.5",
-    "*",
-    "utf-8, iso-8859-1;q=0.5",
-  ]
-
+  let test_cases = ["utf-8", "iso-8859-1;q=0.5", "*", "utf-8, iso-8859-1;q=0.5"]
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -96,20 +81,14 @@ test "prop_accept_charset_preserves_items" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: AcceptEncoding preserves items through parse
+
 ///|
 test "prop_accept_encoding_preserves_items" {
-  let test_cases = [
-    "gzip",
-    "deflate;q=0.5",
-    "identity",
-    "gzip, deflate;q=0.5",
-  ]
-
+  let test_cases = ["gzip", "deflate;q=0.5", "identity", "gzip, deflate;q=0.5"]
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -126,20 +105,14 @@ test "prop_accept_encoding_preserves_items" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: AcceptLanguage preserves items through parse
+
 ///|
 test "prop_accept_language_preserves_items" {
-  let test_cases = [
-    "en-US",
-    "ja;q=0.8",
-    "*",
-    "en-US, ja;q=0.8",
-  ]
-
+  let test_cases = ["en-US", "ja;q=0.8", "*", "en-US, ja;q=0.8"]
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -156,6 +129,5 @@ test "prop_accept_language_preserves_items" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }

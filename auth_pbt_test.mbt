@@ -2,6 +2,7 @@
 /// Property-Based Tests for Auth module
 
 // Test: BasicAuth round-trip (new -> to_header_value -> parse)
+
 ///|
 test "prop_basic_auth_roundtrip" {
   let test_cases = [
@@ -12,7 +13,6 @@ test "prop_basic_auth_roundtrip" {
     ("alice", "secret!@#"),
     ("user-with-dash", "pass_with_underscore"),
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -21,27 +21,25 @@ test "prop_basic_auth_roundtrip" {
     let header = auth.to_header_value()
     let reparsed = BasicAuth::parse(header)
     match reparsed {
-      Ok(parsed) => {
+      Ok(parsed) =>
         if parsed.username() == username && parsed.password() == password {
           passed = passed + 1
         }
-      }
       Err(_) => ()
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: BasicAuth parse preserves credentials
+
 ///|
 test "prop_basic_auth_preserves_credentials" {
   let test_cases = [
-    "Basic dXNlcjpwYXNz",  // user:pass
-    "Basic YWRtaW46cGFzc3dvcmQ=",  // admin:password
-  ]
-
+    "Basic dXNlcjpwYXNz", // user:pass
+     "Basic YWRtaW46cGFzc3dvcmQ=",
+  ] // admin:password
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -59,43 +57,37 @@ test "prop_basic_auth_preserves_credentials" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: BasicAuth parse invalid input
+
 ///|
 test "prop_basic_auth_invalid_input" {
   let test_cases = [
-    "",
-    "NotBasic dXNlcjpwYXNz",
-    "Basic invalid_base64!",
-    "Basic",  // No credentials
+    "", "NotBasic dXNlcjpwYXNz", "Basic invalid_base64!", "Basic", // No credentials
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
     let parsed = BasicAuth::parse(input)
     match parsed {
-      Err(_) => passed = passed + 1  // Should fail
+      Err(_) => passed = passed + 1 // Should fail
       Ok(_) => ()
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
 
 // Test: WwwAuthenticate round-trip
+
 ///|
 test "prop_www_authenticate_roundtrip" {
   let test_cases = [
-    "Basic realm=\"test\"",
-    "Basic realm=\"secure area\", charset=\"UTF-8\"",
+    "Basic realm=\"test\"", "Basic realm=\"secure area\", charset=\"UTF-8\"",
   ]
-
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
@@ -112,6 +104,5 @@ test "prop_www_authenticate_roundtrip" {
     }
     idx = idx + 1
   }
-
   assert_true(passed == test_cases.length())
 }
