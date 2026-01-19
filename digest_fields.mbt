@@ -60,7 +60,7 @@ pub fn DigestEntry::value(self : DigestEntry) -> DigestValue {
 
 ///|
 pub fn DigestEntry::to_string(self : DigestEntry) -> String {
-  self.algorithm + self.value.to_string()
+  self.algorithm + "=" + self.value.to_string()
 }
 
 ///|
@@ -116,7 +116,7 @@ pub fn ContentDigest::to_string(self : ContentDigest) -> String {
       result = result + ", "
     }
     let (alg, val) = self.entries[idx]
-    result = result + alg + val.to_string()
+    result = result + alg + "=" + val.to_string()
     idx = idx + 1
   }
   result
@@ -170,7 +170,7 @@ pub fn ReprDigest::to_string(self : ReprDigest) -> String {
       result = result + ", "
     }
     let (alg, val) = self.entries[idx]
-    result = result + alg + val.to_string()
+    result = result + alg + "=" + val.to_string()
     idx = idx + 1
   }
   result
@@ -527,12 +527,12 @@ fn df_split_string(s : String, sep : String) -> Array[String] {
 
 ///|
 fn df_substring(s : String, start : Int, end : Int) -> String {
-  s.substring(start~, end~)
+  (try! s[start:end]).to_string()
 }
 
 ///|
 fn df_substring_from(s : String, start : Int) -> String {
-  s.substring(start~, end=s.length())
+  (try! s[start:s.length()]).to_string()
 }
 
 ///|
@@ -610,7 +610,7 @@ fn df_base64_encode(input : Array[Byte]) -> String {
     let n = b0 * 65536 + b1 * 256 + b2
 
     // Encode 6-bit values
-    let i0 = n / 1048576 // 2^20
+    let i0 = n / 262144 // 2^18
     let i1 = n / 4096 % 64 // 2^12
     let i2 = n / 64 % 64
     let i3 = n % 64
@@ -630,7 +630,7 @@ fn df_base64_encode(input : Array[Byte]) -> String {
 fn df_base64_char(index : Int) -> String {
   let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
   if index >= 0 && index < 64 {
-    alphabet.substring(start=index, end=index + 1)
+    (try! alphabet[index:index + 1]).to_string()
   } else {
     "="
   }

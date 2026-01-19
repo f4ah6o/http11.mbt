@@ -1,9 +1,0 @@
-import {
-  "f4ah6o/http11" as @lib,
-  "moonbitlang/async",
-  "moonbitlang/async/socket" as @socket,
-}
-
-options(
-  "is-main": true,
-)

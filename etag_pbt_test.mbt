@@ -102,9 +102,9 @@ test "prop_entity_tag_to_string_format" {
       let s_str = s.to_string()
       let w_str = w.to_string()
       // Strong should not have W/ prefix
-      assert_true(!s_str.starts_with("W/"))
+      assert_true(!s_str.has_prefix("W/"))
       // Weak should have W/ prefix
-      assert_true(w_str.starts_with("W/"))
+      assert_true(w_str.has_prefix("W/"))
     }
     _ => assert_true(false)
   }

@@ -1,0 +1,12 @@
+{
+  "is-main": true,
+  "import": [
+    { "path": "f4ah6o/http11", "alias": "lib" },
+    { "path": "moonbitlang/async", "alias": "async" },
+    { "path": "moonbitlang/async/socket", "alias": "socket" }
+  ],
+  "targets": {
+    "main_native.mbt": ["native"],
+    "main_stub.mbt": ["not", "native"]
+  }
+}

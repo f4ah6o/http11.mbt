@@ -645,6 +645,7 @@ pub fn rg_u64_to_string(n : UInt64) -> String {
   result
 }
 
+///|
 fn u64_digit_to_int(d : UInt64) -> Int {
   // Convert a single digit UInt64 (0-9) to Int
   if d == 0UL {

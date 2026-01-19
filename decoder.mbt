@@ -544,8 +544,8 @@ fn parse_header_line(line : String) -> Result[(String, String), HttpError] {
   let colon_idx = decoder_string_index_of(line, ":")
   match colon_idx {
     Some(idx) => {
-      let name = line.substring(start=0, end=idx)
-      let value = line.substring(start=idx + 1, end=line.length())
+      let name = (try! line[0:idx]).to_string()
+      let value = (try! line[idx + 1:line.length()]).to_string()
       let trimmed = trim_whitespace(value)
       if name.length() == 0 {
         Err(InvalidHeaderValue)
@@ -578,7 +578,7 @@ fn trim_whitespace(s : String) -> String {
       break
     }
   }
-  s.substring(start~, end~)
+  (try! s[start:end]).to_string()
 }
 
 ///|
@@ -694,13 +694,13 @@ fn split_to_array(s : String, sep : String) -> Array[String] {
       j = j + 1
     }
     if is_match {
-      result.push(s.substring(start~, end=idx))
+      result.push((try! s[start:idx]).to_string())
       start = idx + sep_len
       idx = start
     } else {
       idx = idx + 1
     }
   }
-  result.push(s.substring(start~, end=s.length()))
+  result.push((try! s[start:s.length()]).to_string())
   result
 }

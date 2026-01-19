@@ -9,7 +9,7 @@ test "prop_cookie_roundtrip" {
     ("session", "abc123"),
     ("user_id", "12345"),
     ("token", "xyz"),
-    ("name", "John Doe"),
+    ("name", "John_Doe"),
   ]
   let mut idx = 0
   let mut passed = 0

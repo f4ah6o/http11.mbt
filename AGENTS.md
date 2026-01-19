@@ -49,3 +49,14 @@ This is a [MoonBit](https://docs.moonbitlang.com) project.
 
 - agent-todo.md has some small tasks that are easy for AI to pick up, agent is
   welcome to finish the tasks and check the box when you are done
+
+## Important Notes for AI Agents
+
+- **DO NOT submit issues to external MoonBit repositories** (moonbitlang/core,
+  moonbitlang/docs, etc.) without explicit user permission. If you encounter a
+  bug or limitation in the MoonBit language itself, document it in this project's
+  issue tracker instead, referencing the external issue if one already exists.
+
+- **Policy**: Always ask the user before creating issues on external projects.
+  Language-level issues should be tracked locally first, then escalated to the
+  MoonBit team by the project maintainer if needed.
