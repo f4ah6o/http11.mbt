@@ -406,13 +406,13 @@ fn rg_parse_range_spec(s : String) -> Result[RangeSpec, RangeError] {
   let mut start_str = ""
   let mut j = 0
   while j < dash_pos {
-    start_str = start_str + s[j].to_string()
+    start_str = start_str + s[j].unsafe_to_char().to_string()
     j = j + 1
   }
   let mut end_str = ""
   j = dash_pos + 1
   while j < s.length() {
-    end_str = end_str + s[j].to_string()
+    end_str = end_str + s[j].unsafe_to_char().to_string()
     j = j + 1
   }
 
@@ -467,8 +467,7 @@ fn rg_string_slice(s : String, start : Int, end : Int) -> String {
   let mut result = ""
   let mut idx = start
   while idx < end {
-    let ch = s[idx]
-    result = result + ch.to_string()
+    result = result + s[idx].unsafe_to_char().to_string()
     idx = idx + 1
   }
   result
@@ -480,8 +479,7 @@ fn rg_string_slice_from(s : String, start : Int) -> String {
   let mut idx = start
   let len = s.length()
   while idx < len {
-    let ch = s[idx]
-    result = result + ch.to_string()
+    result = result + s[idx].unsafe_to_char().to_string()
     idx = idx + 1
   }
   result
@@ -608,23 +606,13 @@ fn int_digit_to_u64(d : Int) -> UInt64 {
 
 ///|
 fn rg_u64_greater_than(a : UInt64, b : UInt64) -> Bool {
-  // Check if a > b using subtraction
-  if a == b {
-    false
-  } else {
-    // If a - b would underflow, then a < b, so a > b is false
-    // Otherwise a > b is true
-    let diff = rg_u64_subtract(a, b)
-    // If we subtracted and the result plus b equals a, then a >= b
-    let sum = diff + b
-    sum == a && a != b
-  }
+  a > b
 }
 
 ///|
 fn rg_u64_subtract(a : UInt64, b : UInt64) -> UInt64 {
   // Safe subtraction that returns 0 on underflow
-  if rg_u64_greater_than(b, a) {
+  if b > a {
     0UL
   } else {
     a - b
