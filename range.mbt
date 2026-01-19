@@ -102,7 +102,7 @@ pub fn Range::parse(input : String) -> Result[Range, RangeError] {
   }
 
   // Parse everything after "bytes="
-  let ranges_str = try! s[6:].to_string()
+  let ranges_str = rg_string_slice_from(s, 6)
   let parts = rg_split_string(ranges_str, ",")
   let ranges : Array[RangeSpec] = []
   let mut idx = 0
@@ -458,8 +458,8 @@ fn rg_char_at(s : String, idx : Int) -> Int {
   if idx >= s.length() {
     return 0
   }
-  let ch = s[idx]
-  ch.to_int()
+  let code = s[idx]
+  code.to_int()
 }
 
 ///|
@@ -657,7 +657,6 @@ pub fn rg_u64_to_string(n : UInt64) -> String {
   result
 }
 
-///|
 fn u64_digit_to_int(d : UInt64) -> Int {
   // Convert a single digit UInt64 (0-9) to Int
   if d == 0UL {
