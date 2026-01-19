@@ -12,6 +12,8 @@ MoonBit で実装された Sans I/O な HTTP/1.1 パーサー・エンコーダ�
 
 ## モジュール構成
 
+### コアモジュール
+
 | ファイル | 説明 |
 |---------|------|
 | `error.mbt` | `HttpError` enum - パースエラーの種類 |
@@ -20,6 +22,56 @@ MoonBit で実装された Sans I/O な HTTP/1.1 パーサー・エンコーダ�
 | `response.mbt` | `Response` struct - HTTP レスポンス表現 |
 | `encoder.mbt` | リクエスト/レスポンスのエンコード関数 |
 | `decoder.mbt` | `RequestDecoder`, `ResponseDecoder` - Sans I/O デコーダー |
+
+### URI / URL
+
+| ファイル | 説明 |
+|---------|------|
+| `uri.mbt` | `Uri` struct - URI パース（RFC 3986）、パーセントエンコード/デコード |
+
+### HTTP ヘッダー
+
+| ファイル | 説明 |
+|---------|------|
+| `host.mbt` | `Host` struct - Host ヘッダー（RFC 9110） |
+| `expect.mbt` | `Expect` struct - Expect ヘッダー（RFC 9110） |
+| `trailer.mbt` | `Trailer` struct - Trailer ヘッダー（RFC 9112） |
+| `upgrade.mbt` | `Upgrade` struct - Upgrade ヘッダー（RFC 9110） |
+| `vary.mbt` | `Vary` struct - Vary ヘッダー（RFC 9110） |
+| `range.mbt` | `Range`, `ContentRange`, `AcceptRanges` - Range 関連ヘッダー（RFC 9110） |
+
+### コンテント関連ヘッダー
+
+| ファイル | 説明 |
+|---------|------|
+| `content_type.mbt` | `ContentType` struct - Content-Type ヘッダー（RFC 9110） |
+| `content_encoding.mbt` | `ContentEncoding` struct - Content-Encoding ヘッダー（RFC 9110） |
+| `content_disposition.mbt` | `ContentDisposition` struct - Content-Disposition ヘッダー（RFC 6266） |
+| `content_language.mbt` | `ContentLanguage` struct - Content-Language ヘッダー（RFC 9110） |
+| `content_location.mbt` | `ContentLocation` struct - Content-Location ヘッダー（RFC 9110） |
+
+### キャッシュ / 認証
+
+| ファイル | 説明 |
+|---------|------|
+| `etag.mbt` | `EntityTag`, `ETagList` - ETag 関連（RFC 9110） |
+| `cache.mbt` | `CacheControl`, `Age`, `Expires` - キャッシュ制御（RFC 9111） |
+| `conditional.mbt` | `IfMatch`, `IfNoneMatch`, `IfModifiedSince` など - 条件付きリクエスト（RFC 9110） |
+| `digest_fields.mbt` | `ContentDigest`, `ReprDigest`, `WantContentDigest` など - ダイジェストフィールド（RFC 9530） |
+
+### 認証 / クッキー / 受入
+
+| ファイル | 説明 |
+|---------|------|
+| `auth.mbt` | `BasicAuth`, `DigestAuth`, `BearerToken` - HTTP 認証（RFC 7617, 7616, 6750） |
+| `cookie.mbt` | `Cookie`, `SetCookie` - Cookie / Set-Cookie ヘッダー（RFC 6265） |
+| `accept.mbt` | `Accept`, `AcceptCharset`, `AcceptEncoding`, `AcceptLanguage` - コンテントネゴシエーション（RFC 9110） |
+
+### 日付
+
+| ファイル | 説明 |
+|---------|------|
+| `date.mbt` | `HttpDate` struct - HTTP-date パース（IMF-fixdate, RFC 850, ANSI C asctime） |
 
 ## エラー型
 
@@ -189,6 +241,96 @@ match decoder.decode() {
 }
 ```
 
+## URI パース（RFC 3986）
+
+```moonbit
+// URI パース
+///|
+let uri = Uri::parse("https://example.com:8080/path?query=value#fragment")
+
+// アクセサー
+uri.scheme()      // Some("https")
+uri.host()        // Some("example.com")
+uri.port()        // Some(8080)
+uri.path()        // "/path"
+uri.query()       // Some("query=value")
+uri.fragment()    // Some("fragment")
+uri.origin_form() // "/path?query=value"
+```
+
+## ヘッダーパース
+
+### Host ヘッダー
+
+```moonbit
+let host = Host::parse("example.com:8080")
+host.host() // "example.com"
+host.port() // Some(8080)
+```
+
+### Content-Type ヘッダー
+
+```moonbit
+let ct = ContentType::parse("application/json; charset=utf-8")
+ct.media_type()  // "application"
+ct.subtype()      // "json"
+ct.mime_type()   // "application/json"
+ct.charset()      // Some("utf-8")
+ct.is_json()     // true
+```
+
+### Cookie
+
+```moonbit
+// Cookie ヘッダー
+let cookies = Cookie::parse("name1=value1; name2=value2")
+
+// Set-Cookie ヘッダー
+let set_cookie = SetCookie::new("session", "abc123")
+  .with_domain("example.com")
+  .with_path("/")
+  .with_secure(true)
+  .with_http_only(true)
+```
+
+### 認証
+
+```moonbit
+// Basic 認証
+let auth = BasicAuth::new("username", "password")
+let header_value = auth.to_header_value() // "Basic base64(...)"
+let parsed = BasicAuth::parse(header_value)
+
+// Bearer トークン
+let token = BearerToken::parse("Bearer abc123")
+```
+
+### ETag
+
+```moonbit
+// ETag パース
+let etag = EntityTag::parse("W/\"abc123\"")
+etag.is_weak()      // true
+etag.tag()          // "abc123"
+
+// ETag リスト
+let etags = parse_etag_list("*") // Any
+etags.is_any()     // true
+```
+
+### Range
+
+```moonbit
+// Range ヘッダー
+let range = Range::parse("bytes=0-499")
+range.unit()       // "bytes"
+range.ranges()     // [Range(0UL, 499UL)]
+
+// Content-Range ヘッダー
+let cr = ContentRange::new_bytes(0UL, 499UL, Some(1000UL))
+cr.to_string()    // "bytes 0-499/1000"
+```
+
 ## Chunked 転送エンコーディング
 
 ```moonbit
@@ -213,12 +355,19 @@ let encoded = encode_chunk("data".to_bytes())
 
 ## サンプル
 
-本ライブラリには実行可能なサンプルプログラムが含まれています。
+本ライブラリには3つの実行可能なサンプルプログラムが含まれています。
 
 ### 実行方法
 
 ```bash
+# 基本例
 moon run cmd/main
+
+# HTTP クライアント
+moon run cmd/client
+
+# HTTP サーバー
+moon run cmd/server
 ```
 
 ### 出力例
