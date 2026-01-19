@@ -284,6 +284,7 @@ ct.is_json()     // true
 
 ```moonbit
 // Cookie ヘッダー
+
 ///|
 let cookies = Cookie::parse("name1=value1; name2=value2")
 
@@ -301,6 +302,7 @@ let set_cookie = SetCookie::new("session", "abc123")
 
 ```moonbit
 // Basic 認証
+
 ///|
 let auth = BasicAuth::new("username", "password")
 
