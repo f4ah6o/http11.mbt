@@ -1,0 +1,13 @@
+import {
+  "f4ah6o/http11" as @lib,
+  "moonbitlang/async" as @async,
+  "moonbitlang/async/socket" as @socket,
+}
+
+options(
+  "is-main": true,
+  targets: {
+    "main_native.mbt": [ "native" ],
+    "main_stub.mbt": [ "not", "native" ],
+  },
+)
