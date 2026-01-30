@@ -159,7 +159,7 @@ let encoded = encode_request(req)
 ### ヘルパーメソッド
 
 ```moonbit
-req.method()              // "GET"
+req.http_method()         // "GET"
 req.get_header("Host")    // Some("example.com")
 req.has_header("Host")    // true
 req.is_keep_alive()       // true
