@@ -105,7 +105,7 @@ async fn main {
   println("  curl http://localhost:8080/")
   println("  curl http://localhost:8080/info")
   println("  curl http://localhost:8080/echo")
-  @socket.TcpServer::new(@socket.Addr::parse("0.0.0.0:8080"), reuse_addr=true).run_forever(fn(
+  @socket.TcpServer::new(@socket.Addr::parse("0.0.0.0:8080"), reuse_addr=true).run_forever(async fn(
       conn,
       _peer_addr,
     ) {

@@ -1,7 +1,7 @@
 import {
-  "f4ah6o/http11" as @lib,
-  "moonbitlang/async" as @async,
-  "moonbitlang/async/socket" as @socket,
+  "f4ah6o/http11" @lib,
+  "moonbitlang/async",
+  "moonbitlang/async/socket" @socket,
 }
 
 options(

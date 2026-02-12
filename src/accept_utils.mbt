@@ -180,7 +180,6 @@ fn acc_parse_weighted_tokens_with_validator(
             }
             None => {
               let _ = ()
-
             }
           }
         }

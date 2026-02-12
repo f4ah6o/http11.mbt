@@ -156,7 +156,6 @@ pub fn SetCookie::parse(input : String) -> Result[SetCookie, CookieError] {
                 }
                 _ => {
                   let _ = ()
-
                 }
               }
             }
@@ -189,7 +188,6 @@ pub fn SetCookie::parse(input : String) -> Result[SetCookie, CookieError] {
                   }
                 _ => {
                   let _ = ()
-
                 }
               }
             }
@@ -368,28 +366,24 @@ pub fn SetCookie::to_string(self : SetCookie) -> String {
     Some(e) => result = result + "; Expires=" + e.to_string()
     None => {
       let _ = ()
-
     }
   }
   match self.max_age {
     Some(a) => result = result + "; Max-Age=" + a.to_string()
     None => {
       let _ = ()
-
     }
   }
   match self.domain {
     Some(d) => result = result + "; Domain=" + d
     None => {
       let _ = ()
-
     }
   }
   match self.path {
     Some(p) => result = result + "; Path=" + p
     None => {
       let _ = ()
-
     }
   }
   if self.secure {
@@ -402,7 +396,6 @@ pub fn SetCookie::to_string(self : SetCookie) -> String {
     Some(ss) => result = result + "; SameSite=" + ss.to_string()
     None => {
       let _ = ()
-
     }
   }
   result

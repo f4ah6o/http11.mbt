@@ -114,7 +114,6 @@ pub fn ContentDisposition::parse(
             }
             None => {
               let _ = ()
-
             }
           }
         }
@@ -258,7 +257,6 @@ pub fn ContentDisposition::to_string(self : ContentDisposition) -> String {
     Some(n) => result = result + "; name=\"" + cd_escape_quoted_string(n) + "\""
     None => {
       let _ = ()
-
     }
   }
   match self.filename {
@@ -266,7 +264,6 @@ pub fn ContentDisposition::to_string(self : ContentDisposition) -> String {
       result = result + "; filename=\"" + cd_escape_quoted_string(f) + "\""
     None => {
       let _ = ()
-
     }
   }
   match self.filename_ext {
@@ -274,7 +271,6 @@ pub fn ContentDisposition::to_string(self : ContentDisposition) -> String {
       result = result + "; filename*=UTF-8''" + cd_encode_ext_value(fe)
     None => {
       let _ = ()
-
     }
   }
   let mut idx = 0
