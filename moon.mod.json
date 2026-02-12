@@ -1,8 +1,8 @@
 {
   "name": "f4ah6o/http11",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "deps": {
-    "moonbitlang/async": "0.16.4"
+    "moonbitlang/async": "0.16.6"
   },
   "readme": "README.mbt.md",
   "repository": "",
