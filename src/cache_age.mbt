@@ -16,7 +16,7 @@ pub fn Age::parse(input : String) -> Result[Age, CacheError] {
     return Err(Empty)
   }
   match cc_parse_u64(s) {
-    Some(secs) => Ok({ seconds: secs })
+    Some(secs) => Ok({ seconds: secs, })
     None => Err(InvalidNumber)
   }
 }

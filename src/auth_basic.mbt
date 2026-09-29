@@ -7,7 +7,7 @@ pub(all) struct BasicAuth {
 
 ///|
 pub fn BasicAuth::new(username : String, password : String) -> BasicAuth {
-  { username, password }
+  { username, password, }
 }
 
 ///|
@@ -41,7 +41,7 @@ pub fn BasicAuth::parse(input : String) -> Result[BasicAuth, AuthError] {
         Some(pos) => {
           let username = au_string_slice(decoded, 0, pos)
           let password = au_string_slice_from(decoded, pos + 1)
-          Ok({ username, password })
+          Ok({ username, password, })
         }
       }
     }

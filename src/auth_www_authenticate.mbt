@@ -7,7 +7,7 @@ pub(all) struct WwwAuthenticate {
 
 ///|
 pub fn WwwAuthenticate::basic(realm : String) -> WwwAuthenticate {
-  { realm, charset: None }
+  { realm, charset: None, }
 }
 
 ///|
@@ -15,7 +15,7 @@ pub fn WwwAuthenticate::with_charset(
   self : WwwAuthenticate,
   charset : String,
 ) -> WwwAuthenticate {
-  { realm: self.realm, charset: Some(charset) }
+  { realm: self.realm, charset: Some(charset), }
 }
 
 ///|
@@ -72,7 +72,7 @@ pub fn WwwAuthenticate::parse(
   }
   match realm {
     None => Err(InvalidFormat)
-    Some(r) => Ok({ realm: r, charset: char_set })
+    Some(r) => Ok({ realm: r, charset: char_set, })
   }
 }
 

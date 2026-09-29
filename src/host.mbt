@@ -5,14 +5,14 @@ pub(all) enum HostError {
   InvalidFormat
   InvalidHost
   InvalidPort
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Host header (RFC 9110 Section 7.2)
 pub(all) struct Host {
   host : String
   port : Int?
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn Host::parse(input : String) -> Result[Host, HostError] {
@@ -42,7 +42,7 @@ pub fn Host::parse(input : String) -> Result[Host, HostError] {
       if !host_is_valid_ipv4_or_reg_name(host_part) {
         return Err(InvalidHost)
       }
-      Ok({ host: host_part, port })
+      Ok({ host: host_part, port, })
     }
   }
 }
@@ -101,7 +101,7 @@ fn host_parse_ipv6(input : String) -> Result[Host, HostError] {
       if !host_is_valid_ipv6_content(host_inner) {
         return Err(InvalidHost)
       }
-      Ok({ host: host_string_slice(input, 0, e + 1), port })
+      Ok({ host: host_string_slice(input, 0, e + 1), port, })
     }
   }
 }

@@ -1,7 +1,7 @@
 ///|
 fn init {
   // Test simple protocol
-  match Upgrade::parse("websocket") {
+  match @http11.Upgrade::parse("websocket") {
     Ok(upgrade) =>
       if upgrade.has_protocol("websocket") && upgrade.protocols().length() == 1 {
         println("upgrade.mbt: simple protocol OK")
@@ -12,7 +12,7 @@ fn init {
   }
 
   // Test with version
-  match Upgrade::parse("h2c/1.0, websocket") {
+  match @http11.Upgrade::parse("h2c/1.0, websocket") {
     Ok(upgrade) => {
       let procs = upgrade.protocols()
       if procs.length() == 2 {
@@ -30,31 +30,31 @@ fn init {
   }
 
   // Test empty input
-  match Upgrade::parse("") {
+  match @http11.Upgrade::parse("") {
     Ok(_) => println("upgrade.mbt: empty input FAILED")
     Err(_) => println("upgrade.mbt: empty input OK")
   }
 
   // Test invalid token
-  match Upgrade::parse("bad value") {
+  match @http11.Upgrade::parse("bad value") {
     Ok(_) => println("upgrade.mbt: invalid token FAILED")
     Err(_) => println("upgrade.mbt: invalid token OK")
   }
 
   // Test websocket/ (empty version)
-  match Upgrade::parse("websocket/") {
+  match @http11.Upgrade::parse("websocket/") {
     Ok(_) => println("upgrade.mbt: empty version FAILED")
     Err(_) => println("upgrade.mbt: empty version OK")
   }
 
   // Test websocket/1/2 (double slash)
-  match Upgrade::parse("websocket/1/2") {
+  match @http11.Upgrade::parse("websocket/1/2") {
     Ok(_) => println("upgrade.mbt: double slash FAILED")
     Err(_) => println("upgrade.mbt: double slash OK")
   }
 
   // Test to_string
-  match Upgrade::parse("websocket, h2c/1.0") {
+  match @http11.Upgrade::parse("websocket, h2c/1.0") {
     Ok(upgrade) => {
       let str = upgrade.to_string()
       if str == "websocket, h2c/1.0" {

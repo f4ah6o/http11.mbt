@@ -1,13 +1,13 @@
 ///|
 fn init {
   // Test percent encoding
-  let encoded = percent_encode("hello world")
+  let encoded = @http11.percent_encode("hello world")
   if encoded == "hello%20world" {
     println("uri.mbt: percent_encode basic OK")
   } else {
     println("uri.mbt: percent_encode basic FAILED")
   }
-  let encoded2 = percent_encode("foo=bar")
+  let encoded2 = @http11.percent_encode("foo=bar")
   if encoded2 == "foo%3Dbar" {
     println("uri.mbt: percent_encode with = OK")
   } else {
@@ -15,7 +15,7 @@ fn init {
   }
 
   // Test percent decoding
-  match percent_decode("hello%20world") {
+  match @http11.percent_decode("hello%20world") {
     Ok(decoded) =>
       if decoded == "hello world" {
         println("uri.mbt: percent_decode basic OK")
@@ -26,13 +26,14 @@ fn init {
   }
 
   // Test invalid percent encoding
-  match percent_decode("%") {
+  match @http11.percent_decode("%") {
     Ok(_) => println("uri.mbt: invalid percent decode FAILED")
     Err(_) => println("uri.mbt: invalid percent decode OK")
   }
 
   // Test URI parsing - full URL
-  match Uri::parse("https://example.com:8080/path?query=value#fragment") {
+  match
+    @http11.Uri::parse("https://example.com:8080/path?query=value#fragment") {
     Ok(uri) => {
       let scheme = uri.scheme()
       let host = uri.host()
@@ -55,7 +56,7 @@ fn init {
   }
 
   // Test URI parsing - simple
-  match Uri::parse("http://example.com") {
+  match @http11.Uri::parse("http://example.com") {
     Ok(uri) =>
       if uri.scheme() == Some("http") &&
         uri.host() == Some("example.com") &&
@@ -69,7 +70,7 @@ fn init {
   }
 
   // Test URI parsing - path only
-  match Uri::parse("/path/to/resource") {
+  match @http11.Uri::parse("/path/to/resource") {
     Ok(uri) =>
       if uri.scheme() == None &&
         uri.host() == None &&
@@ -82,7 +83,7 @@ fn init {
   }
 
   // Test URI parsing - relative
-  match Uri::parse("../other/path") {
+  match @http11.Uri::parse("../other/path") {
     Ok(uri) =>
       if uri.scheme() == None &&
         uri.is_relative() &&
@@ -95,7 +96,7 @@ fn init {
   }
 
   // Test origin form
-  match Uri::parse("http://example.com/path?query") {
+  match @http11.Uri::parse("http://example.com/path?query") {
     Ok(uri) => {
       let p = uri.path()
       let q = uri.query()
@@ -117,7 +118,7 @@ fn init {
     }
     Err(_) => println("uri.mbt: origin_form with query FAILED")
   }
-  match Uri::parse("http://example.com") {
+  match @http11.Uri::parse("http://example.com") {
     Ok(uri) =>
       if uri.origin_form() == "/" {
         println("uri.mbt: origin_form without query OK")
@@ -128,7 +129,7 @@ fn init {
   }
 
   // Test empty input
-  match Uri::parse("") {
+  match @http11.Uri::parse("") {
     Ok(_) => println("uri.mbt: empty parse FAILED")
     Err(_) => println("uri.mbt: empty parse OK")
   }

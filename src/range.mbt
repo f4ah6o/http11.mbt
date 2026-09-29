@@ -6,7 +6,7 @@ pub(all) enum RangeError {
   InvalidUnit
   InvalidRange
   InvalidBounds
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Range specification (RFC 9110 Section 14.2)
@@ -119,7 +119,7 @@ pub fn Range::parse(input : String) -> Result[Range, RangeError] {
   if ranges.length() == 0 {
     return Err(Empty)
   }
-  Ok({ unit: "bytes", ranges })
+  Ok({ unit: "bytes", ranges, })
 }
 
 ///|
@@ -204,7 +204,7 @@ pub fn ContentRange::parse(input : String) -> Result[ContentRange, RangeError] {
           }
           if range_str == "*" {
             // unsatisfied range: bytes */1000
-            return Ok({ unit, start: None, end: None, complete_length })
+            return Ok({ unit, start: None, end: None, complete_length, })
           }
 
           // Parse start-end
@@ -219,7 +219,7 @@ pub fn ContentRange::parse(input : String) -> Result[ContentRange, RangeError] {
                   if s > e {
                     return Err(InvalidBounds)
                   }
-                  Ok({ unit, start: Some(s), end: Some(e), complete_length })
+                  Ok({ unit, start: Some(s), end: Some(e), complete_length, })
                 }
                 _ => Err(InvalidFormat)
               }
@@ -237,7 +237,7 @@ pub fn ContentRange::new_bytes(
   end : UInt64,
   complete_length : UInt64?,
 ) -> ContentRange {
-  { unit: "bytes", start: Some(start), end: Some(end), complete_length }
+  { unit: "bytes", start: Some(start), end: Some(end), complete_length, }
 }
 
 ///|
@@ -245,7 +245,7 @@ pub fn ContentRange::unsatisfied(
   unit : String,
   complete_length : UInt64,
 ) -> ContentRange {
-  { unit, start: None, end: None, complete_length: Some(complete_length) }
+  { unit, start: None, end: None, complete_length: Some(complete_length), }
 }
 
 ///|
@@ -328,12 +328,12 @@ pub fn AcceptRanges::parse(input : String) -> Result[AcceptRanges, RangeError] {
 
 ///|
 pub fn AcceptRanges::bytes() -> AcceptRanges {
-  { units: ["bytes"] }
+  { units: ["bytes"], }
 }
 
 ///|
 pub fn AcceptRanges::none() -> AcceptRanges {
-  { units: ["none"] }
+  { units: ["none"], }
 }
 
 ///|

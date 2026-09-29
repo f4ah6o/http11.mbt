@@ -16,7 +16,7 @@ fn acc_parse_media_range_item(
     Err(e) => return Err(e)
     Ok((mt, st)) => {
       let mut params : Array[(String, String)] = []
-      let mut qvalue = { value: 1000 }
+      let mut qvalue = { value: 1000, }
       let mut q_seen = false
       let mut param_idx = 1
       while param_idx < parts.length() {
@@ -65,7 +65,7 @@ fn acc_parse_media_range_item(
         }
         param_idx = param_idx + 1
       }
-      Ok({ media_type: mt, subtype: st, parameters: params, q: qvalue })
+      Ok({ media_type: mt, subtype: st, parameters: params, q: qvalue, })
     }
   }
 }
@@ -149,7 +149,7 @@ fn acc_parse_weighted_tokens_with_validator(
       if token != "*" && !validator(token) {
         return Err(InvalidToken)
       }
-      let mut qvalue = { value: 1000 }
+      let mut qvalue = { value: 1000, }
       let mut q_seen = false
       let mut sub_idx = 1
       while sub_idx < subparts.length() {

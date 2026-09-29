@@ -5,7 +5,7 @@ pub(all) enum ConditionalError {
   InvalidFormat
   ETagError
   DateError
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// If-Match header (RFC 9110 Section 13.1.1)
@@ -17,7 +17,7 @@ pub(all) struct IfMatch {
 pub fn IfMatch::parse(input : String) -> Result[IfMatch, ConditionalError] {
   let parse_result = parse_etag_list(input)
   match parse_result {
-    Ok(list) => Ok({ etags: list })
+    Ok(list) => Ok({ etags: list, })
     Err(_) => Err(ETagError)
   }
 }
@@ -54,7 +54,7 @@ pub fn IfNoneMatch::parse(
 ) -> Result[IfNoneMatch, ConditionalError] {
   let parse_result = parse_etag_list(input)
   match parse_result {
-    Ok(list) => Ok({ etags: list })
+    Ok(list) => Ok({ etags: list, })
     Err(_) => Err(ETagError)
   }
 }
@@ -91,7 +91,7 @@ pub fn IfModifiedSince::parse(
 ) -> Result[IfModifiedSince, ConditionalError] {
   let parse_result = HttpDate::parse(input)
   match parse_result {
-    Ok(d) => Ok({ date: d })
+    Ok(d) => Ok({ date: d, })
     Err(_) => Err(DateError)
   }
 }
@@ -118,7 +118,7 @@ pub fn IfUnmodifiedSince::parse(
 ) -> Result[IfUnmodifiedSince, ConditionalError] {
   let parse_result = HttpDate::parse(input)
   match parse_result {
-    Ok(d) => Ok({ date: d })
+    Ok(d) => Ok({ date: d, })
     Err(_) => Err(DateError)
   }
 }

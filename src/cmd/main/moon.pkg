@@ -2,6 +2,4 @@ import {
   "f4ah6o/http11" @lib,
 }
 
-options(
-  "is-main": true,
-)
+pkgtype(kind: "executable")

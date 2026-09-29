@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 # MoonBit Project Commands
 
-target := "js"
+target := "native"
 
 default: check test
 
@@ -19,7 +19,7 @@ test-update:
     moon test --update --target {{target}}
 
 run:
-    moon run src/main --target {{target}}
+    moon run src/cmd/main --target {{target}}
 
 info:
     moon info

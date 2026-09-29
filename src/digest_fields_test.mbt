@@ -1,7 +1,7 @@
 ///|
 fn init {
   // Test ContentDigest::parse
-  let digest = ContentDigest::parse("sha-256=:YWJj:").unwrap()
+  let digest = @http11.ContentDigest::parse("sha-256=:YWJj:").unwrap()
   if digest.entries().length() == 1 {
     println("digest_fields.mbt: ContentDigest parse OK")
   } else {
@@ -33,7 +33,7 @@ fn init {
   }
 
   // Test empty input
-  match ContentDigest::parse("") {
+  match @http11.ContentDigest::parse("") {
     Ok(_) => println("digest_fields.mbt: Empty parse FAILED")
     Err(e) =>
       match e {
@@ -43,7 +43,7 @@ fn init {
   }
 
   // Test ReprDigest::parse
-  let repr = ReprDigest::parse("sha-256=:YWJj:, sha-512=:Zg==:").unwrap()
+  let repr = @http11.ReprDigest::parse("sha-256=:YWJj:, sha-512=:Zg==:").unwrap()
   if repr.entries().length() == 2 {
     println("digest_fields.mbt: ReprDigest parse OK")
   } else {
@@ -51,7 +51,9 @@ fn init {
   }
 
   // Test WantContentDigest::parse
-  let want = WantContentDigest::parse("sha-512=3, sha-256=10, unixsum=0").unwrap()
+  let want = @http11.WantContentDigest::parse(
+    "sha-512=3, sha-256=10, unixsum=0",
+  ).unwrap()
   if want.preferences().length() == 3 {
     println("digest_fields.mbt: WantContentDigest parse OK")
   } else {
@@ -77,7 +79,7 @@ fn init {
     bytes.push(i.to_byte())
     i = i + 1
   }
-  let val = DigestValue::new(bytes)
+  let val = @http11.DigestValue::new(bytes)
   if val.to_string() == ":YWJj:" {
     println("digest_fields.mbt: Base64 encode OK")
   } else {
@@ -85,7 +87,7 @@ fn init {
   }
 
   // Test base64 decode (via ContentDigest::parse)
-  let decoded = ContentDigest::parse("sha-256=:YWJj:").unwrap()
+  let decoded = @http11.ContentDigest::parse("sha-256=:YWJj:").unwrap()
   match decoded.get("sha-256") {
     Some(dv) => {
       let db = dv.bytes()

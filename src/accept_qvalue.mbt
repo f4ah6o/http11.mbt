@@ -11,12 +11,12 @@ pub fn QValue::parse(input : String) -> Result[QValue, AcceptError] {
     return Err(InvalidQValue)
   }
   if s == "1" {
-    return Ok({ value: 1000 })
+    return Ok({ value: 1000, })
   }
   if acc_string_starts_with(s, "1.") {
     let rest = acc_string_slice_from(s, 2)
     if rest.length() == 0 {
-      return Ok({ value: 1000 })
+      return Ok({ value: 1000, })
     }
     // Must be all zeros
     let mut idx = 0
@@ -26,10 +26,10 @@ pub fn QValue::parse(input : String) -> Result[QValue, AcceptError] {
       }
       idx = idx + 1
     }
-    return Ok({ value: 1000 })
+    return Ok({ value: 1000, })
   }
   if s == "0" {
-    return Ok({ value: 0 })
+    return Ok({ value: 0, })
   }
   if acc_string_starts_with(s, "0.") {
     let rest = acc_string_slice_from(s, 2)

@@ -14,11 +14,11 @@ test "prop_qvalue_roundtrip" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = QValue::parse(input)
+    let parsed = @http11.QValue::parse(input)
     match parsed {
       Ok(qv) => {
         let str = qv.to_string()
-        let reparsed = QValue::parse(str)
+        let reparsed = @http11.QValue::parse(str)
         match reparsed {
           Ok(r) => if r.value() == qv.value() { passed = passed + 1 }
           Err(_) => ()
@@ -43,11 +43,11 @@ test "prop_accept_roundtrip" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = Accept::parse(input)
+    let parsed = @http11.Accept::parse(input)
     match parsed {
       Ok(accept) => {
         let str = accept.to_string()
-        let reparsed = Accept::parse(str)
+        let reparsed = @http11.Accept::parse(str)
         match reparsed {
           Ok(_) => passed = passed + 1
           Err(_) => ()
@@ -69,7 +69,7 @@ test "prop_accept_charset_preserves_items" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = AcceptCharset::parse(input)
+    let parsed = @http11.AcceptCharset::parse(input)
     match parsed {
       Ok(charset) => {
         let items = charset.items()
@@ -93,7 +93,7 @@ test "prop_accept_encoding_preserves_items" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = AcceptEncoding::parse(input)
+    let parsed = @http11.AcceptEncoding::parse(input)
     match parsed {
       Ok(encoding) => {
         let items = encoding.items()
@@ -117,7 +117,7 @@ test "prop_accept_language_preserves_items" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = AcceptLanguage::parse(input)
+    let parsed = @http11.AcceptLanguage::parse(input)
     match parsed {
       Ok(lang) => {
         let items = lang.items()

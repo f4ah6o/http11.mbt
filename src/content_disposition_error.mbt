@@ -6,4 +6,4 @@ pub(all) enum ContentDispositionError {
   InvalidDispositionType
   InvalidParameter
   InvalidExtValue
-} derive(Show, Eq)
+} derive(Debug, Eq)

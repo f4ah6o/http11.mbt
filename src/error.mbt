@@ -10,4 +10,4 @@ pub(all) enum HttpError {
   InvalidHeaderValue
   InvalidStatusCode
   InvalidChunkSize
-} derive(Show, Eq)
+} derive(Debug, Eq)

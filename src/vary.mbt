@@ -4,14 +4,14 @@ pub(all) enum VaryError {
   Empty
   InvalidFormat
   InvalidFieldName
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Vary header (RFC 9110 Section 12.5.5)
 pub(all) struct Vary {
   any : Bool
   fields : Array[String]
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn Vary::parse(input : String) -> Result[Vary, VaryError] {
@@ -20,7 +20,7 @@ pub fn Vary::parse(input : String) -> Result[Vary, VaryError] {
     return Err(Empty)
   }
   if s == "*" {
-    return Ok({ any: true, fields: [] })
+    return Ok({ any: true, fields: [], })
   }
   let parts = vary_split_string(s, ",")
   let fields : Array[String] = []
@@ -39,7 +39,7 @@ pub fn Vary::parse(input : String) -> Result[Vary, VaryError] {
   if fields.length() == 0 {
     return Err(Empty)
   }
-  Ok({ any: false, fields })
+  Ok({ any: false, fields, })
 }
 
 ///|

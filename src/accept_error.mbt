@@ -8,4 +8,4 @@ pub(all) enum AcceptError {
   InvalidParameter
   InvalidQValue
   InvalidLanguageTag
-} derive(Show, Eq)
+} derive(Debug, Eq)

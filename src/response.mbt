@@ -6,11 +6,11 @@ pub(all) struct Response {
   reason_phrase : String
   headers : Array[(String, String)]
   body : Array[Byte]
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn Response::new(status_code : Int, reason_phrase : String) -> Response {
-  { version: "HTTP/1.1", status_code, reason_phrase, headers: [], body: [] }
+  { version: "HTTP/1.1", status_code, reason_phrase, headers: [], body: [], }
 }
 
 ///|
@@ -19,7 +19,7 @@ pub fn Response::with_version(
   status_code : Int,
   reason_phrase : String,
 ) -> Response {
-  { version, status_code, reason_phrase, headers: [], body: [] }
+  { version, status_code, reason_phrase, headers: [], body: [], }
 }
 
 ///|
@@ -53,7 +53,7 @@ pub fn Response::header(
     new_headers.push(h)
   }
   new_headers.push((name, value))
-  { ..self, headers: new_headers }
+  { ..self, headers: new_headers, }
 }
 
 ///|

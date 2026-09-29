@@ -5,14 +5,14 @@ pub(all) enum ExpectError {
   InvalidFormat
   InvalidToken
   InvalidValue
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Expectation item
 pub(all) struct Expectation {
   token : String
   value : String?
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn Expectation::token(self : Expectation) -> String {
@@ -47,7 +47,7 @@ pub fn Expectation::to_string(self : Expectation) -> String {
 /// Expect header (RFC 9110 Section 10.1.1)
 pub(all) struct Expect {
   items : Array[Expectation]
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn Expect::parse(input : String) -> Result[Expect, ExpectError] {
@@ -71,7 +71,7 @@ pub fn Expect::parse(input : String) -> Result[Expect, ExpectError] {
           return Err(InvalidToken)
         }
         let lower_token = exp_to_lower_case(token)
-        items.push({ token: lower_token, value })
+        items.push({ token: lower_token, value, })
         part_idx = part_idx + 1
       }
     }

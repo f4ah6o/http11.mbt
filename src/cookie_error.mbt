@@ -9,4 +9,4 @@ pub(all) enum CookieError {
   InvalidExpires
   InvalidMaxAge
   InvalidSameSite
-} derive(Show, Eq)
+} derive(Debug, Eq)

@@ -5,4 +5,4 @@ pub(all) enum CacheError {
   InvalidFormat
   InvalidNumber
   InvalidDate
-} derive(Show, Eq)
+} derive(Debug, Eq)

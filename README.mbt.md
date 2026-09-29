@@ -374,13 +374,13 @@ let encoded = encode_chunk("data".to_bytes())
 
 ```bash
 # 基本例
-moon run cmd/main
+moon run src/cmd/main
 
 # HTTP クライアント
-moon run cmd/client
+moon run src/cmd/client --target native
 
 # HTTP サーバー
-moon run cmd/server
+moon run src/cmd/server --target native
 ```
 
 ### 出力例

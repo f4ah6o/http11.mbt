@@ -5,14 +5,14 @@ pub(all) enum ETagError {
   InvalidFormat
   MissingQuote
   InvalidCharacter
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Entity Tag (ETag) (RFC 9110 Section 8.8.3)
 pub(all) struct EntityTag {
   weak : Bool
   tag : String
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn EntityTag::parse(input : String) -> Result[EntityTag, ETagError] {
@@ -42,7 +42,7 @@ pub fn EntityTag::parse(input : String) -> Result[EntityTag, ETagError] {
       if !is_valid_etag(tag) {
         return Err(InvalidCharacter)
       }
-      Ok({ weak, tag })
+      Ok({ weak, tag, })
     }
   }
 }
@@ -52,7 +52,7 @@ pub fn EntityTag::strong(tag : String) -> Result[EntityTag, ETagError] {
   if !is_valid_etag(tag) {
     return Err(InvalidCharacter)
   }
-  Ok({ weak: false, tag })
+  Ok({ weak: false, tag, })
 }
 
 ///|
@@ -60,7 +60,7 @@ pub fn EntityTag::weak(tag : String) -> Result[EntityTag, ETagError] {
   if !is_valid_etag(tag) {
     return Err(InvalidCharacter)
   }
-  Ok({ weak: true, tag })
+  Ok({ weak: true, tag, })
 }
 
 ///|
@@ -102,7 +102,7 @@ pub fn EntityTag::to_string(self : EntityTag) -> String {
 pub(all) enum ETagList {
   Any
   Tags(Array[EntityTag])
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn parse_etag_list(input : String) -> Result[ETagList, ETagError] {

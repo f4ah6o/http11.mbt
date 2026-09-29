@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "f4ah6o/http11"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn encode_chunk(Array[Byte]) -> Array[Byte]
 
@@ -35,25 +39,25 @@ pub fn rg_u64_to_string(UInt64) -> String
 // Types and methods
 pub(all) struct Accept {
   items : Array[MediaRange]
-}
+} derive(Eq)
+pub fn Accept::equal(Self, Self) -> Bool
 pub fn Accept::items(Self) -> Array[MediaRange]
 pub fn Accept::parse(String) -> Result[Self, AcceptError]
 pub fn Accept::to_string(Self) -> String
-pub impl Eq for Accept
 
 pub(all) struct AcceptCharset {
   items : Array[CharsetRange]
-}
+} derive(Eq)
+pub fn AcceptCharset::equal(Self, Self) -> Bool
 pub fn AcceptCharset::items(Self) -> Array[CharsetRange]
 pub fn AcceptCharset::parse(String) -> Result[Self, AcceptError]
-pub impl Eq for AcceptCharset
 
 pub(all) struct AcceptEncoding {
   items : Array[EncodingRange]
-}
+} derive(Eq)
+pub fn AcceptEncoding::equal(Self, Self) -> Bool
 pub fn AcceptEncoding::items(Self) -> Array[EncodingRange]
 pub fn AcceptEncoding::parse(String) -> Result[Self, AcceptError]
-pub impl Eq for AcceptEncoding
 
 pub(all) enum AcceptError {
   Empty
@@ -63,47 +67,49 @@ pub(all) enum AcceptError {
   InvalidParameter
   InvalidQValue
   InvalidLanguageTag
-}
-pub impl Eq for AcceptError
+} derive(Eq, @debug.Debug)
+pub fn AcceptError::equal(Self, Self) -> Bool
+pub fn AcceptError::output(Self, &Logger) -> Unit
+pub fn AcceptError::to_string(Self) -> String
 pub impl Show for AcceptError
 
 pub(all) struct AcceptLanguage {
   items : Array[LanguageRange]
-}
+} derive(Eq)
+pub fn AcceptLanguage::equal(Self, Self) -> Bool
 pub fn AcceptLanguage::items(Self) -> Array[LanguageRange]
 pub fn AcceptLanguage::parse(String) -> Result[Self, AcceptError]
-pub impl Eq for AcceptLanguage
 
 pub(all) struct AcceptRanges {
   units : Array[String]
-}
+} derive(Eq)
 pub fn AcceptRanges::accepts_bytes(Self) -> Bool
 pub fn AcceptRanges::bytes() -> Self
+pub fn AcceptRanges::equal(Self, Self) -> Bool
 pub fn AcceptRanges::is_none(Self) -> Bool
 pub fn AcceptRanges::none() -> Self
 pub fn AcceptRanges::parse(String) -> Result[Self, RangeError]
 pub fn AcceptRanges::to_string(Self) -> String
 pub fn AcceptRanges::units(Self) -> Array[String]
-pub impl Eq for AcceptRanges
 
 pub(all) struct Age {
   seconds : Int
-}
+} derive(Eq)
+pub fn Age::equal(Self, Self) -> Bool
 pub fn Age::new(Int) -> Self
 pub fn Age::parse(String) -> Result[Self, CacheError]
 pub fn Age::seconds(Self) -> Int
 pub fn Age::to_string(Self) -> String
-pub impl Eq for Age
 
 pub(all) enum AuthChallenge {
   Basic(WwwAuthenticate)
   Digest(DigestChallenge)
   Bearer(BearerChallenge)
-}
+} derive(Eq)
+pub fn AuthChallenge::equal(Self, Self) -> Bool
 pub fn AuthChallenge::parse(String) -> Result[Self, AuthError]
 pub fn AuthChallenge::to_header_value(Self) -> String
 pub fn AuthChallenge::to_string(Self) -> String
-pub impl Eq for AuthChallenge
 
 pub(all) enum AuthError {
   Empty
@@ -117,49 +123,51 @@ pub(all) enum AuthError {
   InvalidParameter
   MissingParameter
   InvalidToken
-}
-pub impl Eq for AuthError
+} derive(Eq, @debug.Debug)
+pub fn AuthError::equal(Self, Self) -> Bool
+pub fn AuthError::output(Self, &Logger) -> Unit
+pub fn AuthError::to_string(Self) -> String
 pub impl Show for AuthError
 
 pub(all) enum Authorization {
   Basic(BasicAuth)
   Digest(DigestAuth)
   Bearer(BearerToken)
-}
+} derive(Eq)
+pub fn Authorization::equal(Self, Self) -> Bool
 pub fn Authorization::parse(String) -> Result[Self, AuthError]
 pub fn Authorization::to_header_value(Self) -> String
 pub fn Authorization::to_string(Self) -> String
-pub impl Eq for Authorization
 
 pub(all) struct BasicAuth {
   username : String
   password : String
-}
+} derive(Eq)
+pub fn BasicAuth::equal(Self, Self) -> Bool
 pub fn BasicAuth::new(String, String) -> Self
 pub fn BasicAuth::parse(String) -> Result[Self, AuthError]
 pub fn BasicAuth::password(Self) -> String
 pub fn BasicAuth::to_header_value(Self) -> String
 pub fn BasicAuth::to_string(Self) -> String
 pub fn BasicAuth::username(Self) -> String
-pub impl Eq for BasicAuth
 
 pub(all) struct BearerChallenge {
   params : Array[(String, String)]
-}
+} derive(Eq)
+pub fn BearerChallenge::equal(Self, Self) -> Bool
 pub fn BearerChallenge::param(Self, String) -> String?
 pub fn BearerChallenge::parse(String) -> Result[Self, AuthError]
 pub fn BearerChallenge::to_header_value(Self) -> String
 pub fn BearerChallenge::to_string(Self) -> String
-pub impl Eq for BearerChallenge
 
 pub(all) struct BearerToken {
   token : String
-}
+} derive(Eq)
+pub fn BearerToken::equal(Self, Self) -> Bool
 pub fn BearerToken::parse(String) -> Result[Self, AuthError]
 pub fn BearerToken::to_header_value(Self) -> String
 pub fn BearerToken::to_string(Self) -> String
 pub fn BearerToken::token(Self) -> String
-pub impl Eq for BearerToken
 
 pub(all) struct CacheControl {
   max_age : Int?
@@ -178,7 +186,8 @@ pub(all) struct CacheControl {
   public : Bool
   private : Bool
   immutable : Bool
-}
+} derive(Eq)
+pub fn CacheControl::equal(Self, Self) -> Bool
 pub fn CacheControl::is_cacheable(Self) -> Bool
 pub fn CacheControl::is_immutable(Self) -> Bool
 pub fn CacheControl::is_must_revalidate(Self) -> Bool
@@ -210,33 +219,36 @@ pub fn CacheControl::with_private(Self) -> Self
 pub fn CacheControl::with_proxy_revalidate(Self) -> Self
 pub fn CacheControl::with_public(Self) -> Self
 pub fn CacheControl::with_s_maxage(Self, Int) -> Self
-pub impl Eq for CacheControl
 
 pub(all) enum CacheError {
   Empty
   InvalidFormat
   InvalidNumber
   InvalidDate
-}
-pub impl Eq for CacheError
+} derive(Eq, @debug.Debug)
+pub fn CacheError::equal(Self, Self) -> Bool
+pub fn CacheError::output(Self, &Logger) -> Unit
+pub fn CacheError::to_string(Self) -> String
 pub impl Show for CacheError
 
 pub(all) struct CharsetRange {
   charset : String
   q : QValue
-}
+} derive(Eq)
 pub fn CharsetRange::charset(Self) -> String
+pub fn CharsetRange::equal(Self, Self) -> Bool
 pub fn CharsetRange::qvalue(Self) -> QValue
 pub fn CharsetRange::to_string(Self) -> String
-pub impl Eq for CharsetRange
 
 pub(all) enum ConditionalError {
   Empty
   InvalidFormat
   ETagError
   DateError
-}
-pub impl Eq for ConditionalError
+} derive(Eq, @debug.Debug)
+pub fn ConditionalError::equal(Self, Self) -> Bool
+pub fn ConditionalError::output(Self, &Logger) -> Unit
+pub fn ConditionalError::to_string(Self) -> String
 pub impl Show for ConditionalError
 
 pub(all) enum ContentCoding {
@@ -247,19 +259,20 @@ pub(all) enum ContentCoding {
   Br
   Zstd
   Other(String)
-}
+} derive(Eq, @debug.Debug)
+pub fn ContentCoding::equal(Self, Self) -> Bool
+pub fn ContentCoding::output(Self, &Logger) -> Unit
 pub fn ContentCoding::to_string(Self) -> String
-pub impl Eq for ContentCoding
 pub impl Show for ContentCoding
 
 pub(all) struct ContentDigest {
   entries : Array[(String, DigestValue)]
-}
+} derive(Eq)
 pub fn ContentDigest::entries(Self) -> Array[(String, DigestValue)]
+pub fn ContentDigest::equal(Self, Self) -> Bool
 pub fn ContentDigest::get(Self, String) -> DigestValue?
 pub fn ContentDigest::parse(String) -> Result[Self, DigestFieldsError]
 pub fn ContentDigest::to_string(Self) -> String
-pub impl Eq for ContentDigest
 
 pub(all) struct ContentDisposition {
   disposition_type : DispositionType
@@ -267,8 +280,9 @@ pub(all) struct ContentDisposition {
   filename_ext : String?
   name : String?
   parameters : Array[(String, String)]
-}
+} derive(Eq)
 pub fn ContentDisposition::disposition_type(Self) -> DispositionType
+pub fn ContentDisposition::equal(Self, Self) -> Bool
 pub fn ContentDisposition::filename(Self) -> String?
 pub fn ContentDisposition::filename_ascii(Self) -> String?
 pub fn ContentDisposition::filename_ext(Self) -> String?
@@ -283,7 +297,6 @@ pub fn ContentDisposition::to_string(Self) -> String
 pub fn ContentDisposition::with_filename(Self, String) -> Self
 pub fn ContentDisposition::with_filename_ext(Self, String) -> Self
 pub fn ContentDisposition::with_name(Self, String) -> Self
-pub impl Eq for ContentDisposition
 
 pub(all) enum ContentDispositionError {
   Empty
@@ -291,14 +304,17 @@ pub(all) enum ContentDispositionError {
   InvalidDispositionType
   InvalidParameter
   InvalidExtValue
-}
-pub impl Eq for ContentDispositionError
+} derive(Eq, @debug.Debug)
+pub fn ContentDispositionError::equal(Self, Self) -> Bool
+pub fn ContentDispositionError::output(Self, &Logger) -> Unit
+pub fn ContentDispositionError::to_string(Self) -> String
 pub impl Show for ContentDispositionError
 
 pub(all) struct ContentEncoding {
   encodings : Array[ContentCoding]
-}
+} derive(Eq)
 pub fn ContentEncoding::encodings(Self) -> Array[ContentCoding]
+pub fn ContentEncoding::equal(Self, Self) -> Bool
 pub fn ContentEncoding::has_br(Self) -> Bool
 pub fn ContentEncoding::has_compress(Self) -> Bool
 pub fn ContentEncoding::has_deflate(Self) -> Bool
@@ -307,45 +323,50 @@ pub fn ContentEncoding::has_identity(Self) -> Bool
 pub fn ContentEncoding::has_zstd(Self) -> Bool
 pub fn ContentEncoding::parse(String) -> Result[Self, ContentEncodingError]
 pub fn ContentEncoding::to_string(Self) -> String
-pub impl Eq for ContentEncoding
 
 pub(all) enum ContentEncodingError {
   Empty
   InvalidFormat
   InvalidEncoding
-}
-pub impl Eq for ContentEncodingError
+} derive(Eq, @debug.Debug)
+pub fn ContentEncodingError::equal(Self, Self) -> Bool
+pub fn ContentEncodingError::output(Self, &Logger) -> Unit
+pub fn ContentEncodingError::to_string(Self) -> String
 pub impl Show for ContentEncodingError
 
 pub(all) struct ContentLanguage {
   tags : Array[String]
-}
+} derive(Eq)
+pub fn ContentLanguage::equal(Self, Self) -> Bool
 pub fn ContentLanguage::parse(String) -> Result[Self, ContentLanguageError]
 pub fn ContentLanguage::tags(Self) -> Array[String]
 pub fn ContentLanguage::to_string(Self) -> String
-pub impl Eq for ContentLanguage
 
 pub(all) enum ContentLanguageError {
   Empty
   InvalidFormat
   InvalidLanguageTag
-}
-pub impl Eq for ContentLanguageError
+} derive(Eq, @debug.Debug)
+pub fn ContentLanguageError::equal(Self, Self) -> Bool
+pub fn ContentLanguageError::output(Self, &Logger) -> Unit
+pub fn ContentLanguageError::to_string(Self) -> String
 pub impl Show for ContentLanguageError
 
 pub(all) struct ContentLocation {
   uri : Uri
-}
+} derive(Eq)
+pub fn ContentLocation::equal(Self, Self) -> Bool
 pub fn ContentLocation::parse(String) -> Result[Self, ContentLocationError]
 pub fn ContentLocation::to_string(Self) -> String
 pub fn ContentLocation::uri(Self) -> Uri
-pub impl Eq for ContentLocation
 
 pub(all) enum ContentLocationError {
   Empty
   InvalidUri
-}
-pub impl Eq for ContentLocationError
+} derive(Eq, @debug.Debug)
+pub fn ContentLocationError::equal(Self, Self) -> Bool
+pub fn ContentLocationError::output(Self, &Logger) -> Unit
+pub fn ContentLocationError::to_string(Self) -> String
 pub impl Show for ContentLocationError
 
 pub(all) struct ContentRange {
@@ -353,9 +374,10 @@ pub(all) struct ContentRange {
   start : UInt64?
   end : UInt64?
   complete_length : UInt64?
-}
+} derive(Eq)
 pub fn ContentRange::complete_length(Self) -> UInt64?
 pub fn ContentRange::end(Self) -> UInt64?
+pub fn ContentRange::equal(Self, Self) -> Bool
 pub fn ContentRange::is_unsatisfied(Self) -> Bool
 pub fn ContentRange::length(Self) -> UInt64?
 pub fn ContentRange::new_bytes(UInt64, UInt64, UInt64?) -> Self
@@ -364,15 +386,15 @@ pub fn ContentRange::start(Self) -> UInt64?
 pub fn ContentRange::to_string(Self) -> String
 pub fn ContentRange::unit(Self) -> String
 pub fn ContentRange::unsatisfied(String, UInt64) -> Self
-pub impl Eq for ContentRange
 
 pub(all) struct ContentType {
   media_type : String
   subtype : String
   parameters : Array[(String, String)]
-}
+} derive(Eq)
 pub fn ContentType::boundary(Self) -> String?
 pub fn ContentType::charset(Self) -> String?
+pub fn ContentType::equal(Self, Self) -> Bool
 pub fn ContentType::is_form_data(Self) -> Bool
 pub fn ContentType::is_form_urlencoded(Self) -> Bool
 pub fn ContentType::is_json(Self) -> Bool
@@ -387,27 +409,28 @@ pub fn ContentType::parse(String) -> Result[Self, ContentTypeError]
 pub fn ContentType::subtype(Self) -> String
 pub fn ContentType::to_string(Self) -> String
 pub fn ContentType::with_parameter(Self, String, String) -> Self
-pub impl Eq for ContentType
 
 pub(all) enum ContentTypeError {
   Empty
   InvalidMediaType
   InvalidParameter
   UnterminatedQuote
-}
-pub impl Eq for ContentTypeError
+} derive(Eq, @debug.Debug)
+pub fn ContentTypeError::equal(Self, Self) -> Bool
+pub fn ContentTypeError::output(Self, &Logger) -> Unit
+pub fn ContentTypeError::to_string(Self) -> String
 pub impl Show for ContentTypeError
 
 pub(all) struct Cookie {
   name : String
   value : String
-}
+} derive(Eq)
+pub fn Cookie::equal(Self, Self) -> Bool
 pub fn Cookie::name(Self) -> String
 pub fn Cookie::new(String, String) -> Result[Self, CookieError]
 pub fn Cookie::parse(String) -> Result[Array[Self], CookieError]
 pub fn Cookie::to_string(Self) -> String
 pub fn Cookie::value(Self) -> String
-pub impl Eq for Cookie
 
 pub(all) enum CookieError {
   Empty
@@ -418,8 +441,10 @@ pub(all) enum CookieError {
   InvalidExpires
   InvalidMaxAge
   InvalidSameSite
-}
-pub impl Eq for CookieError
+} derive(Eq, @debug.Debug)
+pub fn CookieError::equal(Self, Self) -> Bool
+pub fn CookieError::output(Self, &Logger) -> Unit
+pub fn CookieError::to_string(Self) -> String
 pub impl Show for CookieError
 
 pub(all) enum DateError {
@@ -433,8 +458,10 @@ pub(all) enum DateError {
   InvalidMinute
   InvalidSecond
   NotGmt
-}
-pub impl Eq for DateError
+} derive(Eq, @debug.Debug)
+pub fn DateError::equal(Self, Self) -> Bool
+pub fn DateError::output(Self, &Logger) -> Unit
+pub fn DateError::to_string(Self) -> String
 pub impl Show for DateError
 
 pub(all) enum DayOfWeek {
@@ -445,8 +472,10 @@ pub(all) enum DayOfWeek {
   Thursday
   Friday
   Saturday
-}
-pub impl Eq for DayOfWeek
+} derive(Eq, @debug.Debug)
+pub fn DayOfWeek::equal(Self, Self) -> Bool
+pub fn DayOfWeek::output(Self, &Logger) -> Unit
+pub fn DayOfWeek::to_string(Self) -> String
 pub impl Show for DayOfWeek
 
 pub(all) enum DecodeState {
@@ -455,8 +484,10 @@ pub(all) enum DecodeState {
   Headers
   Body(Int)
   Complete
-}
-pub impl Eq for DecodeState
+} derive(Eq, @debug.Debug)
+pub fn DecodeState::equal(Self, Self) -> Bool
+pub fn DecodeState::output(Self, &Logger) -> Unit
+pub fn DecodeState::to_string(Self) -> String
 pub impl Show for DecodeState
 
 pub(all) struct DecoderLimits {
@@ -464,15 +495,18 @@ pub(all) struct DecoderLimits {
   max_headers_count : Int
   max_header_line_size : Int
   max_body_size : Int
-}
+} derive(Eq, @debug.Debug)
 pub fn DecoderLimits::default() -> Self
+pub fn DecoderLimits::equal(Self, Self) -> Bool
+pub fn DecoderLimits::output(Self, &Logger) -> Unit
+pub fn DecoderLimits::to_string(Self) -> String
 pub fn DecoderLimits::unlimited() -> Self
-pub impl Eq for DecoderLimits
 pub impl Show for DecoderLimits
 
 pub(all) struct DigestAuth {
   params : Array[(String, String)]
-}
+} derive(Eq)
+pub fn DigestAuth::equal(Self, Self) -> Bool
 pub fn DigestAuth::nonce(Self) -> String?
 pub fn DigestAuth::param(Self, String) -> String?
 pub fn DigestAuth::parse(String) -> Result[Self, AuthError]
@@ -482,28 +516,27 @@ pub fn DigestAuth::to_header_value(Self) -> String
 pub fn DigestAuth::to_string(Self) -> String
 pub fn DigestAuth::uri(Self) -> String?
 pub fn DigestAuth::username(Self) -> String?
-pub impl Eq for DigestAuth
 
 pub(all) struct DigestChallenge {
   params : Array[(String, String)]
-}
+} derive(Eq)
+pub fn DigestChallenge::equal(Self, Self) -> Bool
 pub fn DigestChallenge::nonce(Self) -> String?
 pub fn DigestChallenge::param(Self, String) -> String?
 pub fn DigestChallenge::parse(String) -> Result[Self, AuthError]
 pub fn DigestChallenge::realm(Self) -> String?
 pub fn DigestChallenge::to_header_value(Self) -> String
 pub fn DigestChallenge::to_string(Self) -> String
-pub impl Eq for DigestChallenge
 
 pub(all) struct DigestEntry {
   algorithm : String
   value : DigestValue
-}
+} derive(Eq)
 pub fn DigestEntry::algorithm(Self) -> String
+pub fn DigestEntry::equal(Self, Self) -> Bool
 pub fn DigestEntry::new(String, DigestValue) -> Self
 pub fn DigestEntry::to_string(Self) -> String
 pub fn DigestEntry::value(Self) -> DigestValue
-pub impl Eq for DigestEntry
 
 pub(all) enum DigestFieldsError {
   Empty
@@ -512,71 +545,78 @@ pub(all) enum DigestFieldsError {
   InvalidByteSequence
   InvalidBase64
   InvalidPreference
-}
-pub impl Eq for DigestFieldsError
+} derive(Eq, @debug.Debug)
+pub fn DigestFieldsError::equal(Self, Self) -> Bool
+pub fn DigestFieldsError::output(Self, &Logger) -> Unit
+pub fn DigestFieldsError::to_string(Self) -> String
 pub impl Show for DigestFieldsError
 
 pub(all) struct DigestPreference {
   algorithm : String
   weight : Int
-}
+} derive(Eq)
 pub fn DigestPreference::algorithm(Self) -> String
+pub fn DigestPreference::equal(Self, Self) -> Bool
 pub fn DigestPreference::new(String, Int) -> Self
 pub fn DigestPreference::to_string(Self) -> String
 pub fn DigestPreference::weight(Self) -> Int
-pub impl Eq for DigestPreference
 
 pub(all) struct DigestValue {
   bytes : Array[Byte]
-}
+} derive(Eq)
 pub fn DigestValue::bytes(Self) -> Array[Byte]
+pub fn DigestValue::equal(Self, Self) -> Bool
 pub fn DigestValue::new(Array[Byte]) -> Self
 pub fn DigestValue::to_string(Self) -> String
-pub impl Eq for DigestValue
 
 pub(all) enum DispositionType {
   Inline
   Attachment
   FormData
-}
+} derive(Eq)
+pub fn DispositionType::equal(Self, Self) -> Bool
 pub fn DispositionType::to_string(Self) -> String
-pub impl Eq for DispositionType
 
 pub(all) enum ETagError {
   Empty
   InvalidFormat
   MissingQuote
   InvalidCharacter
-}
-pub impl Eq for ETagError
+} derive(Eq, @debug.Debug)
+pub fn ETagError::equal(Self, Self) -> Bool
+pub fn ETagError::output(Self, &Logger) -> Unit
+pub fn ETagError::to_string(Self) -> String
 pub impl Show for ETagError
 
 pub(all) enum ETagList {
   Any
   Tags(Array[EntityTag])
-}
+} derive(Eq, @debug.Debug)
 pub fn ETagList::contains_strong(Self, EntityTag) -> Bool
 pub fn ETagList::contains_weak(Self, EntityTag) -> Bool
+pub fn ETagList::equal(Self, Self) -> Bool
 pub fn ETagList::is_any(Self) -> Bool
+pub fn ETagList::output(Self, &Logger) -> Unit
 pub fn ETagList::to_string(Self) -> String
-pub impl Eq for ETagList
 pub impl Show for ETagList
 
 pub(all) struct EncodingRange {
   coding : String
   q : QValue
-}
+} derive(Eq)
 pub fn EncodingRange::coding(Self) -> String
+pub fn EncodingRange::equal(Self, Self) -> Bool
 pub fn EncodingRange::qvalue(Self) -> QValue
 pub fn EncodingRange::to_string(Self) -> String
-pub impl Eq for EncodingRange
 
 pub(all) struct EntityTag {
   weak : Bool
   tag : String
-}
+} derive(Eq, @debug.Debug)
+pub fn EntityTag::equal(Self, Self) -> Bool
 pub fn EntityTag::is_strong(Self) -> Bool
 pub fn EntityTag::is_weak(Self) -> Bool
+pub fn EntityTag::output(Self, &Logger) -> Unit
 pub fn EntityTag::parse(String) -> Result[Self, ETagError]
 pub fn EntityTag::strong(String) -> Result[Self, ETagError]
 pub fn EntityTag::strong_compare(Self, Self) -> Bool
@@ -584,17 +624,17 @@ pub fn EntityTag::tag(Self) -> String
 pub fn EntityTag::to_string(Self) -> String
 pub fn EntityTag::weak(String) -> Result[Self, ETagError]
 pub fn EntityTag::weak_compare(Self, Self) -> Bool
-pub impl Eq for EntityTag
 pub impl Show for EntityTag
 
 pub(all) struct Expect {
   items : Array[Expectation]
-}
+} derive(Eq, @debug.Debug)
+pub fn Expect::equal(Self, Self) -> Bool
 pub fn Expect::has_100_continue(Self) -> Bool
 pub fn Expect::items(Self) -> Array[Expectation]
+pub fn Expect::output(Self, &Logger) -> Unit
 pub fn Expect::parse(String) -> Result[Self, ExpectError]
 pub fn Expect::to_string(Self) -> String
-pub impl Eq for Expect
 pub impl Show for Expect
 
 pub(all) enum ExpectError {
@@ -602,40 +642,44 @@ pub(all) enum ExpectError {
   InvalidFormat
   InvalidToken
   InvalidValue
-}
-pub impl Eq for ExpectError
+} derive(Eq, @debug.Debug)
+pub fn ExpectError::equal(Self, Self) -> Bool
+pub fn ExpectError::output(Self, &Logger) -> Unit
+pub fn ExpectError::to_string(Self) -> String
 pub impl Show for ExpectError
 
 pub(all) struct Expectation {
   token : String
   value : String?
-}
+} derive(Eq, @debug.Debug)
+pub fn Expectation::equal(Self, Self) -> Bool
 pub fn Expectation::is_100_continue(Self) -> Bool
+pub fn Expectation::output(Self, &Logger) -> Unit
 pub fn Expectation::to_string(Self) -> String
 pub fn Expectation::token(Self) -> String
 pub fn Expectation::value(Self) -> String?
-pub impl Eq for Expectation
 pub impl Show for Expectation
 
 pub(all) struct Expires {
   date : HttpDate
-}
+} derive(Eq)
 pub fn Expires::date(Self) -> HttpDate
+pub fn Expires::equal(Self, Self) -> Bool
 pub fn Expires::new(HttpDate) -> Self
 pub fn Expires::parse(String) -> Result[Self, CacheError]
 pub fn Expires::to_string(Self) -> String
-pub impl Eq for Expires
 
 pub(all) struct Host {
   host : String
   port : Int?
-}
+} derive(Eq, @debug.Debug)
+pub fn Host::equal(Self, Self) -> Bool
 pub fn Host::host(Self) -> String
 pub fn Host::is_ipv6(Self) -> Bool
+pub fn Host::output(Self, &Logger) -> Unit
 pub fn Host::parse(String) -> Result[Self, HostError]
 pub fn Host::port(Self) -> Int?
 pub fn Host::to_string(Self) -> String
-pub impl Eq for Host
 pub impl Show for Host
 
 pub(all) enum HostError {
@@ -643,8 +687,10 @@ pub(all) enum HostError {
   InvalidFormat
   InvalidHost
   InvalidPort
-}
-pub impl Eq for HostError
+} derive(Eq, @debug.Debug)
+pub fn HostError::equal(Self, Self) -> Bool
+pub fn HostError::output(Self, &Logger) -> Unit
+pub fn HostError::to_string(Self) -> String
 pub impl Show for HostError
 
 pub(all) struct HttpDate {
@@ -655,18 +701,19 @@ pub(all) struct HttpDate {
   hour : Int
   minute : Int
   second : Int
-}
+} derive(Eq, @debug.Debug)
 pub fn HttpDate::day(Self) -> Int
 pub fn HttpDate::day_of_week(Self) -> DayOfWeek
+pub fn HttpDate::equal(Self, Self) -> Bool
 pub fn HttpDate::hour(Self) -> Int
 pub fn HttpDate::minute(Self) -> Int
 pub fn HttpDate::month(Self) -> Int
 pub fn HttpDate::new(DayOfWeek, Int, Int, Int, Int, Int, Int) -> Result[Self, DateError]
+pub fn HttpDate::output(Self, &Logger) -> Unit
 pub fn HttpDate::parse(String) -> Result[Self, DateError]
 pub fn HttpDate::second(Self) -> Int
 pub fn HttpDate::to_string(Self) -> String
 pub fn HttpDate::year(Self) -> Int
-pub impl Eq for HttpDate
 pub impl Show for HttpDate
 
 pub(all) enum HttpError {
@@ -679,127 +726,130 @@ pub(all) enum HttpError {
   InvalidHeaderValue
   InvalidStatusCode
   InvalidChunkSize
-}
-pub impl Eq for HttpError
+} derive(Eq, @debug.Debug)
+pub fn HttpError::equal(Self, Self) -> Bool
+pub fn HttpError::output(Self, &Logger) -> Unit
+pub fn HttpError::to_string(Self) -> String
 pub impl Show for HttpError
 
 pub(all) struct IfMatch {
   etags : ETagList
-}
+} derive(Eq)
+pub fn IfMatch::equal(Self, Self) -> Bool
 pub fn IfMatch::etags(Self) -> ETagList
 pub fn IfMatch::is_any(Self) -> Bool
 pub fn IfMatch::matches(Self, EntityTag) -> Bool
 pub fn IfMatch::parse(String) -> Result[Self, ConditionalError]
 pub fn IfMatch::to_string(Self) -> String
-pub impl Eq for IfMatch
 
 pub(all) struct IfModifiedSince {
   date : HttpDate
-}
+} derive(Eq)
 pub fn IfModifiedSince::date(Self) -> HttpDate
+pub fn IfModifiedSince::equal(Self, Self) -> Bool
 pub fn IfModifiedSince::parse(String) -> Result[Self, ConditionalError]
 pub fn IfModifiedSince::to_string(Self) -> String
-pub impl Eq for IfModifiedSince
 
 pub(all) struct IfNoneMatch {
   etags : ETagList
-}
+} derive(Eq)
+pub fn IfNoneMatch::equal(Self, Self) -> Bool
 pub fn IfNoneMatch::etags(Self) -> ETagList
 pub fn IfNoneMatch::is_any(Self) -> Bool
 pub fn IfNoneMatch::matches(Self, EntityTag) -> Bool
 pub fn IfNoneMatch::parse(String) -> Result[Self, ConditionalError]
 pub fn IfNoneMatch::to_string(Self) -> String
-pub impl Eq for IfNoneMatch
 
 pub(all) enum IfRange {
   ETag(EntityTag)
   Date(HttpDate)
-}
+} derive(Eq)
 pub fn IfRange::date(Self) -> HttpDate?
+pub fn IfRange::equal(Self, Self) -> Bool
 pub fn IfRange::etag(Self) -> EntityTag?
 pub fn IfRange::is_date(Self) -> Bool
 pub fn IfRange::is_etag(Self) -> Bool
 pub fn IfRange::parse(String) -> Result[Self, ConditionalError]
 pub fn IfRange::to_string(Self) -> String
-pub impl Eq for IfRange
 
 pub(all) struct IfUnmodifiedSince {
   date : HttpDate
-}
+} derive(Eq)
 pub fn IfUnmodifiedSince::date(Self) -> HttpDate
+pub fn IfUnmodifiedSince::equal(Self, Self) -> Bool
 pub fn IfUnmodifiedSince::parse(String) -> Result[Self, ConditionalError]
 pub fn IfUnmodifiedSince::to_string(Self) -> String
-pub impl Eq for IfUnmodifiedSince
 
 pub(all) struct LanguageRange {
   language : String
   q : QValue
-}
+} derive(Eq)
+pub fn LanguageRange::equal(Self, Self) -> Bool
 pub fn LanguageRange::language(Self) -> String
 pub fn LanguageRange::qvalue(Self) -> QValue
 pub fn LanguageRange::to_string(Self) -> String
-pub impl Eq for LanguageRange
 
 pub(all) struct MediaRange {
   media_type : String
   subtype : String
   parameters : Array[(String, String)]
   q : QValue
-}
+} derive(Eq)
+pub fn MediaRange::equal(Self, Self) -> Bool
 pub fn MediaRange::media_type(Self) -> String
 pub fn MediaRange::parameters(Self) -> Array[(String, String)]
 pub fn MediaRange::qvalue(Self) -> QValue
 pub fn MediaRange::subtype(Self) -> String
 pub fn MediaRange::to_string(Self) -> String
-pub impl Eq for MediaRange
 
 pub(all) struct Protocol {
   name : String
   version : String?
-}
+} derive(Eq, @debug.Debug)
+pub fn Protocol::equal(Self, Self) -> Bool
 pub fn Protocol::name(Self) -> String
+pub fn Protocol::output(Self, &Logger) -> Unit
 pub fn Protocol::to_string(Self) -> String
 pub fn Protocol::version(Self) -> String?
-pub impl Eq for Protocol
 pub impl Show for Protocol
 
 pub(all) struct ProxyAuthenticate {
   challenge : AuthChallenge
-}
+} derive(Eq)
 pub fn ProxyAuthenticate::challenge(Self) -> AuthChallenge
+pub fn ProxyAuthenticate::equal(Self, Self) -> Bool
 pub fn ProxyAuthenticate::parse(String) -> Result[Self, AuthError]
 pub fn ProxyAuthenticate::to_header_value(Self) -> String
 pub fn ProxyAuthenticate::to_string(Self) -> String
-pub impl Eq for ProxyAuthenticate
 
 pub(all) struct ProxyAuthorization {
   auth : Authorization
-}
+} derive(Eq)
 pub fn ProxyAuthorization::authorization(Self) -> Authorization
+pub fn ProxyAuthorization::equal(Self, Self) -> Bool
 pub fn ProxyAuthorization::parse(String) -> Result[Self, AuthError]
 pub fn ProxyAuthorization::to_header_value(Self) -> String
 pub fn ProxyAuthorization::to_string(Self) -> String
-pub impl Eq for ProxyAuthorization
 
 pub(all) struct QValue {
   value : Int
-}
+} derive(Eq)
+pub fn QValue::equal(Self, Self) -> Bool
 pub fn QValue::parse(String) -> Result[Self, AcceptError]
 pub fn QValue::to_string(Self) -> String
 pub fn QValue::value(Self) -> Int
-pub impl Eq for QValue
 
 pub(all) struct Range {
   unit : String
   ranges : Array[RangeSpec]
-}
+} derive(Eq)
+pub fn Range::equal(Self, Self) -> Bool
 pub fn Range::first(Self) -> RangeSpec?
 pub fn Range::is_bytes(Self) -> Bool
 pub fn Range::parse(String) -> Result[Self, RangeError]
 pub fn Range::ranges(Self) -> Array[RangeSpec]
 pub fn Range::to_string(Self) -> String
 pub fn Range::unit(Self) -> String
-pub impl Eq for Range
 
 pub(all) enum RangeError {
   Empty
@@ -807,27 +857,29 @@ pub(all) enum RangeError {
   InvalidUnit
   InvalidRange
   InvalidBounds
-}
-pub impl Eq for RangeError
+} derive(Eq, @debug.Debug)
+pub fn RangeError::equal(Self, Self) -> Bool
+pub fn RangeError::output(Self, &Logger) -> Unit
+pub fn RangeError::to_string(Self) -> String
 pub impl Show for RangeError
 
 pub(all) enum RangeSpec {
   Range(UInt64, UInt64)
   FromStart(UInt64)
   Suffix(UInt64)
-}
+} derive(Eq)
+pub fn RangeSpec::equal(Self, Self) -> Bool
 pub fn RangeSpec::to_bounds(Self, UInt64) -> (UInt64, UInt64)?
 pub fn RangeSpec::to_string(Self) -> String
-pub impl Eq for RangeSpec
 
 pub(all) struct ReprDigest {
   entries : Array[(String, DigestValue)]
-}
+} derive(Eq)
 pub fn ReprDigest::entries(Self) -> Array[(String, DigestValue)]
+pub fn ReprDigest::equal(Self, Self) -> Bool
 pub fn ReprDigest::get(Self, String) -> DigestValue?
 pub fn ReprDigest::parse(String) -> Result[Self, DigestFieldsError]
 pub fn ReprDigest::to_string(Self) -> String
-pub impl Eq for ReprDigest
 
 pub(all) struct Request {
   http_method : String
@@ -835,9 +887,10 @@ pub(all) struct Request {
   version : String
   headers : Array[(String, String)]
   body : Array[Byte]
-}
+} derive(Eq, @debug.Debug)
 pub fn Request::body(Self, Array[Byte]) -> Self
 pub fn Request::content_length(Self) -> Int?
+pub fn Request::equal(Self, Self) -> Bool
 pub fn Request::get_header(Self, String) -> String?
 pub fn Request::has_header(Self, String) -> Bool
 pub fn Request::header(Self, String, String) -> Self
@@ -845,8 +898,9 @@ pub fn Request::http_method(Self) -> String
 pub fn Request::is_chunked(Self) -> Bool
 pub fn Request::is_keep_alive(Self) -> Bool
 pub fn Request::new(String, String) -> Self
+pub fn Request::output(Self, &Logger) -> Unit
+pub fn Request::to_string(Self) -> String
 pub fn Request::with_version(String, String, String) -> Self
-pub impl Eq for Request
 pub impl Show for Request
 
 pub(all) struct RequestDecoder {
@@ -859,12 +913,14 @@ pub(all) struct RequestDecoder {
   mut body_buf : Array[Byte]
   mut content_length : Int?
   limits : DecoderLimits
-}
+} derive(@debug.Debug)
 pub fn RequestDecoder::decode(Self) -> Result[Request?, HttpError]
 pub fn RequestDecoder::feed(Self, Array[Byte]) -> Result[Unit, HttpError]
 pub fn RequestDecoder::new() -> Self
+pub fn RequestDecoder::output(Self, &Logger) -> Unit
 pub fn RequestDecoder::remaining(Self) -> Array[Byte]
 pub fn RequestDecoder::reset(Self) -> Unit
+pub fn RequestDecoder::to_string(Self) -> String
 pub fn RequestDecoder::with_limits(DecoderLimits) -> Self
 pub impl Show for RequestDecoder
 
@@ -874,9 +930,10 @@ pub(all) struct Response {
   reason_phrase : String
   headers : Array[(String, String)]
   body : Array[Byte]
-}
+} derive(Eq, @debug.Debug)
 pub fn Response::body(Self, Array[Byte]) -> Self
 pub fn Response::content_length(Self) -> Int?
+pub fn Response::equal(Self, Self) -> Bool
 pub fn Response::get_header(Self, String) -> String?
 pub fn Response::has_header(Self, String) -> Bool
 pub fn Response::header(Self, String, String) -> Self
@@ -887,8 +944,9 @@ pub fn Response::is_redirect(Self) -> Bool
 pub fn Response::is_server_error(Self) -> Bool
 pub fn Response::is_success(Self) -> Bool
 pub fn Response::new(Int, String) -> Self
+pub fn Response::output(Self, &Logger) -> Unit
+pub fn Response::to_string(Self) -> String
 pub fn Response::with_version(String, Int, String) -> Self
-pub impl Eq for Response
 pub impl Show for Response
 
 pub(all) struct ResponseDecoder {
@@ -901,12 +959,14 @@ pub(all) struct ResponseDecoder {
   mut body_buf : Array[Byte]
   mut content_length : Int?
   limits : DecoderLimits
-}
+} derive(@debug.Debug)
 pub fn ResponseDecoder::decode(Self) -> Result[Response?, HttpError]
 pub fn ResponseDecoder::feed(Self, Array[Byte]) -> Result[Unit, HttpError]
 pub fn ResponseDecoder::new() -> Self
+pub fn ResponseDecoder::output(Self, &Logger) -> Unit
 pub fn ResponseDecoder::remaining(Self) -> Array[Byte]
 pub fn ResponseDecoder::reset(Self) -> Unit
+pub fn ResponseDecoder::to_string(Self) -> String
 pub fn ResponseDecoder::with_limits(DecoderLimits) -> Self
 pub impl Show for ResponseDecoder
 
@@ -914,9 +974,9 @@ pub(all) enum SameSite {
   Strict
   Lax
   SameSiteNone
-}
+} derive(Eq)
+pub fn SameSite::equal(Self, Self) -> Bool
 pub fn SameSite::to_string(Self) -> String
-pub impl Eq for SameSite
 
 pub(all) struct SetCookie {
   name : String
@@ -928,8 +988,9 @@ pub(all) struct SetCookie {
   secure : Bool
   http_only : Bool
   same_site : SameSite?
-}
+} derive(Eq)
 pub fn SetCookie::domain(Self) -> String?
+pub fn SetCookie::equal(Self, Self) -> Bool
 pub fn SetCookie::expires(Self) -> HttpDate?
 pub fn SetCookie::http_only(Self) -> Bool
 pub fn SetCookie::max_age(Self) -> Int?
@@ -948,33 +1009,36 @@ pub fn SetCookie::with_max_age(Self, Int) -> Self
 pub fn SetCookie::with_path(Self, String) -> Self
 pub fn SetCookie::with_same_site(Self, SameSite) -> Self
 pub fn SetCookie::with_secure(Self, Bool) -> Self
-pub impl Eq for SetCookie
 
 pub(all) struct Trailer {
   fields : Array[String]
-}
+} derive(Eq, @debug.Debug)
+pub fn Trailer::equal(Self, Self) -> Bool
 pub fn Trailer::fields(Self) -> Array[String]
+pub fn Trailer::output(Self, &Logger) -> Unit
 pub fn Trailer::parse(String) -> Result[Self, TrailerError]
 pub fn Trailer::to_string(Self) -> String
-pub impl Eq for Trailer
 pub impl Show for Trailer
 
 pub(all) enum TrailerError {
   Empty
   InvalidFormat
   InvalidFieldName
-}
-pub impl Eq for TrailerError
+} derive(Eq, @debug.Debug)
+pub fn TrailerError::equal(Self, Self) -> Bool
+pub fn TrailerError::output(Self, &Logger) -> Unit
+pub fn TrailerError::to_string(Self) -> String
 pub impl Show for TrailerError
 
 pub(all) struct Upgrade {
   protocols : Array[Protocol]
-}
+} derive(Eq, @debug.Debug)
+pub fn Upgrade::equal(Self, Self) -> Bool
 pub fn Upgrade::has_protocol(Self, String) -> Bool
+pub fn Upgrade::output(Self, &Logger) -> Unit
 pub fn Upgrade::parse(String) -> Result[Self, UpgradeError]
 pub fn Upgrade::protocols(Self) -> Array[Protocol]
 pub fn Upgrade::to_string(Self) -> String
-pub impl Eq for Upgrade
 pub impl Show for Upgrade
 
 pub(all) enum UpgradeError {
@@ -982,8 +1046,10 @@ pub(all) enum UpgradeError {
   InvalidFormat
   InvalidProtocol
   InvalidVersion
-}
-pub impl Eq for UpgradeError
+} derive(Eq, @debug.Debug)
+pub fn UpgradeError::equal(Self, Self) -> Bool
+pub fn UpgradeError::output(Self, &Logger) -> Unit
+pub fn UpgradeError::to_string(Self) -> String
 pub impl Show for UpgradeError
 
 pub(all) struct Uri {
@@ -998,21 +1064,22 @@ pub(all) struct Uri {
   query_start : Int?
   query_end : Int?
   fragment_start : Int?
-}
+} derive(Eq, @debug.Debug)
 pub fn Uri::as_str(Self) -> String
 pub fn Uri::authority(Self) -> String?
+pub fn Uri::equal(Self, Self) -> Bool
 pub fn Uri::fragment(Self) -> String?
 pub fn Uri::host(Self) -> String?
 pub fn Uri::is_absolute(Self) -> Bool
 pub fn Uri::is_relative(Self) -> Bool
 pub fn Uri::origin_form(Self) -> String
+pub fn Uri::output(Self, &Logger) -> Unit
 pub fn Uri::parse(String) -> Result[Self, UriError]
 pub fn Uri::path(Self) -> String
 pub fn Uri::port(Self) -> Int?
 pub fn Uri::query(Self) -> String?
 pub fn Uri::scheme(Self) -> String?
 pub fn Uri::to_string(Self) -> String
-pub impl Eq for Uri
 pub impl Show for Uri
 
 pub(all) enum UriError {
@@ -1023,61 +1090,65 @@ pub(all) enum UriError {
   InvalidScheme
   InvalidHost
   InvalidUtf8
-}
-pub impl Eq for UriError
+} derive(Eq, @debug.Debug)
+pub fn UriError::equal(Self, Self) -> Bool
+pub fn UriError::output(Self, &Logger) -> Unit
+pub fn UriError::to_string(Self) -> String
 pub impl Show for UriError
 
 pub(all) struct Vary {
   any : Bool
   fields : Array[String]
-}
+} derive(Eq, @debug.Debug)
+pub fn Vary::equal(Self, Self) -> Bool
 pub fn Vary::fields(Self) -> Array[String]
 pub fn Vary::is_any(Self) -> Bool
+pub fn Vary::output(Self, &Logger) -> Unit
 pub fn Vary::parse(String) -> Result[Self, VaryError]
 pub fn Vary::to_string(Self) -> String
-pub impl Eq for Vary
 pub impl Show for Vary
 
 pub(all) enum VaryError {
   Empty
   InvalidFormat
   InvalidFieldName
-}
-pub impl Eq for VaryError
+} derive(Eq, @debug.Debug)
+pub fn VaryError::equal(Self, Self) -> Bool
+pub fn VaryError::output(Self, &Logger) -> Unit
+pub fn VaryError::to_string(Self) -> String
 pub impl Show for VaryError
 
 pub(all) struct WantContentDigest {
   preferences : Array[DigestPreference]
-}
+} derive(Eq)
+pub fn WantContentDigest::equal(Self, Self) -> Bool
 pub fn WantContentDigest::get(Self, String) -> Int?
 pub fn WantContentDigest::parse(String) -> Result[Self, DigestFieldsError]
 pub fn WantContentDigest::preferences(Self) -> Array[DigestPreference]
 pub fn WantContentDigest::to_string(Self) -> String
-pub impl Eq for WantContentDigest
 
 pub(all) struct WantReprDigest {
   preferences : Array[DigestPreference]
-}
+} derive(Eq)
+pub fn WantReprDigest::equal(Self, Self) -> Bool
 pub fn WantReprDigest::get(Self, String) -> Int?
 pub fn WantReprDigest::parse(String) -> Result[Self, DigestFieldsError]
 pub fn WantReprDigest::preferences(Self) -> Array[DigestPreference]
 pub fn WantReprDigest::to_string(Self) -> String
-pub impl Eq for WantReprDigest
 
 pub(all) struct WwwAuthenticate {
   realm : String
   charset : String?
-}
+} derive(Eq)
 pub fn WwwAuthenticate::basic(String) -> Self
 pub fn WwwAuthenticate::charset(Self) -> String?
+pub fn WwwAuthenticate::equal(Self, Self) -> Bool
 pub fn WwwAuthenticate::parse(String) -> Result[Self, AuthError]
 pub fn WwwAuthenticate::realm(Self) -> String
 pub fn WwwAuthenticate::to_header_value(Self) -> String
 pub fn WwwAuthenticate::to_string(Self) -> String
 pub fn WwwAuthenticate::with_charset(Self, String) -> Self
-pub impl Eq for WwwAuthenticate
 
 // Type aliases
 
 // Traits
-

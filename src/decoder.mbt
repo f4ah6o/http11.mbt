@@ -14,7 +14,7 @@ pub(all) enum DecodeState {
   Headers
   Body(Int)
   Complete
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Sans I/O HTTP request decoder
@@ -28,7 +28,7 @@ pub(all) struct RequestDecoder {
   mut body_buf : Array[Byte]
   mut content_length : Int?
   limits : DecoderLimits
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub fn RequestDecoder::new() -> RequestDecoder {
@@ -229,7 +229,7 @@ pub(all) struct ResponseDecoder {
   mut body_buf : Array[Byte]
   mut content_length : Int?
   limits : DecoderLimits
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub fn ResponseDecoder::new() -> ResponseDecoder {
@@ -544,8 +544,8 @@ fn parse_header_line(line : String) -> Result[(String, String), HttpError] {
   let colon_idx = decoder_string_index_of(line, ":")
   match colon_idx {
     Some(idx) => {
-      let name = (try! line[0:idx]).to_string()
-      let value = (try! line[idx + 1:line.length()]).to_string()
+      let name = line[0:idx].to_owned()
+      let value = line[idx + 1:line.length()].to_owned()
       let trimmed = trim_whitespace(value)
       if name.length() == 0 {
         Err(InvalidHeaderValue)
@@ -578,7 +578,7 @@ fn trim_whitespace(s : String) -> String {
       break
     }
   }
-  (try! s[start:end]).to_string()
+  s[start:end].to_owned()
 }
 
 ///|
@@ -694,13 +694,13 @@ fn split_to_array(s : String, sep : String) -> Array[String] {
       j = j + 1
     }
     if is_match {
-      result.push((try! s[start:idx]).to_string())
+      result.push(s[start:idx].to_owned())
       start = idx + sep_len
       idx = start
     } else {
       idx = idx + 1
     }
   }
-  result.push((try! s[start:s.length()]).to_string())
+  result.push(s[start:s.length()].to_owned())
   result
 }

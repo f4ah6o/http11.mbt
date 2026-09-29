@@ -22,7 +22,7 @@ pub fn AcceptEncoding::parse(
           new_items.push(items[j])
           j = j + 1
         }
-        new_items.push({ coding: value, q })
+        new_items.push({ coding: value, q, })
         items = new_items
         idx = idx + 1
       }

@@ -11,7 +11,7 @@ pub(all) enum DateError {
   InvalidMinute
   InvalidSecond
   NotGmt
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Day of week
@@ -23,7 +23,7 @@ pub(all) enum DayOfWeek {
   Thursday
   Friday
   Saturday
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// HTTP-date structure (RFC 9110 Section 5.6.7)
@@ -40,7 +40,7 @@ pub(all) struct HttpDate {
   hour : Int
   minute : Int
   second : Int
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn HttpDate::new(
@@ -70,7 +70,7 @@ pub fn HttpDate::new(
   if second > 60 {
     return Err(InvalidSecond)
   }
-  Ok({ day_of_week, day, month, year, hour, minute, second })
+  Ok({ day_of_week, day, month, year, hour, minute, second, })
 }
 
 ///|

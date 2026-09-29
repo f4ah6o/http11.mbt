@@ -22,7 +22,7 @@ pub fn AcceptCharset::parse(
           new_items.push(items[j])
           j = j + 1
         }
-        new_items.push({ charset: value, q })
+        new_items.push({ charset: value, q, })
         items = new_items
         idx = idx + 1
       }

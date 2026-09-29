@@ -1,14 +1,14 @@
 ///|
 fn init {
   // Test CacheControl::parse with max-age
-  let cc1 = CacheControl::parse("max-age=3600").unwrap()
+  let cc1 = @http11.CacheControl::parse("max-age=3600").unwrap()
   match cc1.max_age() {
     Some(3600) => println("cache.mbt: Parse max-age OK")
     _ => println("cache.mbt: Parse max-age FAILED")
   }
 
   // Test CacheControl::parse with multiple directives
-  let cc2 = CacheControl::parse("max-age=3600, public, no-transform").unwrap()
+  let cc2 = @http11.CacheControl::parse("max-age=3600, public, no-transform").unwrap()
   match cc2.max_age() {
     Some(3600) =>
       if cc2.is_public() && cc2.is_no_transform() {
@@ -20,7 +20,7 @@ fn init {
   }
 
   // Test CacheControl::parse with no-store
-  let cc3 = CacheControl::parse("no-store").unwrap()
+  let cc3 = @http11.CacheControl::parse("no-store").unwrap()
   if cc3.is_no_store() && !cc3.is_cacheable() {
     println("cache.mbt: Parse no-store OK")
   } else {
@@ -28,7 +28,7 @@ fn init {
   }
 
   // Test CacheControl::parse with private
-  let cc4 = CacheControl::parse("private, max-age=600").unwrap()
+  let cc4 = @http11.CacheControl::parse("private, max-age=600").unwrap()
   match cc4.max_age() {
     Some(600) =>
       if cc4.is_private() {
@@ -40,7 +40,7 @@ fn init {
   }
 
   // Test CacheControl::parse with s-maxage
-  let cc5 = CacheControl::parse("public, s-maxage=86400").unwrap()
+  let cc5 = @http11.CacheControl::parse("public, s-maxage=86400").unwrap()
   match cc5.s_maxage() {
     Some(86400) =>
       if cc5.is_public() {
@@ -52,7 +52,7 @@ fn init {
   }
 
   // Test CacheControl::parse with must-revalidate
-  let cc6 = CacheControl::parse("max-age=0, must-revalidate").unwrap()
+  let cc6 = @http11.CacheControl::parse("max-age=0, must-revalidate").unwrap()
   match cc6.max_age() {
     Some(0) =>
       if cc6.is_must_revalidate() {
@@ -64,7 +64,7 @@ fn init {
   }
 
   // Test CacheControl::parse with immutable
-  let cc7 = CacheControl::parse("max-age=31536000, immutable").unwrap()
+  let cc7 = @http11.CacheControl::parse("max-age=31536000, immutable").unwrap()
   match cc7.max_age() {
     Some(31536000) =>
       if cc7.is_immutable() {
@@ -76,7 +76,7 @@ fn init {
   }
 
   // Test CacheControl::parse with empty string
-  let cc8 = CacheControl::parse("").unwrap()
+  let cc8 = @http11.CacheControl::parse("").unwrap()
   match cc8.max_age() {
     None =>
       if !cc8.is_public() {
@@ -88,7 +88,7 @@ fn init {
   }
 
   // Test CacheControl builder
-  let cc9 = CacheControl::new()
+  let cc9 = @http11.CacheControl::new()
     .with_max_age(3600)
     .with_public()
     .with_no_transform()
@@ -103,7 +103,7 @@ fn init {
   }
 
   // Test CacheControl::to_string
-  let cc10 = CacheControl::new().with_max_age(3600).with_public()
+  let cc10 = @http11.CacheControl::new().with_max_age(3600).with_public()
   let str10 = cc10.to_string()
   if cc_string_contains(str10, "max-age=3600") &&
     cc_string_contains(str10, "public") {
@@ -113,13 +113,13 @@ fn init {
   }
 
   // Test CacheControl::is_cacheable
-  let cc11 = CacheControl::new().with_max_age(3600)
+  let cc11 = @http11.CacheControl::new().with_max_age(3600)
   if cc11.is_cacheable() {
     println("cache.mbt: is_cacheable (true) OK")
   } else {
     println("cache.mbt: is_cacheable (true) FAILED")
   }
-  let cc12 = CacheControl::new().with_no_store()
+  let cc12 = @http11.CacheControl::new().with_no_store()
   if !cc12.is_cacheable() {
     println("cache.mbt: is_cacheable (false) OK")
   } else {
@@ -127,7 +127,7 @@ fn init {
   }
 
   // Test Age::parse
-  let age1 = Age::parse("120").unwrap()
+  let age1 = @http11.Age::parse("120").unwrap()
   if age1.seconds() == 120 {
     println("cache.mbt: Age parse OK")
   } else {
@@ -135,7 +135,7 @@ fn init {
   }
 
   // Test Age::parse with zero
-  let age2 = Age::parse("0").unwrap()
+  let age2 = @http11.Age::parse("0").unwrap()
   if age2.seconds() == 0 {
     println("cache.mbt: Age parse zero OK")
   } else {
@@ -143,21 +143,21 @@ fn init {
   }
 
   // Test Age::parse with empty string
-  let age3 = Age::parse("")
+  let age3 = @http11.Age::parse("")
   match age3 {
     Ok(_) => println("cache.mbt: Age parse empty FAILED")
     Err(_) => println("cache.mbt: Age parse empty OK")
   }
 
   // Test Age::parse with invalid input
-  let age4 = Age::parse("abc")
+  let age4 = @http11.Age::parse("abc")
   match age4 {
     Ok(_) => println("cache.mbt: Age parse invalid FAILED")
     Err(_) => println("cache.mbt: Age parse invalid OK")
   }
 
   // Test Age::to_string
-  let age5 = Age::new(120)
+  let age5 = @http11.Age::new(120)
   if age5.to_string() == "120" {
     println("cache.mbt: Age to_string OK")
   } else {
@@ -165,7 +165,7 @@ fn init {
   }
 
   // Test Expires::parse
-  let expires1 = Expires::parse("Sun, 06 Nov 1994 08:49:37 GMT").unwrap()
+  let expires1 = @http11.Expires::parse("Sun, 06 Nov 1994 08:49:37 GMT").unwrap()
   let date1 = expires1.date()
   if date1.year() == 1994 && date1.month() == 11 && date1.day() == 6 {
     println("cache.mbt: Expires parse OK")
@@ -174,21 +174,21 @@ fn init {
   }
 
   // Test Expires::parse with invalid date
-  let expires2 = Expires::parse("invalid date")
+  let expires2 = @http11.Expires::parse("invalid date")
   match expires2 {
     Ok(_) => println("cache.mbt: Expires parse invalid FAILED")
     Err(_) => println("cache.mbt: Expires parse invalid OK")
   }
 
   // Test Expires::parse with empty string
-  let expires3 = Expires::parse("")
+  let expires3 = @http11.Expires::parse("")
   match expires3 {
     Ok(_) => println("cache.mbt: Expires parse empty FAILED")
     Err(_) => println("cache.mbt: Expires parse empty OK")
   }
 
   // Test Expires::to_string
-  let expires4 = Expires::parse("Sun, 06 Nov 1994 08:49:37 GMT").unwrap()
+  let expires4 = @http11.Expires::parse("Sun, 06 Nov 1994 08:49:37 GMT").unwrap()
   let str4 = expires4.to_string()
   if cc_string_contains(str4, "1994") && cc_string_contains(str4, "Nov") {
     println("cache.mbt: Expires to_string OK")
@@ -197,12 +197,12 @@ fn init {
   }
 
   // Test CacheControl roundtrip
-  let original = CacheControl::new()
+  let original = @http11.CacheControl::new()
     .with_max_age(3600)
     .with_public()
     .with_must_revalidate()
   let header = original.to_string()
-  let reparsed = CacheControl::parse(header).unwrap()
+  let reparsed = @http11.CacheControl::parse(header).unwrap()
   match reparsed.max_age() {
     Some(3600) =>
       if reparsed.is_public() && reparsed.is_must_revalidate() {
@@ -214,9 +214,9 @@ fn init {
   }
 
   // Test Age roundtrip
-  let age_orig = Age::new(3600)
+  let age_orig = @http11.Age::new(3600)
   let age_header = age_orig.to_string()
-  let age_reparsed = Age::parse(age_header).unwrap()
+  let age_reparsed = @http11.Age::parse(age_header).unwrap()
   if age_orig.seconds() == age_reparsed.seconds() {
     println("cache.mbt: Age roundtrip OK")
   } else {
@@ -224,9 +224,9 @@ fn init {
   }
 
   // Test Expires roundtrip
-  let exp_orig = Expires::parse("Sun, 06 Nov 1994 08:49:37 GMT").unwrap()
+  let exp_orig = @http11.Expires::parse("Sun, 06 Nov 1994 08:49:37 GMT").unwrap()
   let exp_header = exp_orig.to_string()
-  let exp_reparsed = Expires::parse(exp_header).unwrap()
+  let exp_reparsed = @http11.Expires::parse(exp_header).unwrap()
   let orig_date = exp_orig.date()
   let rep_date = exp_reparsed.date()
   if orig_date.year() == rep_date.year() &&
@@ -238,7 +238,7 @@ fn init {
   }
 
   // Test CacheControl with all delta-seconds directives
-  let cc_all = CacheControl::parse(
+  let cc_all = @http11.CacheControl::parse(
     "max-age=100, s-maxage=200, max-stale=300, min-fresh=400, stale-while-revalidate=500, stale-if-error=600",
   ).unwrap()
   let test_all = match cc_all.max_age() {
@@ -272,7 +272,7 @@ fn init {
   }
 
   // Test CacheControl with all boolean flags
-  let cc_flags = CacheControl::parse(
+  let cc_flags = @http11.CacheControl::parse(
     "no-cache, no-store, no-transform, only-if-cached, must-revalidate, proxy-revalidate, must-understand, public, private, immutable",
   ).unwrap()
   let test_flags = cc_flags.is_no_cache() &&

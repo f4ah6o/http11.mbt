@@ -10,7 +10,7 @@ pub fn DigestPreference::new(
   algorithm : String,
   weight : Int,
 ) -> DigestPreference {
-  { algorithm, weight }
+  { algorithm, weight, }
 }
 
 ///|

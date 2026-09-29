@@ -1,7 +1,7 @@
 ///|
 fn init {
   // Test simple 100-continue
-  match Expect::parse("100-continue") {
+  match @http11.Expect::parse("100-continue") {
     Ok(exp) =>
       if exp.has_100_continue() && exp.items().length() == 1 {
         println("expect.mbt: simple 100-continue OK")
@@ -12,7 +12,7 @@ fn init {
   }
 
   // Test extension
-  match Expect::parse("foo=bar, 100-continue") {
+  match @http11.Expect::parse("foo=bar, 100-continue") {
     Ok(exp) =>
       if exp.items().length() == 2 {
         let first = exp.items()[0]
@@ -28,7 +28,7 @@ fn init {
   }
 
   // Test quoted value
-  match Expect::parse("token=\"value\"") {
+  match @http11.Expect::parse("token=\"value\"") {
     Ok(exp) => {
       let first = exp.items()[0]
       if first.value() == Some("value") {
@@ -41,25 +41,25 @@ fn init {
   }
 
   // Test empty input
-  match Expect::parse("") {
+  match @http11.Expect::parse("") {
     Ok(_) => println("expect.mbt: empty input FAILED")
     Err(_) => println("expect.mbt: empty input OK")
   }
 
   // Test invalid token
-  match Expect::parse("bad value") {
+  match @http11.Expect::parse("bad value") {
     Ok(_) => println("expect.mbt: invalid token FAILED")
     Err(_) => println("expect.mbt: invalid token OK")
   }
 
   // Test token=
-  match Expect::parse("token=") {
+  match @http11.Expect::parse("token=") {
     Ok(_) => println("expect.mbt: empty value FAILED")
     Err(_) => println("expect.mbt: empty value OK")
   }
 
   // Test to_string
-  match Expect::parse("foo=bar, 100-continue") {
+  match @http11.Expect::parse("foo=bar, 100-continue") {
     Ok(exp) =>
       if exp.to_string() == "foo=bar, 100-continue" {
         println("expect.mbt: to_string OK")
@@ -70,7 +70,7 @@ fn init {
   }
 
   // Test empty value round-trip
-  match Expect::parse("token=\"\"") {
+  match @http11.Expect::parse("token=\"\"") {
     Ok(exp) => {
       let first = exp.items()[0]
       if first.value() == Some("") {

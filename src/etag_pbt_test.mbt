@@ -12,11 +12,11 @@ test "prop_entity_tag_strong_roundtrip" {
   let mut passed = 0
   while idx < test_cases.length() {
     let tag = test_cases[idx]
-    let etag = EntityTag::strong(tag)
+    let etag = @http11.EntityTag::strong(tag)
     match etag {
       Ok(e) => {
         let str = e.to_string()
-        let reparsed = EntityTag::parse(str)
+        let reparsed = @http11.EntityTag::parse(str)
         match reparsed {
           Ok(r) => if !r.is_weak() && r.tag() == tag { passed = passed + 1 }
           Err(_) => ()
@@ -38,11 +38,11 @@ test "prop_entity_tag_weak_roundtrip" {
   let mut passed = 0
   while idx < test_cases.length() {
     let tag = test_cases[idx]
-    let etag = EntityTag::weak(tag)
+    let etag = @http11.EntityTag::weak(tag)
     match etag {
       Ok(e) => {
         let str = e.to_string()
-        let reparsed = EntityTag::parse(str)
+        let reparsed = @http11.EntityTag::parse(str)
         match reparsed {
           Ok(r) => if r.is_weak() && r.tag() == tag { passed = passed + 1 }
           Err(_) => ()
@@ -59,9 +59,9 @@ test "prop_entity_tag_weak_roundtrip" {
 
 ///|
 test "prop_entity_tag_strong_compare" {
-  let tag1 = EntityTag::strong("abc123")
-  let tag2 = EntityTag::strong("abc123")
-  let tag3 = EntityTag::strong("xyz789")
+  let tag1 = @http11.EntityTag::strong("abc123")
+  let tag2 = @http11.EntityTag::strong("abc123")
+  let tag3 = @http11.EntityTag::strong("xyz789")
   match (tag1, tag2, tag3) {
     (Ok(t1), Ok(t2), Ok(t3)) => {
       // Same tags should match
@@ -77,9 +77,9 @@ test "prop_entity_tag_strong_compare" {
 
 ///|
 test "prop_entity_tag_weak_compare" {
-  let tag1 = EntityTag::strong("abc123")
-  let tag2 = EntityTag::weak("abc123")
-  let tag3 = EntityTag::weak("xyz789")
+  let tag1 = @http11.EntityTag::strong("abc123")
+  let tag2 = @http11.EntityTag::weak("abc123")
+  let tag3 = @http11.EntityTag::weak("xyz789")
   match (tag1, tag2, tag3) {
     (Ok(t1), Ok(t2), Ok(t3)) => {
       // Same tag, different strength should match for weak compare
@@ -95,8 +95,8 @@ test "prop_entity_tag_weak_compare" {
 
 ///|
 test "prop_entity_tag_to_string_format" {
-  let strong = EntityTag::strong("abc123")
-  let weak = EntityTag::weak("abc123")
+  let strong = @http11.EntityTag::strong("abc123")
+  let weak = @http11.EntityTag::weak("abc123")
   match (strong, weak) {
     (Ok(s), Ok(w)) => {
       let s_str = s.to_string()
@@ -119,7 +119,7 @@ test "prop_etag_list_parse" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = parse_etag_list(input)
+    let parsed = @http11.parse_etag_list(input)
     match parsed {
       Ok(_) => passed = passed + 1
       Err(_) => ()
@@ -133,8 +133,8 @@ test "prop_etag_list_parse" {
 
 ///|
 test "prop_etag_list_is_any" {
-  let any_list = parse_etag_list("*")
-  let tags_list = parse_etag_list("\"abc123\"")
+  let any_list = @http11.parse_etag_list("*")
+  let tags_list = @http11.parse_etag_list("\"abc123\"")
   match (any_list, tags_list) {
     (Ok(any), Ok(tags)) => {
       assert_true(any.is_any())
@@ -157,7 +157,7 @@ test "prop_entity_tag_invalid_inputs_rejected" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = EntityTag::parse(input)
+    let parsed = @http11.EntityTag::parse(input)
     match parsed {
       Err(_) => passed = passed + 1
       Ok(_) => ()

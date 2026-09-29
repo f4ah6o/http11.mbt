@@ -5,7 +5,7 @@ pub(all) struct DecoderLimits {
   max_headers_count : Int
   max_header_line_size : Int
   max_body_size : Int
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn DecoderLimits::default() -> DecoderLimits {

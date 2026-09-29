@@ -3,7 +3,7 @@
 pub(all) enum ContentLocationError {
   Empty
   InvalidUri
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Content-Location header (RFC 9110 Section 8.6)

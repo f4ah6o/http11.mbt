@@ -5,14 +5,14 @@ pub(all) enum UpgradeError {
   InvalidFormat
   InvalidProtocol
   InvalidVersion
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Upgrade protocol
 pub(all) struct Protocol {
   name : String
   version : String?
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn Protocol::name(self : Protocol) -> String {
@@ -36,7 +36,7 @@ pub fn Protocol::to_string(self : Protocol) -> String {
 /// Upgrade header (RFC 9110 Section 7.8)
 pub(all) struct Upgrade {
   protocols : Array[Protocol]
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn Upgrade::parse(input : String) -> Result[Upgrade, UpgradeError] {
@@ -127,7 +127,7 @@ fn upgrade_parse_protocol(input : String) -> Result[Protocol, UpgradeError] {
       if !upgrade_is_valid_token(input) {
         return Err(InvalidProtocol)
       }
-      Ok({ name: upgrade_to_lower_case(input), version: None })
+      Ok({ name: upgrade_to_lower_case(input), version: None, })
     }
   }
 }

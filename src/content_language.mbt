@@ -4,7 +4,7 @@ pub(all) enum ContentLanguageError {
   Empty
   InvalidFormat
   InvalidLanguageTag
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Content-Language header (RFC 9110 Section 8.5)

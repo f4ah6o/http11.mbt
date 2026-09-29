@@ -29,7 +29,7 @@ pub(all) struct DigestEntry {
 
 ///|
 pub fn DigestEntry::new(algorithm : String, value : DigestValue) -> DigestEntry {
-  { algorithm, value }
+  { algorithm, value, }
 }
 
 ///|

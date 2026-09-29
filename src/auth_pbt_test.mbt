@@ -17,9 +17,9 @@ test "prop_basic_auth_roundtrip" {
   let mut passed = 0
   while idx < test_cases.length() {
     let (username, password) = test_cases[idx]
-    let auth = BasicAuth::new(username, password)
+    let auth = @http11.BasicAuth::new(username, password)
     let header = auth.to_header_value()
-    let reparsed = BasicAuth::parse(header)
+    let reparsed = @http11.BasicAuth::parse(header)
     match reparsed {
       Ok(parsed) =>
         if parsed.username() == username && parsed.password() == password {
@@ -44,7 +44,7 @@ test "prop_basic_auth_preserves_credentials" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = BasicAuth::parse(input)
+    let parsed = @http11.BasicAuth::parse(input)
     match parsed {
       Ok(auth) => {
         // Should successfully parse
@@ -71,7 +71,7 @@ test "prop_basic_auth_invalid_input" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = BasicAuth::parse(input)
+    let parsed = @http11.BasicAuth::parse(input)
     match parsed {
       Err(_) => passed = passed + 1 // Should fail
       Ok(_) => ()
@@ -92,7 +92,7 @@ test "prop_www_authenticate_roundtrip" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = WwwAuthenticate::parse(input)
+    let parsed = @http11.WwwAuthenticate::parse(input)
     match parsed {
       Ok(auth) => {
         let str = auth.to_string()

@@ -1,7 +1,7 @@
 ///|
 fn init {
   // Test parse inline
-  let cd1 = ContentDisposition::parse("inline").unwrap()
+  let cd1 = @http11.ContentDisposition::parse("inline").unwrap()
   if cd1.disposition_type() == Inline && cd1.is_inline() {
     println("content_disposition.mbt: Parse inline OK")
   } else {
@@ -9,7 +9,7 @@ fn init {
   }
 
   // Test parse attachment
-  let cd2 = ContentDisposition::parse("attachment").unwrap()
+  let cd2 = @http11.ContentDisposition::parse("attachment").unwrap()
   if cd2.disposition_type() == Attachment && cd2.is_attachment() {
     println("content_disposition.mbt: Parse attachment OK")
   } else {
@@ -17,7 +17,9 @@ fn init {
   }
 
   // Test parse attachment with filename
-  let cd3 = ContentDisposition::parse("attachment; filename=\"example.txt\"").unwrap()
+  let cd3 = @http11.ContentDisposition::parse(
+    "attachment; filename=\"example.txt\"",
+  ).unwrap()
   if cd3.is_attachment() && cd3.filename().unwrap() == "example.txt" {
     println("content_disposition.mbt: Parse with filename OK")
   } else {
@@ -25,7 +27,9 @@ fn init {
   }
 
   // Test parse filename without quotes
-  let cd4 = ContentDisposition::parse("attachment; filename=example.txt").unwrap()
+  let cd4 = @http11.ContentDisposition::parse(
+    "attachment; filename=example.txt",
+  ).unwrap()
   if cd4.filename().unwrap() == "example.txt" {
     println("content_disposition.mbt: Filename without quotes OK")
   } else {
@@ -33,7 +37,7 @@ fn init {
   }
 
   // Test parse filename with escape
-  let cd5 = ContentDisposition::parse(
+  let cd5 = @http11.ContentDisposition::parse(
     "attachment; filename=\"file\\\"name.txt\"",
   ).unwrap()
   if cd5.filename().unwrap() == "file\"name.txt" {
@@ -43,7 +47,7 @@ fn init {
   }
 
   // Test parse form-data
-  let cd6 = ContentDisposition::parse("form-data; name=\"field1\"").unwrap()
+  let cd6 = @http11.ContentDisposition::parse("form-data; name=\"field1\"").unwrap()
   if cd6.is_form_data() && cd6.name().unwrap() == "field1" {
     println("content_disposition.mbt: Parse form-data OK")
   } else {
@@ -51,7 +55,7 @@ fn init {
   }
 
   // Test parse form-data with filename
-  let cd7 = ContentDisposition::parse(
+  let cd7 = @http11.ContentDisposition::parse(
     "form-data; name=\"file\"; filename=\"image.png\"",
   ).unwrap()
   if cd7.is_form_data() &&
@@ -63,7 +67,9 @@ fn init {
   }
 
   // Test case insensitive
-  let cd8 = ContentDisposition::parse("ATTACHMENT; FILENAME=\"test.txt\"").unwrap()
+  let cd8 = @http11.ContentDisposition::parse(
+    "ATTACHMENT; FILENAME=\"test.txt\"",
+  ).unwrap()
   if cd8.is_attachment() && cd8.filename().unwrap() == "test.txt" {
     println("content_disposition.mbt: Case insensitive OK")
   } else {
@@ -71,21 +77,23 @@ fn init {
   }
 
   // Test empty input
-  let cd9 = ContentDisposition::parse("")
+  let cd9 = @http11.ContentDisposition::parse("")
   match cd9 {
     Ok(_) => println("content_disposition.mbt: Empty input FAILED")
     Err(_) => println("content_disposition.mbt: Empty input OK")
   }
 
   // Test invalid type
-  let cd10 = ContentDisposition::parse("unknown")
+  let cd10 = @http11.ContentDisposition::parse("unknown")
   match cd10 {
     Ok(_) => println("content_disposition.mbt: Invalid type FAILED")
     Err(_) => println("content_disposition.mbt: Invalid type OK")
   }
 
   // Test to_string
-  let cd11 = ContentDisposition::new(Attachment).with_filename("test.txt")
+  let cd11 = @http11.ContentDisposition::new(Attachment).with_filename(
+    "test.txt",
+  )
   if cd11.to_string() == "attachment; filename=\"test.txt\"" {
     println("content_disposition.mbt: to_string OK")
   } else {
@@ -93,7 +101,9 @@ fn init {
   }
 
   // Test builder
-  let cd12 = ContentDisposition::new(Attachment).with_filename("example.txt")
+  let cd12 = @http11.ContentDisposition::new(Attachment).with_filename(
+    "example.txt",
+  )
   if cd12.is_attachment() && cd12.filename().unwrap() == "example.txt" {
     println("content_disposition.mbt: Builder OK")
   } else {

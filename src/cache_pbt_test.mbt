@@ -14,11 +14,11 @@ test "prop_cache_control_roundtrip" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = CacheControl::parse(input)
+    let parsed = @http11.CacheControl::parse(input)
     match parsed {
       Ok(cc) => {
         let str = cc.to_string()
-        let reparsed = CacheControl::parse(str)
+        let reparsed = @http11.CacheControl::parse(str)
         match reparsed {
           Ok(_) => passed = passed + 1
           Err(_) => ()
@@ -40,10 +40,10 @@ test "prop_cache_control_max_age_preserved" {
   let mut passed = 0
   while idx < test_cases.length() {
     let max_age = test_cases[idx]
-    let cc = CacheControl::new()
+    let cc = @http11.CacheControl::new()
     let cc_with_max_age = cc.with_max_age(max_age)
     let str = cc_with_max_age.to_string()
-    let reparsed = CacheControl::parse(str)
+    let reparsed = @http11.CacheControl::parse(str)
     match reparsed {
       Ok(parsed) =>
         match parsed.max_age() {
@@ -66,9 +66,9 @@ test "prop_age_roundtrip" {
   let mut passed = 0
   while idx < test_cases.length() {
     let seconds = test_cases[idx]
-    let age = Age::new(seconds)
+    let age = @http11.Age::new(seconds)
     let str = age.to_string()
-    let reparsed = Age::parse(str)
+    let reparsed = @http11.Age::parse(str)
     match reparsed {
       Ok(parsed) => if parsed.seconds() == seconds { passed = passed + 1 }
       Err(_) => ()
@@ -89,11 +89,11 @@ test "prop_cache_control_flags_preserved" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = CacheControl::parse(input)
+    let parsed = @http11.CacheControl::parse(input)
     match parsed {
       Ok(cc) => {
         let str = cc.to_string()
-        let reparsed = CacheControl::parse(str)
+        let reparsed = @http11.CacheControl::parse(str)
         match reparsed {
           Ok(_) => passed = passed + 1
           Err(_) => ()
@@ -110,7 +110,7 @@ test "prop_cache_control_flags_preserved" {
 
 ///|
 test "prop_cache_control_empty" {
-  let parsed = CacheControl::parse("")
+  let parsed = @http11.CacheControl::parse("")
   match parsed {
     Ok(cc) =>
       // Empty input should return default CacheControl

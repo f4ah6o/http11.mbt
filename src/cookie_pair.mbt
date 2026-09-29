@@ -16,7 +16,7 @@ pub fn Cookie::new(
   if !ck_is_valid_cookie_value(value) {
     return Err(InvalidValue)
   }
-  Ok({ name, value })
+  Ok({ name, value, })
 }
 
 ///|
@@ -40,7 +40,7 @@ pub fn Cookie::parse(input : String) -> Result[Array[Cookie], CookieError] {
             new_cookies.push(cookies[j])
             j = j + 1
           }
-          new_cookies.push({ name: n, value: v })
+          new_cookies.push({ name: n, value: v, })
           cookies = new_cookies
         }
         Err(e) => return Err(e)

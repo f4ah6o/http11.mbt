@@ -18,4 +18,4 @@ pub(all) enum AuthError {
   InvalidParameter
   MissingParameter
   InvalidToken
-} derive(Show, Eq)
+} derive(Debug, Eq)

@@ -5,7 +5,7 @@ pub(all) enum ContentTypeError {
   InvalidMediaType
   InvalidParameter
   UnterminatedQuote
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Content-Type header (RFC 9110 Section 8.3)
@@ -64,7 +64,11 @@ pub fn ContentType::with_parameter(
     idx = idx + 1
   }
   new_params.push((ct_to_lower_case(name), value))
-  { media_type: self.media_type, subtype: self.subtype, parameters: new_params }
+  {
+    media_type: self.media_type,
+    subtype: self.subtype,
+    parameters: new_params,
+  }
 }
 
 ///|

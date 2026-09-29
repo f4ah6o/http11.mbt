@@ -12,4 +12,4 @@ pub(all) enum DigestFieldsError {
   InvalidByteSequence
   InvalidBase64
   InvalidPreference
-} derive(Show, Eq)
+} derive(Debug, Eq)

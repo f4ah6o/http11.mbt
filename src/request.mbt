@@ -6,11 +6,11 @@ pub(all) struct Request {
   version : String
   headers : Array[(String, String)]
   body : Array[Byte]
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn Request::new(http_method : String, uri : String) -> Request {
-  { http_method, uri, version: "HTTP/1.1", headers: [], body: [] }
+  { http_method, uri, version: "HTTP/1.1", headers: [], body: [], }
 }
 
 ///|
@@ -19,7 +19,7 @@ pub fn Request::with_version(
   uri : String,
   version : String,
 ) -> Request {
-  { http_method, uri, version, headers: [], body: [] }
+  { http_method, uri, version, headers: [], body: [], }
 }
 
 ///|
@@ -33,7 +33,7 @@ pub fn Request::header(
     new_headers.push(h)
   }
   new_headers.push((name, value))
-  { ..self, headers: new_headers }
+  { ..self, headers: new_headers, }
 }
 
 ///|

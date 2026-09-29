@@ -8,7 +8,7 @@ pub(all) enum UriError {
   InvalidScheme
   InvalidHost
   InvalidUtf8
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Parsed URI (RFC 3986 Section 3)
@@ -30,7 +30,7 @@ pub(all) struct Uri {
   query_start : Int?
   query_end : Int?
   fragment_start : Int?
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn Uri::parse(input : String) -> Result[Uri, UriError] {

@@ -16,7 +16,7 @@ test "prop_uri_parse_components" {
   let mut passed = 0
   while idx < test_cases.length() {
     let (input, expected_scheme, expected_host) = test_cases[idx]
-    let parsed = Uri::parse(input)
+    let parsed = @http11.Uri::parse(input)
     match parsed {
       Ok(uri) => {
         let scheme_matches = match (expected_scheme, uri.scheme()) {
@@ -53,7 +53,7 @@ test "prop_uri_port_extraction" {
   let mut passed = 0
   while idx < test_cases.length() {
     let (input, expected_port) = test_cases[idx]
-    let parsed = Uri::parse(input)
+    let parsed = @http11.Uri::parse(input)
     match parsed {
       Ok(uri) => if uri.port() == expected_port { passed = passed + 1 }
       Err(_) => ()
@@ -74,7 +74,7 @@ test "prop_uri_path_extraction" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = Uri::parse(input)
+    let parsed = @http11.Uri::parse(input)
     match parsed {
       Ok(uri) => {
         let path = uri.path()
@@ -101,7 +101,7 @@ test "prop_uri_query_extraction" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = Uri::parse(input)
+    let parsed = @http11.Uri::parse(input)
     match parsed {
       Ok(_) =>
         // Should successfully parse
@@ -124,7 +124,7 @@ test "prop_uri_fragment_extraction" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = Uri::parse(input)
+    let parsed = @http11.Uri::parse(input)
     match parsed {
       Ok(_) =>
         // Should successfully parse
@@ -140,7 +140,7 @@ test "prop_uri_fragment_extraction" {
 
 ///|
 test "prop_uri_empty_rejected" {
-  let parsed = Uri::parse("")
+  let parsed = @http11.Uri::parse("")
   match parsed {
     Err(_) => assert_true(true)
     Ok(_) => assert_true(false)
@@ -158,7 +158,7 @@ test "prop_uri_percent_encoding" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = Uri::parse(input)
+    let parsed = @http11.Uri::parse(input)
     match parsed {
       Ok(_) =>
         // Should successfully parse
@@ -174,8 +174,8 @@ test "prop_uri_percent_encoding" {
 
 ///|
 test "prop_uri_absolute_vs_relative" {
-  let absolute = Uri::parse("http://example.com/path")
-  let relative = Uri::parse("/path/to/resource")
+  let absolute = @http11.Uri::parse("http://example.com/path")
+  let relative = @http11.Uri::parse("/path/to/resource")
   match (absolute, relative) {
     (Ok(abs), Ok(rel)) => {
       // Absolute URI should have scheme

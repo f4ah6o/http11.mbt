@@ -154,7 +154,7 @@ fn df_is_token_char(ch : Char) -> Bool {
 
 ///|
 fn df_trim(s : String) -> String {
-  s.trim().to_string()
+  s.trim().to_owned()
 }
 
 ///|
@@ -164,12 +164,12 @@ fn df_split_string(s : String, sep : String) -> Array[String] {
 
 ///|
 fn df_substring(s : String, start : Int, end : Int) -> String {
-  (try! s[start:end]).to_string()
+  s[start:end].to_owned()
 }
 
 ///|
 fn df_substring_from(s : String, start : Int) -> String {
-  (try! s[start:s.length()]).to_string()
+  s[start:s.length()].to_owned()
 }
 
 ///|
@@ -253,7 +253,7 @@ fn df_base64_encode(input : Array[Byte]) -> String {
 fn df_base64_char(index : Int) -> String {
   let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
   if index >= 0 && index < 64 {
-    (try! alphabet[index:index + 1]).to_string()
+    alphabet[index:index + 1].to_owned()
   } else {
     "="
   }
@@ -262,7 +262,7 @@ fn df_base64_char(index : Int) -> String {
 ///|
 fn df_base64_decode(input : String) -> Result[Array[Byte], DigestFieldsError] {
   // Remove padding '=' from end
-  let s = input.trim().to_string()
+  let s = input.trim().to_owned()
   let mut s_len = s.length()
 
   // Remove trailing '='

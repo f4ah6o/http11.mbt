@@ -13,11 +13,11 @@ test "prop_http_date_roundtrip" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = HttpDate::parse(input)
+    let parsed = @http11.HttpDate::parse(input)
     match parsed {
       Ok(date) => {
         let str = date.to_string()
-        let reparsed = HttpDate::parse(str)
+        let reparsed = @http11.HttpDate::parse(str)
         match reparsed {
           Ok(r) =>
             // Should successfully reparse
@@ -41,10 +41,18 @@ test "prop_http_date_roundtrip" {
 
 ///|
 test "prop_http_date_new_preserves_values" {
-  let date = HttpDate::new(DayOfWeek::Monday, 15, 8, 2023, 12, 30, 45)
+  let date = @http11.HttpDate::new(
+    @http11.DayOfWeek::Monday,
+    15,
+    8,
+    2023,
+    12,
+    30,
+    45,
+  )
   match date {
     Ok(d) => {
-      assert_true(d.day_of_week() == DayOfWeek::Monday)
+      assert_true(d.day_of_week() == @http11.DayOfWeek::Monday)
       assert_true(d.day() == 15)
       assert_true(d.month() == 8)
       assert_true(d.year() == 2023)
@@ -68,7 +76,7 @@ test "prop_http_date_invalid_inputs_rejected" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = HttpDate::parse(input)
+    let parsed = @http11.HttpDate::parse(input)
     match parsed {
       Err(_) => passed = passed + 1 // Should fail
       Ok(_) => ()
@@ -82,7 +90,15 @@ test "prop_http_date_invalid_inputs_rejected" {
 
 ///|
 test "prop_http_date_to_string_valid" {
-  let date = HttpDate::new(DayOfWeek::Friday, 1, 1, 2021, 0, 0, 0)
+  let date = @http11.HttpDate::new(
+    @http11.DayOfWeek::Friday,
+    1,
+    1,
+    2021,
+    0,
+    0,
+    0,
+  )
   match date {
     Ok(d) => {
       let str = d.to_string()
@@ -100,14 +116,16 @@ test "prop_http_date_to_string_valid" {
 test "prop_http_date_edge_cases" {
   let test_cases = [
     // Boundary values
-    (DayOfWeek::Sunday, 1, 1, 1, 0, 0, 0), // Minimum
-    (DayOfWeek::Monday, 31, 12, 9999, 23, 59, 59), // Maximum
+    (@http11.DayOfWeek::Sunday, 1, 1, 1, 0, 0, 0), // Minimum
+    (@http11.DayOfWeek::Monday, 31, 12, 9999, 23, 59, 59), // Maximum
   ]
   let mut idx = 0
   let mut passed = 0
   while idx < test_cases.length() {
     let (dow, day, month, year, hour, minute, second) = test_cases[idx]
-    let date = HttpDate::new(dow, day, month, year, hour, minute, second)
+    let date = @http11.HttpDate::new(
+      dow, day, month, year, hour, minute, second,
+    )
     match date {
       Ok(_) => passed = passed + 1
       Err(_) => ()

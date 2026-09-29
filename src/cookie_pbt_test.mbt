@@ -15,11 +15,11 @@ test "prop_cookie_roundtrip" {
   let mut passed = 0
   while idx < test_cases.length() {
     let (name, value) = test_cases[idx]
-    let cookie = Cookie::new(name, value)
+    let cookie = @http11.Cookie::new(name, value)
     match cookie {
       Ok(c) => {
         let str = c.to_string()
-        let reparsed = Cookie::parse(str)
+        let reparsed = @http11.Cookie::parse(str)
         match reparsed {
           Ok(cookies) =>
             if cookies.length() > 0 {
@@ -43,7 +43,7 @@ test "prop_cookie_roundtrip" {
 ///|
 test "prop_cookie_multiple_preserved" {
   let input = "session=abc123; user_id=12345; token=xyz"
-  let parsed = Cookie::parse(input)
+  let parsed = @http11.Cookie::parse(input)
   match parsed {
     Ok(cookies) => assert_true(cookies.length() == 3)
     Err(_) => assert_true(false)
@@ -62,7 +62,7 @@ test "prop_cookie_invalid_names_rejected" {
   let mut passed = 0
   while idx < test_cases.length() {
     let name = test_cases[idx]
-    let cookie = Cookie::new(name, "value")
+    let cookie = @http11.Cookie::new(name, "value")
     match cookie {
       Err(_) => passed = passed + 1
       Ok(_) => ()
@@ -81,7 +81,7 @@ test "prop_set_cookie_roundtrip" {
   let mut passed = 0
   while idx < test_cases.length() {
     let (name, value) = test_cases[idx]
-    let cookie = SetCookie::new(name, value)
+    let cookie = @http11.SetCookie::new(name, value)
     match cookie {
       Ok(sc) => {
         let str = sc.to_string()
@@ -100,7 +100,7 @@ test "prop_set_cookie_roundtrip" {
 
 ///|
 test "prop_set_cookie_httponly_preserved" {
-  let cookie = SetCookie::new("session", "abc")
+  let cookie = @http11.SetCookie::new("session", "abc")
   match cookie {
     Ok(sc) => {
       let sc_http_only = sc.with_http_only(true)
@@ -117,9 +117,9 @@ test "prop_set_cookie_httponly_preserved" {
 ///|
 test "prop_samesite_to_string" {
   let test_cases = [
-    (SameSite::Strict, "Strict"),
-    (SameSite::Lax, "Lax"),
-    (SameSite::SameSiteNone, "None"),
+    (@http11.SameSite::Strict, "Strict"),
+    (@http11.SameSite::Lax, "Lax"),
+    (@http11.SameSite::SameSiteNone, "None"),
   ]
   let mut idx = 0
   let mut passed = 0

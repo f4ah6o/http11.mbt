@@ -1,0 +1,68 @@
+name: MoonBit CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      MOONBIT_VERSION: "0.1.20260920"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Cache MoonBit toolchain and packages
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.moon
+            .mooncakes
+          key: ${{ runner.os }}-moonbit-${{ env.MOONBIT_VERSION }}-${{ hashFiles('moon.mod') }}
+          restore-keys: |
+            ${{ runner.os }}-moonbit-${{ env.MOONBIT_VERSION }}-
+
+      - name: Install MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | MOONBIT_INSTALL_VERSION="$MOONBIT_VERSION" bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Update dependencies
+        run: moon update
+
+      - name: Check formatting
+        run: moon fmt --check
+
+      - name: Check generated interfaces
+        run: |
+          moon info
+          git diff --exit-code -- ':(glob)**/pkg.generated.mbti'
+
+      - name: Check native target
+        run: moon check --deny-warn --target native
+
+      - name: Check JavaScript target
+        run: moon check --target js
+
+      - name: Check WebAssembly GC target
+        run: moon check --target wasm-gc
+
+      - name: Run native tests
+        run: moon test --target native
+
+      - name: Run JavaScript tests
+        run: moon test --target js
+
+      - name: Run WebAssembly GC tests
+        run: moon test --target wasm-gc
+
+      - name: Build classic WebAssembly test artifact
+        run: moon test --target wasm --build-only
+
+      - name: Build native target
+        run: moon build --target native

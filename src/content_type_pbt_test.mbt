@@ -13,11 +13,11 @@ test "prop_content_type_roundtrip" {
   let mut passed = 0
   while idx < test_cases.length() {
     let input = test_cases[idx]
-    let parsed = ContentType::parse(input)
+    let parsed = @http11.ContentType::parse(input)
     match parsed {
       Ok(ct) => {
         let str = ct.to_string()
-        let reparsed = ContentType::parse(str)
+        let reparsed = @http11.ContentType::parse(str)
         match reparsed {
           Ok(r) =>
             // Should successfully reparse
@@ -47,7 +47,7 @@ test "prop_content_type_new_preserves_values" {
   let mut passed = 0
   while idx < test_cases.length() {
     let (media_type, subtype) = test_cases[idx]
-    let ct = ContentType::new(media_type, subtype)
+    let ct = @http11.ContentType::new(media_type, subtype)
     if ct.mime_type() == media_type + "/" + subtype {
       passed = passed + 1
     }
@@ -60,7 +60,7 @@ test "prop_content_type_new_preserves_values" {
 
 ///|
 test "prop_content_type_with_parameter_preserves" {
-  let ct = ContentType::new("text", "html")
+  let ct = @http11.ContentType::new("text", "html")
   let ct_with_charset = ct.with_parameter("charset", "utf-8")
   match ct_with_charset.charset() {
     Some(charset) =>
@@ -77,9 +77,9 @@ test "prop_content_type_with_parameter_preserves" {
 
 ///|
 test "prop_content_type_type_checkers" {
-  let json = ContentType::new("application", "json")
-  let text = ContentType::new("text", "html")
-  let multipart = ContentType::new("multipart", "form-data")
+  let json = @http11.ContentType::new("application", "json")
+  let text = @http11.ContentType::new("text", "html")
+  let multipart = @http11.ContentType::new("multipart", "form-data")
   assert_true(json.is_json())
   assert_true(text.is_text())
   assert_true(multipart.is_multipart())
@@ -90,7 +90,7 @@ test "prop_content_type_type_checkers" {
 
 ///|
 test "prop_content_type_boundary_parameter" {
-  let ct = ContentType::new("multipart", "form-data")
+  let ct = @http11.ContentType::new("multipart", "form-data")
   let ct_with_boundary = ct.with_parameter("boundary", "----XYZ")
   match ct_with_boundary.boundary() {
     Some(boundary) =>
@@ -107,7 +107,7 @@ test "prop_content_type_boundary_parameter" {
 
 ///|
 test "prop_content_type_charset_parameter" {
-  let ct = ContentType::new("text", "html")
+  let ct = @http11.ContentType::new("text", "html")
   let ct_with_charset = ct.with_parameter("charset", "utf-8")
   match ct_with_charset.charset() {
     Some(charset) =>
@@ -124,7 +124,7 @@ test "prop_content_type_charset_parameter" {
 
 ///|
 test "prop_content_type_to_string_valid" {
-  let ct = ContentType::new("application", "json")
+  let ct = @http11.ContentType::new("application", "json")
   let str = ct.to_string()
 
   // Should contain /
@@ -135,7 +135,7 @@ test "prop_content_type_to_string_valid" {
 
 ///|
 test "prop_content_type_empty_rejected" {
-  let parsed = ContentType::parse("")
+  let parsed = @http11.ContentType::parse("")
   match parsed {
     Err(_) => assert_true(true)
     Ok(_) => assert_true(false)

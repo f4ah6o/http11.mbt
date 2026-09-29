@@ -4,7 +4,7 @@ pub(all) enum ContentEncodingError {
   Empty
   InvalidFormat
   InvalidEncoding
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Content Coding (compression algorithm)
@@ -16,7 +16,7 @@ pub(all) enum ContentCoding {
   Br
   Zstd
   Other(String)
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn ContentCoding::to_string(self : ContentCoding) -> String {

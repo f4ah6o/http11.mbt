@@ -4,13 +4,13 @@ pub(all) enum TrailerError {
   Empty
   InvalidFormat
   InvalidFieldName
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Trailer header (RFC 9112 Section 7.1.2)
 pub(all) struct Trailer {
   fields : Array[String]
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn Trailer::parse(input : String) -> Result[Trailer, TrailerError] {
