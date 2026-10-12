@@ -1,0 +1,4 @@
+# First bounded campaign: the pure chunk-size formatter only.
+# Keep the same operators and target when comparing before/after reports.
+include = ["src/encoder_hex.mbt"]
+operators = ["comparison", "boolean", "arithmetic", "literal", "condition", "body"]
