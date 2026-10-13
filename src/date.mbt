@@ -34,23 +34,23 @@ pub(all) enum DayOfWeek {
 /// - ANSI C asctime: Sun Nov  6 08:49:37 1994 (obsolete)
 pub(all) struct HttpDate {
   day_of_week : DayOfWeek
-  day : Int
-  month : Int
-  year : Int
-  hour : Int
-  minute : Int
-  second : Int
+  day : Int32
+  month : Int32
+  year : Int32
+  hour : Int32
+  minute : Int32
+  second : Int32
 } derive(Debug, Eq)
 
 ///|
 pub fn HttpDate::new(
   day_of_week : DayOfWeek,
-  day : Int,
-  month : Int,
-  year : Int,
-  hour : Int,
-  minute : Int,
-  second : Int,
+  day : Int32,
+  month : Int32,
+  year : Int32,
+  hour : Int32,
+  minute : Int32,
+  second : Int32,
 ) -> Result[HttpDate, DateError] {
   if day < 1 || day > 31 {
     return Err(InvalidDay)
@@ -106,32 +106,32 @@ pub fn HttpDate::day_of_week(self : HttpDate) -> DayOfWeek {
 }
 
 ///|
-pub fn HttpDate::day(self : HttpDate) -> Int {
+pub fn HttpDate::day(self : HttpDate) -> Int32 {
   self.day
 }
 
 ///|
-pub fn HttpDate::month(self : HttpDate) -> Int {
+pub fn HttpDate::month(self : HttpDate) -> Int32 {
   self.month
 }
 
 ///|
-pub fn HttpDate::year(self : HttpDate) -> Int {
+pub fn HttpDate::year(self : HttpDate) -> Int32 {
   self.year
 }
 
 ///|
-pub fn HttpDate::hour(self : HttpDate) -> Int {
+pub fn HttpDate::hour(self : HttpDate) -> Int32 {
   self.hour
 }
 
 ///|
-pub fn HttpDate::minute(self : HttpDate) -> Int {
+pub fn HttpDate::minute(self : HttpDate) -> Int32 {
   self.minute
 }
 
 ///|
-pub fn HttpDate::second(self : HttpDate) -> Int {
+pub fn HttpDate::second(self : HttpDate) -> Int32 {
   self.second
 }
 
@@ -328,7 +328,7 @@ fn parse_asctime(input : String) -> Result[HttpDate, DateError] {
 }
 
 ///|
-fn parse_month(s : String) -> Int? {
+fn parse_month(s : String) -> Int32? {
   match s {
     "Jan" => Some(1)
     "Feb" => Some(2)
@@ -347,7 +347,7 @@ fn parse_month(s : String) -> Int? {
 }
 
 ///|
-fn month_name(month : Int) -> String {
+fn month_name(month : Int32) -> String {
   match month {
     1 => "Jan"
     2 => "Feb"
@@ -366,7 +366,7 @@ fn month_name(month : Int) -> String {
 }
 
 ///|
-fn parse_time(s : String) -> (Int, Int, Int)? {
+fn parse_time(s : String) -> (Int32, Int32, Int32)? {
   let parts = split_string(s, ":")
   if parts.length() != 3 {
     return None
@@ -422,7 +422,7 @@ fn trim_string(s : String) -> String {
 }
 
 ///|
-fn date_index_of(s : String, needle : String) -> Int? {
+fn date_index_of(s : String, needle : String) -> Int32? {
   if needle.length() == 0 {
     return Some(0)
   }
@@ -465,7 +465,7 @@ fn split_whitespace(s : String) -> Array[String] {
       }
       in_ws = true
     } else {
-      let ch_str = Int::unsafe_to_char(ci).to_string()
+      let ch_str = Int32::unsafe_to_char(ci).to_string()
       current = current + ch_str
       in_ws = false
     }
@@ -506,7 +506,7 @@ fn split_string(s : String, sep : String) -> Array[String] {
 }
 
 ///|
-fn date_parse_int(s : String) -> Int? {
+fn date_parse_int(s : String) -> Int32? {
   let mut result = 0
   let mut idx = 0
   let len = s.length()
@@ -527,25 +527,25 @@ fn date_parse_int(s : String) -> Int? {
 }
 
 ///|
-fn string_slice(s : String, start : Int, end : Int) -> String {
+fn string_slice(s : String, start : Int32, end : Int32) -> String {
   let mut result = ""
   let mut idx = start
   while idx < end {
     let ch = s[idx]
-    result = result + Int::unsafe_to_char(ch.to_int()).to_string()
+    result = result + Int32::unsafe_to_char(ch.to_int()).to_string()
     idx = idx + 1
   }
   result
 }
 
 ///|
-fn string_slice_from(s : String, start : Int) -> String {
+fn string_slice_from(s : String, start : Int32) -> String {
   let mut result = ""
   let mut idx = start
   let len = s.length()
   while idx < len {
     let ch = s[idx]
-    result = result + Int::unsafe_to_char(ch.to_int()).to_string()
+    result = result + Int32::unsafe_to_char(ch.to_int()).to_string()
     idx = idx + 1
   }
   result

@@ -242,7 +242,7 @@ fn acc_parse_quoted_string(
   while idx < len {
     let ch = acc_char_at(input, idx)
     if escaped {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
       escaped = false
       idx = idx + 1
     } else if ch == 92 { // \
@@ -251,7 +251,7 @@ fn acc_parse_quoted_string(
     } else if ch == 34 { // "
       return Ok((result, acc_string_slice_from(input, idx + 1)))
     } else {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
       idx = idx + 1
     }
   }
@@ -315,7 +315,7 @@ fn acc_is_valid_token(s : String) -> Bool {
 }
 
 ///|
-fn acc_is_token_char(b : Int) -> Bool {
+fn acc_is_token_char(b : Int32) -> Bool {
   b == 33 ||
   b == 35 ||
   b == 36 ||
@@ -337,7 +337,7 @@ fn acc_is_token_char(b : Int) -> Bool {
 }
 
 ///|
-fn acc_is_alnum(b : Int) -> Bool {
+fn acc_is_alnum(b : Int32) -> Bool {
   (b >= 48 && b <= 57) || // 0-9
   (b >= 65 && b <= 90) || // A-Z
   (b >= 97 && b <= 122) // a-z
@@ -366,7 +366,7 @@ fn acc_escape_quotes(s : String) -> String {
     } else if ch == 34 { // "
       result = result + "\\\""
     } else {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
     }
     idx = idx + 1
   }
@@ -394,12 +394,12 @@ fn acc_trim_trailing_zeros(s : String) -> String {
 }
 
 ///|
-fn acc_char_at(s : String, idx : Int) -> Int {
+fn acc_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 
 ///|
-fn acc_find_char(s : String, target : Int) -> Int? {
+fn acc_find_char(s : String, target : Int32) -> Int32? {
   let mut idx = 0
   while idx < s.length() {
     if acc_char_at(s, idx) == target {
@@ -411,12 +411,12 @@ fn acc_find_char(s : String, target : Int) -> Int? {
 }
 
 ///|
-fn acc_string_slice(s : String, start : Int, end : Int) -> String {
+fn acc_string_slice(s : String, start : Int32, end : Int32) -> String {
   str_string_slice(s, start, end)
 }
 
 ///|
-fn acc_string_slice_from(s : String, start : Int) -> String {
+fn acc_string_slice_from(s : String, start : Int32) -> String {
   str_string_slice_from(s, start)
 }
 
@@ -458,7 +458,7 @@ fn acc_split_string(s : String, sep : String) -> Array[String] {
 }
 
 ///|
-fn acc_split_with_quotes(input : String, delimiter : Int) -> Array[String] {
+fn acc_split_with_quotes(input : String, delimiter : Int32) -> Array[String] {
   let result : Array[String] = []
   let mut start = 0
   let mut in_quote = false
@@ -518,7 +518,7 @@ fn acc_join_strings(strs : Array[String], sep : String) -> String {
 }
 
 ///|
-fn acc_int_pow(base : Int, exp : Int) -> Int {
+fn acc_int_pow(base : Int32, exp : Int32) -> Int32 {
   let mut result = 1
   let mut idx = 0
   while idx < exp {

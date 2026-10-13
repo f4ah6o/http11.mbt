@@ -59,7 +59,7 @@ fn ck_is_valid_cookie_value(s : String) -> Bool {
 }
 
 ///|
-fn ck_is_token_char(b : Int) -> Bool {
+fn ck_is_token_char(b : Int32) -> Bool {
   b == 33 ||
   b == 35 ||
   b == 36 ||
@@ -81,7 +81,7 @@ fn ck_is_token_char(b : Int) -> Bool {
 }
 
 ///|
-fn ck_is_cookie_octet(b : Int) -> Bool {
+fn ck_is_cookie_octet(b : Int32) -> Bool {
   b == 33 ||
   (b >= 35 && b <= 43) ||
   (b >= 45 && b <= 58) ||
@@ -125,7 +125,7 @@ fn ck_split_params(input : String) -> Array[String] {
       current = ""
       idx = idx + 1
     } else {
-      current = current + Int::unsafe_to_char(ch).to_string()
+      current = current + Int32::unsafe_to_char(ch).to_string()
       idx = idx + 1
     }
   }
@@ -143,7 +143,7 @@ fn ck_split_params(input : String) -> Array[String] {
 }
 
 ///|
-fn ck_parse_i64(s : String) -> Int? {
+fn ck_parse_i64(s : String) -> Int32? {
   let mut result = 0
   let mut idx = 0
   let len = s.length()
@@ -177,12 +177,12 @@ fn ck_trim_string(s : String) -> String {
 }
 
 ///|
-fn ck_char_at(s : String, idx : Int) -> Int {
+fn ck_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 
 ///|
-fn ck_find_char(s : String, target : Int) -> Int? {
+fn ck_find_char(s : String, target : Int32) -> Int32? {
   let mut idx = 0
   while idx < s.length() {
     if ck_char_at(s, idx) == target {
@@ -194,17 +194,17 @@ fn ck_find_char(s : String, target : Int) -> Int? {
 }
 
 ///|
-fn ck_string_slice(s : String, start : Int, end : Int) -> String {
+fn ck_string_slice(s : String, start : Int32, end : Int32) -> String {
   str_string_slice(s, start, end)
 }
 
 ///|
-fn ck_string_slice_from(s : String, start : Int) -> String {
+fn ck_string_slice_from(s : String, start : Int32) -> String {
   str_string_slice_from(s, start)
 }
 
 ///|
-fn ck_split_string(s : String, sep : Int) -> Array[String] {
+fn ck_split_string(s : String, sep : Int32) -> Array[String] {
   str_split_char(s, sep)
 }
 

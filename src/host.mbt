@@ -11,7 +11,7 @@ pub(all) enum HostError {
 /// Host header (RFC 9110 Section 7.2)
 pub(all) struct Host {
   host : String
-  port : Int?
+  port : Int32?
 } derive(Debug, Eq)
 
 ///|
@@ -53,7 +53,7 @@ pub fn Host::host(self : Host) -> String {
 }
 
 ///|
-pub fn Host::port(self : Host) -> Int? {
+pub fn Host::port(self : Host) -> Int32? {
   self.port
 }
 
@@ -82,7 +82,7 @@ fn host_parse_ipv6(input : String) -> Result[Host, HostError] {
     Some(e) => {
       let host_inner = host_string_slice(input, 1, e)
       let rest = host_string_slice_from(input, e + 1)
-      let port : Int? = if rest.length() == 0 {
+      let port : Int32? = if rest.length() == 0 {
         None
       } else if host_string_starts_with(rest, ":") {
         let port_str = host_string_slice_from(rest, 1)
@@ -107,7 +107,7 @@ fn host_parse_ipv6(input : String) -> Result[Host, HostError] {
 }
 
 ///|
-fn host_split_host_port(input : String) -> Result[(String, Int?), HostError] {
+fn host_split_host_port(input : String) -> Result[(String, Int32?), HostError] {
   let colon_pos = host_find_last_char_in(input, 58) // :
   match colon_pos {
     Some(pos) => {
@@ -131,7 +131,7 @@ fn host_split_host_port(input : String) -> Result[(String, Int?), HostError] {
 }
 
 ///|
-fn host_parse_port(input : String) -> Int? {
+fn host_parse_port(input : String) -> Int32? {
   if input.length() == 0 {
     return None
   }
@@ -203,7 +203,7 @@ fn host_is_valid_ipv4_part(input : String) -> Bool {
 }
 
 ///|
-fn host_parse_int(input : String) -> Int? {
+fn host_parse_int(input : String) -> Int32? {
   let mut result = 0
   let mut idx = 0
   let len = input.length()
@@ -304,37 +304,37 @@ fn host_is_valid_ipvfuture(input : String) -> Bool {
 }
 
 ///|
-fn host_is_ipvfuture_char(b : Int) -> Bool {
+fn host_is_ipvfuture_char(b : Int32) -> Bool {
   host_is_unreserved(b) || host_is_sub_delim(b) || b == 58 // :
 }
 
 ///|
-fn host_is_unreserved(b : Int) -> Bool {
+fn host_is_unreserved(b : Int32) -> Bool {
   host_is_alnum(b) || b == 45 || b == 46 || b == 95 || b == 126 // -, ., _, ~
 }
 
 ///|
-fn host_is_alnum(b : Int) -> Bool {
+fn host_is_alnum(b : Int32) -> Bool {
   host_is_alpha(b) || host_is_digit(b)
 }
 
 ///|
-fn host_is_alpha(b : Int) -> Bool {
+fn host_is_alpha(b : Int32) -> Bool {
   (b >= 65 && b <= 90) || (b >= 97 && b <= 122) // A-Z, a-z
 }
 
 ///|
-fn host_is_digit(b : Int) -> Bool {
+fn host_is_digit(b : Int32) -> Bool {
   b >= 48 && b <= 57 // 0-9
 }
 
 ///|
-fn host_is_hexdig(b : Int) -> Bool {
+fn host_is_hexdig(b : Int32) -> Bool {
   host_is_digit(b) || (b >= 65 && b <= 70) || (b >= 97 && b <= 102) // A-F, a-f
 }
 
 ///|
-fn host_is_sub_delim(b : Int) -> Bool {
+fn host_is_sub_delim(b : Int32) -> Bool {
   b == 33 ||
   b == 36 ||
   b == 38 ||
@@ -377,12 +377,12 @@ fn host_string_starts_with(s : String, prefix : String) -> Bool {
 }
 
 ///|
-fn host_char_at(s : String, idx : Int) -> Int {
+fn host_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 
 ///|
-fn host_find_char_in(s : String, start : Int, target : Int) -> Int? {
+fn host_find_char_in(s : String, start : Int32, target : Int32) -> Int32? {
   let mut idx = start
   while idx < s.length() {
     if host_char_at(s, idx) == target {
@@ -394,7 +394,7 @@ fn host_find_char_in(s : String, start : Int, target : Int) -> Int? {
 }
 
 ///|
-fn host_find_last_char_in(s : String, target : Int) -> Int? {
+fn host_find_last_char_in(s : String, target : Int32) -> Int32? {
   let mut idx = s.length() - 1
   while idx >= 0 {
     if host_char_at(s, idx) == target {
@@ -409,7 +409,7 @@ fn host_find_last_char_in(s : String, target : Int) -> Int? {
 }
 
 ///|
-fn host_contains(s : String, target : Int) -> Bool {
+fn host_contains(s : String, target : Int32) -> Bool {
   match host_find_char_in(s, 0, target) {
     Some(_) => true
     None => false
@@ -417,12 +417,12 @@ fn host_contains(s : String, target : Int) -> Bool {
 }
 
 ///|
-fn host_string_slice(s : String, start : Int, end : Int) -> String {
+fn host_string_slice(s : String, start : Int32, end : Int32) -> String {
   str_string_slice(s, start, end)
 }
 
 ///|
-fn host_string_slice_from(s : String, start : Int) -> String {
+fn host_string_slice_from(s : String, start : Int32) -> String {
   str_string_slice_from(s, start)
 }
 

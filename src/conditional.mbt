@@ -222,6 +222,6 @@ fn cond_trim_string(s : String) -> String {
 }
 
 ///|
-fn cond_char_at(s : String, idx : Int) -> Int {
+fn cond_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }

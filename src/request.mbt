@@ -87,7 +87,7 @@ pub fn Request::is_keep_alive(self : Request) -> Bool {
 }
 
 ///|
-pub fn Request::content_length(self : Request) -> Int? {
+pub fn Request::content_length(self : Request) -> Int32? {
   match self.get_header("content-length") {
     Some(v) => request_parse_int(v)
     None => None
@@ -115,7 +115,7 @@ fn request_string_to_lower(s : String) -> String {
     let c = s[idx]
     let ci = c.to_int()
     let new_c = if ci >= 65 && ci <= 90 {
-      Int::unsafe_to_char(ci + 32).to_string()
+      Int32::unsafe_to_char(ci + 32).to_string()
     } else {
       c.to_string()
     }
@@ -126,7 +126,7 @@ fn request_string_to_lower(s : String) -> String {
 }
 
 ///|
-fn request_parse_int(s : String) -> Int? {
+fn request_parse_int(s : String) -> Int32? {
   let mut result = 0
   let mut idx = 0
   let len = s.length()

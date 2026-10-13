@@ -20,31 +20,31 @@ fn array_to_bytes(arr : Array[Byte]) -> Bytes {
 fn body_to_string(body : Array[Byte]) -> String {
   let mut result = ""
   for b in body {
-    result = result + Int::unsafe_to_char(b.to_int()).to_string()
+    result = result + Int32::unsafe_to_char(b.to_int()).to_string()
   }
   result
 }
 
 ///|
-fn string_slice(s : String, start : Int, end : Int) -> String {
+fn string_slice(s : String, start : Int32, end : Int32) -> String {
   let mut result = ""
   for i in start..<end {
     if i < s.length() {
-      result = result + Int::unsafe_to_char(s[i].to_int()).to_string()
+      result = result + Int32::unsafe_to_char(s[i].to_int()).to_string()
     }
   }
   result
 }
 
 ///|
-fn string_slice_from(s : String, start : Int) -> String {
+fn string_slice_from(s : String, start : Int32) -> String {
   string_slice(s, start, s.length())
 }
 
 ///|
 /// Parse a simple URL like http://host:port/path
 /// Returns (host, port, path)
-fn parse_url(url : String) -> (String, Int, String) {
+fn parse_url(url : String) -> (String, Int32, String) {
   // Remove http:// prefix if present
   let mut rest = url
   if url.has_prefix("http://") {
@@ -77,7 +77,7 @@ fn parse_url(url : String) -> (String, Int, String) {
 }
 
 ///|
-fn parse_port(s : String) -> Int {
+fn parse_port(s : String) -> Int32 {
   let mut result = 0
   for i in 0..<s.length() {
     let c = s[i]

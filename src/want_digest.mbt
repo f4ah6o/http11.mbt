@@ -38,7 +38,7 @@ pub fn WantContentDigest::preferences(
 pub fn WantContentDigest::get(
   self : WantContentDigest,
   algorithm : String,
-) -> Int? {
+) -> Int32? {
   let key = df_to_lower_case(algorithm)
   let mut idx = 0
   while idx < self.preferences.length() {
@@ -102,7 +102,7 @@ pub fn WantReprDigest::preferences(
 }
 
 ///|
-pub fn WantReprDigest::get(self : WantReprDigest, algorithm : String) -> Int? {
+pub fn WantReprDigest::get(self : WantReprDigest, algorithm : String) -> Int32? {
   let key = df_to_lower_case(algorithm)
   let mut idx = 0
   while idx < self.preferences.length() {

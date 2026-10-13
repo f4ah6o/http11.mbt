@@ -1,11 +1,11 @@
 ///|
 /// Age header (RFC 9111 Section 5.1)
 pub(all) struct Age {
-  seconds : Int
+  seconds : Int32
 } derive(Eq)
 
 ///|
-pub fn Age::new(seconds : Int) -> Age {
+pub fn Age::new(seconds : Int32) -> Age {
   { seconds, }
 }
 
@@ -22,7 +22,7 @@ pub fn Age::parse(input : String) -> Result[Age, CacheError] {
 }
 
 ///|
-pub fn Age::seconds(self : Age) -> Int {
+pub fn Age::seconds(self : Age) -> Int32 {
   self.seconds
 }
 

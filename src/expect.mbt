@@ -169,7 +169,7 @@ fn exp_parse_quoted_string(
   while idx < len {
     let ch = exp_char_at(input, idx)
     if escaped {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
       escaped = false
       idx = idx + 1
     } else if ch == 92 { // \
@@ -178,7 +178,7 @@ fn exp_parse_quoted_string(
     } else if ch == 34 { // "
       return Ok((result, exp_string_slice_from(input, idx + 1)))
     } else {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
       idx = idx + 1
     }
   }
@@ -186,7 +186,7 @@ fn exp_parse_quoted_string(
 }
 
 ///|
-fn exp_split_with_quotes(input : String, delimiter : Int) -> Array[String] {
+fn exp_split_with_quotes(input : String, delimiter : Int32) -> Array[String] {
   let result : Array[String] = []
   let mut start = 0
   let mut in_quote = false
@@ -236,7 +236,7 @@ fn exp_is_valid_token(s : String) -> Bool {
 }
 
 ///|
-fn exp_is_token_char(b : Int) -> Bool {
+fn exp_is_token_char(b : Int32) -> Bool {
   b == 33 ||
   b == 35 ||
   b == 36 ||
@@ -292,7 +292,7 @@ fn exp_escape_quotes(s : String) -> String {
     } else if ch == 34 { // "
       result = result + "\\\""
     } else {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
     }
     idx = idx + 1
   }
@@ -305,12 +305,12 @@ fn exp_to_lower_case(s : String) -> String {
 }
 
 ///|
-fn exp_char_at(s : String, idx : Int) -> Int {
+fn exp_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 
 ///|
-fn exp_find_char_in(s : String, start : Int, target : Int) -> Int? {
+fn exp_find_char_in(s : String, start : Int32, target : Int32) -> Int32? {
   let mut idx = start
   while idx < s.length() {
     if exp_char_at(s, idx) == target {
@@ -322,12 +322,12 @@ fn exp_find_char_in(s : String, start : Int, target : Int) -> Int? {
 }
 
 ///|
-fn exp_string_slice(s : String, start : Int, end : Int) -> String {
+fn exp_string_slice(s : String, start : Int32, end : Int32) -> String {
   str_string_slice(s, start, end)
 }
 
 ///|
-fn exp_string_slice_from(s : String, start : Int) -> String {
+fn exp_string_slice_from(s : String, start : Int32) -> String {
   str_string_slice_from(s, start)
 }
 

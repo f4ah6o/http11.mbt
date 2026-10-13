@@ -25,7 +25,7 @@ fn cd_split_params(input : String) -> Array[String] {
   while idx < len {
     let ch = cd_char_at(input, idx)
     if escape_next {
-      current = current + Int::unsafe_to_char(ch).to_string()
+      current = current + Int32::unsafe_to_char(ch).to_string()
       escape_next = false
       idx = idx + 1
     } else if ch == 92 && in_quotes { // \
@@ -48,7 +48,7 @@ fn cd_split_params(input : String) -> Array[String] {
       current = ""
       idx = idx + 1
     } else {
-      current = current + Int::unsafe_to_char(ch).to_string()
+      current = current + Int32::unsafe_to_char(ch).to_string()
       idx = idx + 1
     }
   }
@@ -93,13 +93,13 @@ fn cd_parse_quoted_string(
     if ch == 92 { // \
       if idx + 1 < len {
         result = result +
-          Int::unsafe_to_char(cd_char_at(s, idx + 1)).to_string()
+          Int32::unsafe_to_char(cd_char_at(s, idx + 1)).to_string()
         idx = idx + 2
       } else {
         return Err(InvalidParameter)
       }
     } else {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
       idx = idx + 1
     }
   }
@@ -141,7 +141,7 @@ fn cd_parse_ext_value(
 
 ///|
 fn cd_percent_decode(s : String) -> Result[String, ContentDispositionError] {
-  let mut bytes : Array[Int] = []
+  let mut bytes : Array[Int32] = []
   let mut idx = 0
   let len = s.length()
   while idx < len {
@@ -184,7 +184,7 @@ fn cd_percent_decode(s : String) -> Result[String, ContentDispositionError] {
 
 ///|
 fn cd_utf8_from_bytes(
-  bytes : Array[Int],
+  bytes : Array[Int32],
 ) -> Result[String, ContentDispositionError] {
   let mut result = ""
   let mut idx = 0
@@ -192,7 +192,7 @@ fn cd_utf8_from_bytes(
     let b = bytes[idx]
     if b < 128 {
       // ASCII
-      result = result + Int::unsafe_to_char(b).to_string()
+      result = result + Int32::unsafe_to_char(b).to_string()
       idx = idx + 1
     } else if b >= 192 && b < 224 {
       // 2-byte sequence
@@ -200,7 +200,7 @@ fn cd_utf8_from_bytes(
         let b2 = bytes[idx + 1]
         if b2 >= 128 && b2 < 192 {
           let code = (b - 192) * 64 + (b2 - 128)
-          result = result + Int::unsafe_to_char(code).to_string()
+          result = result + Int32::unsafe_to_char(code).to_string()
           idx = idx + 2
         } else {
           return Err(InvalidExtValue)
@@ -215,7 +215,7 @@ fn cd_utf8_from_bytes(
         let b3 = bytes[idx + 2]
         if b2 >= 128 && b2 < 192 && b3 >= 128 && b3 < 192 {
           let code = (b - 224) * 4096 + (b2 - 128) * 64 + (b3 - 128)
-          result = result + Int::unsafe_to_char(code).to_string()
+          result = result + Int32::unsafe_to_char(code).to_string()
           idx = idx + 3
         } else {
           return Err(InvalidExtValue)
@@ -239,7 +239,7 @@ fn cd_utf8_from_bytes(
             (b2 - 128) * 4096 +
             (b3 - 128) * 64 +
             (b4 - 128)
-          result = result + Int::unsafe_to_char(code).to_string()
+          result = result + Int32::unsafe_to_char(code).to_string()
           idx = idx + 4
         } else {
           return Err(InvalidExtValue)
@@ -255,7 +255,7 @@ fn cd_utf8_from_bytes(
 }
 
 ///|
-fn cd_parse_hex(s : String) -> Result[Int, ContentDispositionError] {
+fn cd_parse_hex(s : String) -> Result[Int32, ContentDispositionError] {
   let mut result = 0
   let mut idx = 0
   while idx < s.length() {
@@ -282,7 +282,7 @@ fn cd_encode_ext_value(s : String) -> String {
   while idx < s.length() {
     let ch = cd_char_at(s, idx)
     if cd_is_attr_char(ch) {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
     } else {
       result = result + "%" + cd_int_to_hex(ch, 2)
     }
@@ -292,7 +292,7 @@ fn cd_encode_ext_value(s : String) -> String {
 }
 
 ///|
-fn cd_is_attr_char(b : Int) -> Bool {
+fn cd_is_attr_char(b : Int32) -> Bool {
   (b >= 65 && b <= 90) || // A-Z
   (b >= 97 && b <= 122) || // a-z
   (b >= 48 && b <= 57) || // 0-9
@@ -319,21 +319,22 @@ fn cd_escape_quoted_string(s : String) -> String {
     if ch == 34 || ch == 92 { // " or \
       result = result + "\\"
     }
-    result = result + Int::unsafe_to_char(ch).to_string()
+    result = result + Int32::unsafe_to_char(ch).to_string()
     idx = idx + 1
   }
   result
 }
 
 ///|
-fn cd_int_to_hex(n : Int, padding : Int) -> String {
+fn cd_int_to_hex(n : Int32, padding : Int32) -> String {
   let chars = "0123456789ABCDEF"
   let mut result = ""
   let mut val = n
   let mut len = 0
   while val > 0 {
     let digit = val % 16
-    result = Int::unsafe_to_char(cd_char_at(chars, digit)).to_string() + result
+    result = Int32::unsafe_to_char(cd_char_at(chars, digit)).to_string() +
+      result
     val = val / 16
     len = len + 1
   }
@@ -355,9 +356,9 @@ fn cd_to_upper_case(s : String) -> String {
   while idx < s.length() {
     let ch = cd_char_at(s, idx)
     if ch >= 97 && ch <= 122 { // a-z
-      result = result + Int::unsafe_to_char(ch - 32).to_string()
+      result = result + Int32::unsafe_to_char(ch - 32).to_string()
     } else {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
     }
     idx = idx + 1
   }
@@ -375,12 +376,12 @@ fn cd_trim_string(s : String) -> String {
 }
 
 ///|
-fn cd_char_at(s : String, idx : Int) -> Int {
+fn cd_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 
 ///|
-fn cd_find_char(s : String, target : Int) -> Int? {
+fn cd_find_char(s : String, target : Int32) -> Int32? {
   let mut idx = 0
   while idx < s.length() {
     if cd_char_at(s, idx) == target {
@@ -392,11 +393,11 @@ fn cd_find_char(s : String, target : Int) -> Int? {
 }
 
 ///|
-fn cd_string_slice(s : String, start : Int, end : Int) -> String {
+fn cd_string_slice(s : String, start : Int32, end : Int32) -> String {
   str_string_slice(s, start, end)
 }
 
 ///|
-fn cd_string_slice_from(s : String, start : Int) -> String {
+fn cd_string_slice_from(s : String, start : Int32) -> String {
   str_string_slice_from(s, start)
 }

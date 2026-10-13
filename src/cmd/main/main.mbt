@@ -12,7 +12,7 @@ fn bytes_to_string(bytes : Array[Byte]) -> String {
     let b = bytes[idx].to_int()
     // Display printable ASCII characters as-is, others as hex
     if b >= 32 && b <= 126 {
-      result = result + Int::unsafe_to_char(b).to_string()
+      result = result + Int32::unsafe_to_char(b).to_string()
     } else if b == 13 {
       result = result + "\\r"
     } else if b == 10 {
