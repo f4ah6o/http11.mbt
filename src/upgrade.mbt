@@ -148,7 +148,7 @@ fn upgrade_is_valid_token(s : String) -> Bool {
 }
 
 ///|
-fn upgrade_is_token_char(b : Int) -> Bool {
+fn upgrade_is_token_char(b : Int32) -> Bool {
   b == 33 ||
   b == 35 ||
   b == 36 ||
@@ -179,7 +179,7 @@ fn upgrade_is_token_char(b : Int) -> Bool {
 }
 
 ///|
-fn upgrade_char_at(s : String, idx : Int) -> Int {
+fn upgrade_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 
@@ -189,7 +189,7 @@ fn upgrade_to_lower_case(s : String) -> String {
 }
 
 ///|
-fn upgrade_find_char_in(s : String, start : Int, target : Int) -> Int? {
+fn upgrade_find_char_in(s : String, start : Int32, target : Int32) -> Int32? {
   let mut idx = start
   while idx < s.length() {
     if upgrade_char_at(s, idx) == target {
@@ -211,12 +211,12 @@ fn upgrade_split_string(s : String, sep : String) -> Array[String] {
 }
 
 ///|
-fn upgrade_string_slice(s : String, start : Int, end : Int) -> String {
+fn upgrade_string_slice(s : String, start : Int32, end : Int32) -> String {
   str_string_slice(s, start, end)
 }
 
 ///|
-fn upgrade_string_slice_from(s : String, start : Int) -> String {
+fn upgrade_string_slice_from(s : String, start : Int32) -> String {
   str_string_slice_from(s, start)
 }
 

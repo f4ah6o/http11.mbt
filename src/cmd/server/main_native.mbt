@@ -29,7 +29,7 @@ fn array_to_bytes(arr : Array[Byte]) -> Bytes {
 fn body_to_string(body : Array[Byte]) -> String {
   let mut result = ""
   for b in body {
-    result = result + Int::unsafe_to_char(b.to_int()).to_string()
+    result = result + Int32::unsafe_to_char(b.to_int()).to_string()
   }
   result
 }

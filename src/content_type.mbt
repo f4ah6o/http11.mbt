@@ -265,7 +265,7 @@ fn ct_parse_quoted_string(
   while idx < len {
     let ch = ct_char_at(input, idx)
     if escaped {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
       escaped = false
       idx = idx + 1
     } else if ch == 92 { // \
@@ -274,7 +274,7 @@ fn ct_parse_quoted_string(
     } else if ch == 34 { // "
       return Ok((result, ct_string_slice_from(input, idx + 1)))
     } else {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
       idx = idx + 1
     }
   }
@@ -310,7 +310,7 @@ fn ct_is_valid_token(s : String) -> Bool {
 }
 
 ///|
-fn ct_is_token_char(b : Int) -> Bool {
+fn ct_is_token_char(b : Int32) -> Bool {
   b == 33 ||
   b == 35 ||
   b == 36 ||
@@ -354,7 +354,7 @@ fn ct_escape_quotes(s : String) -> String {
     } else if ch == 34 { // "
       result = result + "\\\""
     } else {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
     }
     idx = idx + 1
   }
@@ -372,7 +372,7 @@ fn ct_trim_string(s : String) -> String {
 }
 
 ///|
-fn ct_skip_leading_char(s : String, target : Int) -> String {
+fn ct_skip_leading_char(s : String, target : Int32) -> String {
   let mut idx = 0
   let len = s.length()
   while idx < len && ct_char_at(s, idx) == target {
@@ -382,12 +382,12 @@ fn ct_skip_leading_char(s : String, target : Int) -> String {
 }
 
 ///|
-fn ct_char_at(s : String, idx : Int) -> Int {
+fn ct_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 
 ///|
-fn ct_find_char(s : String, target : Int) -> Int? {
+fn ct_find_char(s : String, target : Int32) -> Int32? {
   let mut idx = 0
   while idx < s.length() {
     if ct_char_at(s, idx) == target {
@@ -399,11 +399,11 @@ fn ct_find_char(s : String, target : Int) -> Int? {
 }
 
 ///|
-fn ct_string_slice(s : String, start : Int, end : Int) -> String {
+fn ct_string_slice(s : String, start : Int32, end : Int32) -> String {
   str_string_slice(s, start, end)
 }
 
 ///|
-fn ct_string_slice_from(s : String, start : Int) -> String {
+fn ct_string_slice_from(s : String, start : Int32) -> String {
   str_string_slice_from(s, start)
 }

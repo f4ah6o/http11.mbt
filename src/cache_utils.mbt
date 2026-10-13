@@ -79,7 +79,7 @@ fn cc_parse_directive(
 }
 
 ///|
-fn cc_set_max_age(cc : CacheControl, secs : Int) -> CacheControl {
+fn cc_set_max_age(cc : CacheControl, secs : Int32) -> CacheControl {
   {
     max_age: Some(secs),
     s_maxage: cc.s_maxage,
@@ -101,7 +101,7 @@ fn cc_set_max_age(cc : CacheControl, secs : Int) -> CacheControl {
 }
 
 ///|
-fn cc_set_s_maxage(cc : CacheControl, secs : Int) -> CacheControl {
+fn cc_set_s_maxage(cc : CacheControl, secs : Int32) -> CacheControl {
   {
     max_age: cc.max_age,
     s_maxage: Some(secs),
@@ -123,7 +123,7 @@ fn cc_set_s_maxage(cc : CacheControl, secs : Int) -> CacheControl {
 }
 
 ///|
-fn cc_set_max_stale(cc : CacheControl, secs : Int) -> CacheControl {
+fn cc_set_max_stale(cc : CacheControl, secs : Int32) -> CacheControl {
   {
     max_age: cc.max_age,
     s_maxage: cc.s_maxage,
@@ -145,7 +145,7 @@ fn cc_set_max_stale(cc : CacheControl, secs : Int) -> CacheControl {
 }
 
 ///|
-fn cc_set_min_fresh(cc : CacheControl, secs : Int) -> CacheControl {
+fn cc_set_min_fresh(cc : CacheControl, secs : Int32) -> CacheControl {
   {
     max_age: cc.max_age,
     s_maxage: cc.s_maxage,
@@ -167,7 +167,10 @@ fn cc_set_min_fresh(cc : CacheControl, secs : Int) -> CacheControl {
 }
 
 ///|
-fn cc_set_stale_while_revalidate(cc : CacheControl, secs : Int) -> CacheControl {
+fn cc_set_stale_while_revalidate(
+  cc : CacheControl,
+  secs : Int32,
+) -> CacheControl {
   {
     max_age: cc.max_age,
     s_maxage: cc.s_maxage,
@@ -189,7 +192,7 @@ fn cc_set_stale_while_revalidate(cc : CacheControl, secs : Int) -> CacheControl 
 }
 
 ///|
-fn cc_set_stale_if_error(cc : CacheControl, secs : Int) -> CacheControl {
+fn cc_set_stale_if_error(cc : CacheControl, secs : Int32) -> CacheControl {
   {
     max_age: cc.max_age,
     s_maxage: cc.s_maxage,
@@ -458,22 +461,22 @@ fn cc_trim_string(s : String) -> String {
 }
 
 ///|
-fn cc_char_at(s : String, idx : Int) -> Int {
+fn cc_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 
 ///|
-fn cc_string_slice(s : String, start : Int, end : Int) -> String {
+fn cc_string_slice(s : String, start : Int32, end : Int32) -> String {
   str_string_slice(s, start, end)
 }
 
 ///|
-fn cc_string_slice_from(s : String, start : Int) -> String {
+fn cc_string_slice_from(s : String, start : Int32) -> String {
   str_string_slice_from(s, start)
 }
 
 ///|
-fn cc_find_char(s : String, target : Int) -> Int? {
+fn cc_find_char(s : String, target : Int32) -> Int32? {
   let mut idx = 0
   while idx < s.length() {
     if cc_char_at(s, idx) == target {
@@ -495,7 +498,7 @@ fn cc_to_lower_case(s : String) -> String {
 }
 
 ///|
-fn cc_parse_u64(s : String) -> Int? {
+fn cc_parse_u64(s : String) -> Int32? {
   let mut result = 0
   let mut idx = 0
   let len = s.length()

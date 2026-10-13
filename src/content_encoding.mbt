@@ -164,7 +164,7 @@ fn ce_is_valid_token(s : String) -> Bool {
 }
 
 ///|
-fn ce_is_token_char(b : Int) -> Bool {
+fn ce_is_token_char(b : Int32) -> Bool {
   b == 33 ||
   b == 35 ||
   b == 36 ||
@@ -186,7 +186,7 @@ fn ce_is_token_char(b : Int) -> Bool {
 }
 
 ///|
-fn ce_char_at(s : String, idx : Int) -> Int {
+fn ce_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 

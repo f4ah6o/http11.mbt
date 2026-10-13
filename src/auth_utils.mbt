@@ -11,22 +11,22 @@ fn au_trim_string(s : String) -> String {
 }
 
 ///|
-fn au_char_at(s : String, idx : Int) -> Int {
+fn au_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 
 ///|
-fn au_string_slice(s : String, start : Int, end : Int) -> String {
+fn au_string_slice(s : String, start : Int32, end : Int32) -> String {
   str_string_slice(s, start, end)
 }
 
 ///|
-fn au_string_slice_from(s : String, start : Int) -> String {
+fn au_string_slice_from(s : String, start : Int32) -> String {
   str_string_slice_from(s, start)
 }
 
 ///|
-fn au_find_char(s : String, target : Int) -> Int? {
+fn au_find_char(s : String, target : Int32) -> Int32? {
   let mut idx = 0
   while idx < s.length() {
     if au_char_at(s, idx) == target {
@@ -90,12 +90,12 @@ fn au_strip_scheme(input : String, scheme : String) -> String? {
 }
 
 ///|
-fn au_is_ows(b : Int) -> Bool {
+fn au_is_ows(b : Int32) -> Bool {
   b == 32 || b == 9
 }
 
 ///|
-fn au_is_token_char(b : Int) -> Bool {
+fn au_is_token_char(b : Int32) -> Bool {
   b == 33 ||
   b == 35 ||
   b == 36 ||
@@ -117,7 +117,7 @@ fn au_is_token_char(b : Int) -> Bool {
 }
 
 ///|
-fn au_is_token68_char(b : Int) -> Bool {
+fn au_is_token68_char(b : Int32) -> Bool {
   (b >= 65 && b <= 90) || // A-Z
   (b >= 97 && b <= 122) || // a-z
   (b >= 48 && b <= 57) || // 0-9
@@ -204,7 +204,7 @@ fn au_parse_auth_params(
       let mut escaped = false
       let mut closed = false
       while i < input.length() {
-        let ch = Int::unsafe_to_char(au_char_at(input, i))
+        let ch = Int32::unsafe_to_char(au_char_at(input, i))
         if escaped {
           value = value + ch.to_string()
           escaped = false
@@ -324,7 +324,7 @@ fn au_escape_quotes(value : String) -> String {
       // quote
       result = result + "\\\""
     } else {
-      result = result + Int::unsafe_to_char(ch_int).to_string()
+      result = result + Int32::unsafe_to_char(ch_int).to_string()
     }
     idx = idx + 1
   }
@@ -377,17 +377,19 @@ fn au_base64_encode(input : String) -> String {
     let i3 = if i + 2 < len { b2 & 63 } else { -1 }
 
     // Get the character from alphabet at the calculated indices
-    result = result + Int::unsafe_to_char(au_char_at(alphabet, i0)).to_string()
-    result = result + Int::unsafe_to_char(au_char_at(alphabet, i1)).to_string()
+    result = result +
+      Int32::unsafe_to_char(au_char_at(alphabet, i0)).to_string()
+    result = result +
+      Int32::unsafe_to_char(au_char_at(alphabet, i1)).to_string()
     if i2 >= 0 {
       result = result +
-        Int::unsafe_to_char(au_char_at(alphabet, i2)).to_string()
+        Int32::unsafe_to_char(au_char_at(alphabet, i2)).to_string()
     } else {
       result = result + "="
     }
     if i3 >= 0 {
       result = result +
-        Int::unsafe_to_char(au_char_at(alphabet, i3)).to_string()
+        Int32::unsafe_to_char(au_char_at(alphabet, i3)).to_string()
     } else {
       result = result + "="
     }
@@ -397,7 +399,7 @@ fn au_base64_encode(input : String) -> String {
 }
 
 ///|
-fn au_base64_decode_char(c : Int) -> Int? {
+fn au_base64_decode_char(c : Int32) -> Int32? {
   if c >= 65 && c <= 90 {
     // A-Z
     Some(c - 65)
@@ -444,7 +446,7 @@ fn au_base64_decode(input : String) -> Result[String, AuthError] {
         if bits >= 8 {
           bits = bits - 8
           let byte = buf / au_pow2(bits)
-          result = result + Int::unsafe_to_char(byte).to_string()
+          result = result + Int32::unsafe_to_char(byte).to_string()
           buf = buf % au_pow2(bits)
         }
       }
@@ -455,7 +457,7 @@ fn au_base64_decode(input : String) -> Result[String, AuthError] {
 }
 
 ///|
-fn au_pow2(n : Int) -> Int {
+fn au_pow2(n : Int32) -> Int32 {
   if n == 0 {
     1
   } else if n == 1 {

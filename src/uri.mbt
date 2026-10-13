@@ -20,16 +20,16 @@ pub(all) enum UriError {
 /// scheme     authority       path        query   fragment
 pub(all) struct Uri {
   source : String
-  scheme_end : Int?
-  authority_start : Int?
-  authority_end : Int?
-  host_end : Int?
-  port : Int?
-  path_start : Int
-  path_end : Int
-  query_start : Int?
-  query_end : Int?
-  fragment_start : Int?
+  scheme_end : Int32?
+  authority_start : Int32?
+  authority_end : Int32?
+  host_end : Int32?
+  port : Int32?
+  path_start : Int32
+  path_end : Int32
+  query_start : Int32?
+  query_end : Int32?
+  fragment_start : Int32?
 } derive(Debug, Eq)
 
 ///|
@@ -161,7 +161,7 @@ pub fn Uri::host(self : Uri) -> String? {
 }
 
 ///|
-pub fn Uri::port(self : Uri) -> Int? {
+pub fn Uri::port(self : Uri) -> Int32? {
   self.port
 }
 
@@ -222,7 +222,7 @@ pub fn Uri::to_string(self : Uri) -> String {
 
 ///|
 pub fn percent_encode(input : String) -> String {
-  let result : Array[Int] = []
+  let result : Array[Int32] = []
   let mut idx = 0
   let len = input.length()
   while idx < len {
@@ -241,7 +241,7 @@ pub fn percent_encode(input : String) -> String {
 
 ///|
 pub fn percent_encode_path(input : String) -> String {
-  let result : Array[Int] = []
+  let result : Array[Int32] = []
   let mut idx = 0
   let len = input.length()
   while idx < len {
@@ -260,7 +260,7 @@ pub fn percent_encode_path(input : String) -> String {
 
 ///|
 pub fn percent_encode_query(input : String) -> String {
-  let result : Array[Int] = []
+  let result : Array[Int32] = []
   let mut idx = 0
   let len = input.length()
   while idx < len {
@@ -286,8 +286,8 @@ pub fn percent_decode(input : String) -> Result[String, UriError] {
 }
 
 ///|
-pub fn percent_decode_bytes(input : String) -> Result[Array[Int], UriError] {
-  let result : Array[Int] = []
+pub fn percent_decode_bytes(input : String) -> Result[Array[Int32], UriError] {
+  let result : Array[Int32] = []
   let mut idx = 0
   let len = input.length()
   while idx < len {
@@ -320,27 +320,27 @@ pub fn percent_decode_bytes(input : String) -> Result[Array[Int], UriError] {
 ///
 
 ///|
-fn uri_is_unreserved(byte : Int) -> Bool {
+fn uri_is_unreserved(byte : Int32) -> Bool {
   uri_is_alnum(byte) || byte == 45 || byte == 46 || byte == 95 || byte == 126 // -, ., _, ~
 }
 
 ///|
-fn uri_is_alnum(byte : Int) -> Bool {
+fn uri_is_alnum(byte : Int32) -> Bool {
   uri_is_alpha(byte) || uri_is_digit(byte)
 }
 
 ///|
-fn uri_is_alpha(byte : Int) -> Bool {
+fn uri_is_alpha(byte : Int32) -> Bool {
   (byte >= 65 && byte <= 90) || (byte >= 97 && byte <= 122) // A-Z, a-z
 }
 
 ///|
-fn uri_is_digit(byte : Int) -> Bool {
+fn uri_is_digit(byte : Int32) -> Bool {
   byte >= 48 && byte <= 57 // 0-9
 }
 
 ///|
-fn uri_to_hex_char(nibble : Int) -> Int {
+fn uri_to_hex_char(nibble : Int32) -> Int32 {
   if nibble >= 0 && nibble <= 9 {
     48 + nibble // '0' + nibble
   } else {
@@ -349,7 +349,7 @@ fn uri_to_hex_char(nibble : Int) -> Int {
 }
 
 ///|
-fn uri_from_hex_char(byte : Int) -> Int? {
+fn uri_from_hex_char(byte : Int32) -> Int32? {
   if byte >= 48 && byte <= 57 { // 0-9
     Some(byte - 48)
   } else if byte >= 65 && byte <= 70 { // A-F
@@ -362,7 +362,7 @@ fn uri_from_hex_char(byte : Int) -> Int? {
 }
 
 ///|
-fn uri_find_scheme_end(s : String) -> (Int?, Int) {
+fn uri_find_scheme_end(s : String) -> (Int32?, Int32) {
   let mut idx = 0
   let len = s.length()
   while idx < len {
@@ -384,7 +384,7 @@ fn uri_find_scheme_end(s : String) -> (Int?, Int) {
 }
 
 ///|
-fn uri_parse_authority(authority : String) -> Result[(Int, Int?), UriError] {
+fn uri_parse_authority(authority : String) -> Result[(Int32, Int32?), UriError] {
   if authority.length() == 0 {
     return Ok((0, None))
   }
@@ -444,7 +444,7 @@ fn uri_parse_authority(authority : String) -> Result[(Int, Int?), UriError] {
 }
 
 ///|
-fn uri_parse_port(port_str : String) -> Int? {
+fn uri_parse_port(port_str : String) -> Int32? {
   let mut result = 0
   let mut idx = 0
   let len = port_str.length()
@@ -468,11 +468,11 @@ fn uri_parse_port(port_str : String) -> Int? {
 ///|
 fn uri_find_char_from_set(
   s : String,
-  start : Int,
-  c1 : Int,
-  c2 : Int,
-  c3 : Int,
-) -> Int {
+  start : Int32,
+  c1 : Int32,
+  c2 : Int32,
+  c3 : Int32,
+) -> Int32 {
   let mut idx = start
   let len = s.length()
   while idx < len {
@@ -486,7 +486,7 @@ fn uri_find_char_from_set(
 }
 
 ///|
-fn uri_find_char_in(s : String, start : Int, target : Int) -> Int? {
+fn uri_find_char_in(s : String, start : Int32, target : Int32) -> Int32? {
   let mut idx = start
   let len = s.length()
   while idx < len {
@@ -499,17 +499,17 @@ fn uri_find_char_in(s : String, start : Int, target : Int) -> Int? {
 }
 
 ///|
-fn uri_string_char_at(s : String, idx : Int) -> Int {
+fn uri_string_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 
 ///|
-fn uri_string_slice(s : String, start : Int, end : Int) -> String {
+fn uri_string_slice(s : String, start : Int32, end : Int32) -> String {
   str_string_slice(s, start, end)
 }
 
 ///|
-fn uri_string_slice_from(s : String, start : Int) -> String {
+fn uri_string_slice_from(s : String, start : Int32) -> String {
   str_string_slice_from(s, start)
 }
 
@@ -519,18 +519,18 @@ fn uri_trim_string(s : String) -> String {
 }
 
 ///|
-fn uri_bytes_to_string(bytes : Array[Int]) -> String {
+fn uri_bytes_to_string(bytes : Array[Int32]) -> String {
   let mut result = ""
   let mut idx = 0
   while idx < bytes.length() {
     let byte = bytes[idx]
-    result = result + Int::unsafe_to_char(byte).to_string()
+    result = result + Int32::unsafe_to_char(byte).to_string()
     idx = idx + 1
   }
   result
 }
 
 ///|
-fn uri_bytes_to_string_result(bytes : Array[Int]) -> Result[String, UriError] {
+fn uri_bytes_to_string_result(bytes : Array[Int32]) -> Result[String, UriError] {
   Ok(uri_bytes_to_string(bytes))
 }

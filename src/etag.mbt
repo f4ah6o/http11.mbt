@@ -230,12 +230,12 @@ fn etag_string_starts_with(s : String, prefix : String) -> Bool {
 }
 
 ///|
-fn etag_char_at(s : String, idx : Int) -> Int {
+fn etag_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 
 ///|
-fn etag_find_char_from(s : String, target : Int, start : Int) -> Int? {
+fn etag_find_char_from(s : String, target : Int32, start : Int32) -> Int32? {
   let mut idx = start
   while idx < s.length() {
     if etag_char_at(s, idx) == target {
@@ -247,7 +247,7 @@ fn etag_find_char_from(s : String, target : Int, start : Int) -> Int? {
 }
 
 ///|
-fn etag_string_slice(s : String, start : Int, end : Int) -> String {
+fn etag_string_slice(s : String, start : Int32, end : Int32) -> String {
   str_string_slice(s, start, end)
 }
 

@@ -2,7 +2,7 @@
 /// Body parsing modes
 priv enum BodyMode {
   None
-  ContentLength(Int)
+  ContentLength(Int32)
   Chunked
 }
 
@@ -12,7 +12,7 @@ pub(all) enum DecodeState {
   Start
   StartLine
   Headers
-  Body(Int)
+  Body(Int32)
   Complete
 } derive(Debug, Eq)
 
@@ -26,7 +26,7 @@ pub(all) struct RequestDecoder {
   mut parsed_version : String?
   mut headers : Array[(String, String)]
   mut body_buf : Array[Byte]
-  mut content_length : Int?
+  mut content_length : Int32?
   limits : DecoderLimits
 } derive(Debug)
 
@@ -223,11 +223,11 @@ pub(all) struct ResponseDecoder {
   mut buf : Array[Byte]
   mut state : DecodeState
   mut parsed_version : String?
-  mut parsed_status_code : Int?
+  mut parsed_status_code : Int32?
   mut parsed_reason : String?
   mut headers : Array[(String, String)]
   mut body_buf : Array[Byte]
-  mut content_length : Int?
+  mut content_length : Int32?
   limits : DecoderLimits
 } derive(Debug)
 
@@ -431,7 +431,7 @@ fn decoder_array_append(a : Array[Byte], b : Array[Byte]) -> Array[Byte] {
 }
 
 ///|
-fn split_at(arr : Array[Byte], n : Int) -> (Array[Byte], Array[Byte]) {
+fn split_at(arr : Array[Byte], n : Int32) -> (Array[Byte], Array[Byte]) {
   let first = []
   let mut idx = 0
   while idx < n && idx < arr.length() {
@@ -449,7 +449,7 @@ fn split_at(arr : Array[Byte], n : Int) -> (Array[Byte], Array[Byte]) {
 ///|
 fn read_crlf_line(
   buf : Array[Byte],
-  max_size : Int,
+  max_size : Int32,
 ) -> Result[(String, Array[Byte]), HttpError] {
   let mut i = 0
   let len = buf.length()
@@ -470,13 +470,13 @@ fn read_crlf_line(
 ///|
 fn decoder_bytes_to_string_slice(
   arr : Array[Byte],
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> String {
   let mut result = ""
   let mut i = start
   while i < end {
-    result = result + Int::unsafe_to_char(arr[i].to_int()).to_string()
+    result = result + Int32::unsafe_to_char(arr[i].to_int()).to_string()
     i = i + 1
   }
   result
@@ -485,8 +485,8 @@ fn decoder_bytes_to_string_slice(
 ///|
 fn decoder_bytes_slice(
   arr : Array[Byte],
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> Array[Byte] {
   let result = []
   let mut i = start
@@ -512,7 +512,9 @@ fn parse_request_line(
 }
 
 ///|
-fn parse_status_line(line : String) -> Result[(String, Int, String), HttpError] {
+fn parse_status_line(
+  line : String,
+) -> Result[(String, Int32, String), HttpError] {
   let parts = split_to_array(line, " ")
   if parts.length() < 2 {
     return Err(InvalidData("Invalid status line"))
@@ -622,14 +624,14 @@ fn decoder_string_to_lower(s : String) -> String {
     let ci = c.to_int()
     // Use Int::unsafe_to_char for all characters, as Char.to_string() may produce numeric output
     let new_ci = if ci >= 65 && ci <= 90 { ci + 32 } else { ci }
-    result = result + Int::unsafe_to_char(new_ci).to_string()
+    result = result + Int32::unsafe_to_char(new_ci).to_string()
     idx = idx + 1
   }
   result
 }
 
 ///|
-fn decoder_string_index_of(s : String, needle : String) -> Int? {
+fn decoder_string_index_of(s : String, needle : String) -> Int32? {
   if needle.length() == 0 {
     return Some(0)
   }
@@ -656,7 +658,7 @@ fn decoder_string_index_of(s : String, needle : String) -> Int? {
 }
 
 ///|
-fn decoder_parse_int(s : String) -> Int? {
+fn decoder_parse_int(s : String) -> Int32? {
   let mut result = 0
   let mut idx = 0
   let len = s.length()

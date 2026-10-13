@@ -2,21 +2,21 @@
 /// HTTP Response representation
 pub(all) struct Response {
   version : String
-  status_code : Int
+  status_code : Int32
   reason_phrase : String
   headers : Array[(String, String)]
   body : Array[Byte]
 } derive(Debug, Eq)
 
 ///|
-pub fn Response::new(status_code : Int, reason_phrase : String) -> Response {
+pub fn Response::new(status_code : Int32, reason_phrase : String) -> Response {
   { version: "HTTP/1.1", status_code, reason_phrase, headers: [], body: [], }
 }
 
 ///|
 pub fn Response::with_version(
   version : String,
-  status_code : Int,
+  status_code : Int32,
   reason_phrase : String,
 ) -> Response {
   { version, status_code, reason_phrase, headers: [], body: [], }
@@ -107,7 +107,7 @@ pub fn Response::is_keep_alive(self : Response) -> Bool {
 }
 
 ///|
-pub fn Response::content_length(self : Response) -> Int? {
+pub fn Response::content_length(self : Response) -> Int32? {
   match self.get_header("content-length") {
     Some(v) => response_parse_int(v)
     None => None
@@ -130,7 +130,7 @@ fn response_string_to_lower(s : String) -> String {
     let c = s[idx]
     let ci = c.to_int()
     let new_c = if ci >= 65 && ci <= 90 {
-      Int::unsafe_to_char(ci + 32).to_string()
+      Int32::unsafe_to_char(ci + 32).to_string()
     } else {
       c.to_string()
     }
@@ -141,7 +141,7 @@ fn response_string_to_lower(s : String) -> String {
 }
 
 ///|
-fn response_parse_int(s : String) -> Int? {
+fn response_parse_int(s : String) -> Int32? {
   let mut result = 0
   let mut idx = 0
   let len = s.length()

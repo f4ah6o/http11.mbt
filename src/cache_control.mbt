@@ -1,12 +1,12 @@
 ///|
 /// Cache-Control header (RFC 9111 Section 5.2)
 pub(all) struct CacheControl {
-  max_age : Int?
-  s_maxage : Int?
-  max_stale : Int?
-  min_fresh : Int?
-  stale_while_revalidate : Int?
-  stale_if_error : Int?
+  max_age : Int32?
+  s_maxage : Int32?
+  max_stale : Int32?
+  min_fresh : Int32?
+  stale_while_revalidate : Int32?
+  stale_if_error : Int32?
   no_cache : Bool
   no_store : Bool
   no_transform : Bool
@@ -67,7 +67,7 @@ pub fn CacheControl::parse(input : String) -> Result[CacheControl, CacheError] {
 ///|
 pub fn CacheControl::with_max_age(
   self : CacheControl,
-  seconds : Int,
+  seconds : Int32,
 ) -> CacheControl {
   {
     max_age: Some(seconds),
@@ -92,7 +92,7 @@ pub fn CacheControl::with_max_age(
 ///|
 pub fn CacheControl::with_s_maxage(
   self : CacheControl,
-  seconds : Int,
+  seconds : Int32,
 ) -> CacheControl {
   {
     max_age: self.max_age,
@@ -313,32 +313,32 @@ pub fn CacheControl::with_immutable(self : CacheControl) -> CacheControl {
 }
 
 ///|
-pub fn CacheControl::max_age(self : CacheControl) -> Int? {
+pub fn CacheControl::max_age(self : CacheControl) -> Int32? {
   self.max_age
 }
 
 ///|
-pub fn CacheControl::s_maxage(self : CacheControl) -> Int? {
+pub fn CacheControl::s_maxage(self : CacheControl) -> Int32? {
   self.s_maxage
 }
 
 ///|
-pub fn CacheControl::max_stale(self : CacheControl) -> Int? {
+pub fn CacheControl::max_stale(self : CacheControl) -> Int32? {
   self.max_stale
 }
 
 ///|
-pub fn CacheControl::min_fresh(self : CacheControl) -> Int? {
+pub fn CacheControl::min_fresh(self : CacheControl) -> Int32? {
   self.min_fresh
 }
 
 ///|
-pub fn CacheControl::stale_while_revalidate(self : CacheControl) -> Int? {
+pub fn CacheControl::stale_while_revalidate(self : CacheControl) -> Int32? {
   self.stale_while_revalidate
 }
 
 ///|
-pub fn CacheControl::stale_if_error(self : CacheControl) -> Int? {
+pub fn CacheControl::stale_if_error(self : CacheControl) -> Int32? {
   self.stale_if_error
 }
 

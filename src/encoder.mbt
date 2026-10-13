@@ -95,7 +95,7 @@ fn string_to_bytes(s : String) -> Array[Byte] {
 }
 
 ///|
-fn int_to_hex(n : Int) -> String {
+fn int_to_hex(n : Int32) -> String {
   let hex = "0123456789abcdef"
   if n == 0 {
     return "0"

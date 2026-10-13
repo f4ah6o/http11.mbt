@@ -1,10 +1,10 @@
 ///|
 /// Decoder limits to prevent resource exhaustion
 pub(all) struct DecoderLimits {
-  max_buffer_size : Int
-  max_headers_count : Int
-  max_header_line_size : Int
-  max_body_size : Int
+  max_buffer_size : Int32
+  max_headers_count : Int32
+  max_header_line_size : Int32
+  max_body_size : Int32
 } derive(Debug, Eq)
 
 ///|
