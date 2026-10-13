@@ -4,7 +4,7 @@ pub(all) struct SetCookie {
   name : String
   value : String
   expires : HttpDate?
-  max_age : Int?
+  max_age : Int32?
   domain : String?
   path : String?
   secure : Bool
@@ -216,7 +216,7 @@ pub fn SetCookie::expires(self : SetCookie) -> HttpDate? {
 }
 
 ///|
-pub fn SetCookie::max_age(self : SetCookie) -> Int? {
+pub fn SetCookie::max_age(self : SetCookie) -> Int32? {
   self.max_age
 }
 
@@ -264,7 +264,7 @@ pub fn SetCookie::with_expires(
 }
 
 ///|
-pub fn SetCookie::with_max_age(self : SetCookie, max_age : Int) -> SetCookie {
+pub fn SetCookie::with_max_age(self : SetCookie, max_age : Int32) -> SetCookie {
   {
     name: self.name,
     value: self.value,

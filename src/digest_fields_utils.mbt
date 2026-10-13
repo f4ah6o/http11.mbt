@@ -85,7 +85,7 @@ fn df_parse_byte_sequence(
 }
 
 ///|
-fn df_parse_preference(input : String) -> Result[Int, DigestFieldsError] {
+fn df_parse_preference(input : String) -> Result[Int32, DigestFieldsError] {
   let s = df_trim(input)
   if s.length() == 0 {
     return Err(InvalidPreference)
@@ -115,7 +115,7 @@ fn df_is_valid_token(s : String) -> Bool {
   let mut idx = 0
   while idx < s.length() {
     let code = s[idx]
-    let ch = Int::unsafe_to_char(code.to_int())
+    let ch = Int32::unsafe_to_char(code.to_int())
     if !df_is_token_char(ch) {
       return false
     }
@@ -163,12 +163,12 @@ fn df_split_string(s : String, sep : String) -> Array[String] {
 }
 
 ///|
-fn df_substring(s : String, start : Int, end : Int) -> String {
+fn df_substring(s : String, start : Int32, end : Int32) -> String {
   s[start:end].to_owned()
 }
 
 ///|
-fn df_substring_from(s : String, start : Int) -> String {
+fn df_substring_from(s : String, start : Int32) -> String {
   s[start:s.length()].to_owned()
 }
 
@@ -178,7 +178,7 @@ fn df_to_lower_case(s : String) -> String {
 }
 
 ///|
-fn df_find_char(s : String, target : Int) -> Int? {
+fn df_find_char(s : String, target : Int32) -> Int32? {
   let mut idx = 0
   while idx < s.length() {
     let ch = s[idx]
@@ -191,7 +191,7 @@ fn df_find_char(s : String, target : Int) -> Int? {
 }
 
 ///|
-fn df_int_to_string(n : Int) -> String {
+fn df_int_to_string(n : Int32) -> String {
   if n == 0 {
     return "0"
   }
@@ -201,7 +201,7 @@ fn df_int_to_string(n : Int) -> String {
     let mut result = ""
     let mut num = n
     while num > 0 {
-      result = result + Int::unsafe_to_char(48 + num % 10).to_string()
+      result = result + Int32::unsafe_to_char(48 + num % 10).to_string()
       num = num / 10
     }
     result
@@ -250,7 +250,7 @@ fn df_base64_encode(input : Array[Byte]) -> String {
 }
 
 ///|
-fn df_base64_char(index : Int) -> String {
+fn df_base64_char(index : Int32) -> String {
   let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
   if index >= 0 && index < 64 {
     alphabet[index:index + 1].to_owned()
@@ -308,7 +308,7 @@ fn df_base64_decode(input : String) -> Result[Array[Byte], DigestFieldsError] {
 }
 
 ///|
-fn df_pow2(n : Int) -> Int {
+fn df_pow2(n : Int32) -> Int32 {
   if n == 0 {
     1
   } else if n == 1 {
@@ -337,7 +337,7 @@ fn df_pow2(n : Int) -> Int {
 }
 
 ///|
-fn df_parse_u8(s : String) -> Int? {
+fn df_parse_u8(s : String) -> Int32? {
   if s.length() == 0 {
     return None
   }

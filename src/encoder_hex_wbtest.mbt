@@ -1,10 +1,10 @@
 ///|
 /// The public chunk encoder supplies an array length, so this private helper's
-/// domain is nonnegative Int. Compare with core's independent radix formatter,
+/// domain is nonnegative Int32. Compare with core's independent radix formatter,
 /// rather than copying the implementation or relying on a self round-trip.
 test "hex size agrees with core radix oracle" {
   @quickcheck.check(
-    (n : Int) => int_to_hex(n) == n.to_string(radix=16),
+    (n : Int32) => int_to_hex(n) == n.to_string(radix=16),
     filter=n => n >= 0,
     count=2000,
     max_size=2147483647,

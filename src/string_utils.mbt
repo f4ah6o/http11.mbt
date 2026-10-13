@@ -1,5 +1,5 @@
 ///|
-fn str_char_at(s : String, idx : Int) -> Int {
+fn str_char_at(s : String, idx : Int32) -> Int32 {
   if idx >= s.length() {
     return 0
   }
@@ -8,25 +8,25 @@ fn str_char_at(s : String, idx : Int) -> Int {
 }
 
 ///|
-fn str_string_slice(s : String, start : Int, end : Int) -> String {
+fn str_string_slice(s : String, start : Int32, end : Int32) -> String {
   let mut result = ""
   let mut idx = start
   while idx < end {
     let ch = s[idx]
-    result = result + Int::unsafe_to_char(ch.to_int()).to_string()
+    result = result + Int32::unsafe_to_char(ch.to_int()).to_string()
     idx = idx + 1
   }
   result
 }
 
 ///|
-fn str_string_slice_from(s : String, start : Int) -> String {
+fn str_string_slice_from(s : String, start : Int32) -> String {
   let mut result = ""
   let mut idx = start
   let len = s.length()
   while idx < len {
     let ch = s[idx]
-    result = result + Int::unsafe_to_char(ch.to_int()).to_string()
+    result = result + Int32::unsafe_to_char(ch.to_int()).to_string()
     idx = idx + 1
   }
   result
@@ -63,9 +63,9 @@ fn str_to_lower_case(s : String) -> String {
   while idx < s.length() {
     let ch = str_char_at(s, idx)
     if ch >= 65 && ch <= 90 { // A-Z
-      result = result + Int::unsafe_to_char(ch + 32).to_string()
+      result = result + Int32::unsafe_to_char(ch + 32).to_string()
     } else {
-      result = result + Int::unsafe_to_char(ch).to_string()
+      result = result + Int32::unsafe_to_char(ch).to_string()
     }
     idx = idx + 1
   }
@@ -101,7 +101,7 @@ fn str_split_string(s : String, sep : String) -> Array[String] {
 }
 
 ///|
-fn str_split_char(s : String, sep : Int) -> Array[String] {
+fn str_split_char(s : String, sep : Int32) -> Array[String] {
   let mut result = []
   let mut start = 0
   let mut idx = 0

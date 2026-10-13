@@ -1,7 +1,7 @@
 ///|
 /// Q value (0.000 - 1.000)
 pub(all) struct QValue {
-  value : Int
+  value : Int32
 } derive(Eq)
 
 ///|
@@ -60,7 +60,7 @@ pub fn QValue::parse(input : String) -> Result[QValue, AcceptError] {
 }
 
 ///|
-pub fn QValue::value(self : QValue) -> Int {
+pub fn QValue::value(self : QValue) -> Int32 {
   self.value
 }
 

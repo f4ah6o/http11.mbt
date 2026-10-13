@@ -84,14 +84,14 @@ fn cl_is_valid_language_tag(tag : String) -> Bool {
 }
 
 ///|
-fn cl_is_alnum(b : Int) -> Bool {
+fn cl_is_alnum(b : Int32) -> Bool {
   (b >= 48 && b <= 57) || // 0-9
   (b >= 65 && b <= 90) || // A-Z
   (b >= 97 && b <= 122) // a-z
 }
 
 ///|
-fn cl_char_at(s : String, idx : Int) -> Int {
+fn cl_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 

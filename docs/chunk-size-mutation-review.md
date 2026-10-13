@@ -16,7 +16,65 @@ annotations. The only subsequent production behavior change is
 All possible entries are ASCII hexadecimal digits, so the conversion is defined.
 No public interface changed.
 
-## Reproducibility
+## Revalidation after main's toolchain update (2026-10-13)
+
+PR #8 was merged into main at
+`e8821026f2c9f2f58a3120c04114032ac7ead54a`. PR #7 incorporates that commit
+without reverting its toolchain pins or source migrations. The CI conflict
+uses main's installer release `0.10.15+943464bfa`. The helper remains extracted
+and fixed; its input and the property input use `Int32`, matching main's
+migration. The duplicate, buggy helper from main is not restored.
+
+The results in this section are a **new campaign on the merged source**, run
+on this Mac. The original campaign below used the old source and toolchain;
+its mutant IDs and measurements are historical evidence, not reused results.
+
+- Moon: `0.1.20261012` (`748b63c`)
+- Compiler and official core: `v0.10.15+943464bfa`
+- Core archive SHA-256:
+  `96d30f4dbcc6a9e1736ef26fbdd0e8fb0e97cb01d50e55d2a0072208b8061ae5`
+- `src/encoder_hex.mbt` SHA-256:
+  `0cc0152b81c9a65104697335d08618016177df649243467be92d06916146b938`
+- turtles: `0.4.6`, macOS arm64; native target, 2 jobs, 30-second timeout,
+  checked-in operators and file selection; no reused outcomes
+- Both comparison copies contain identical corrected production source. The
+  control removes only the two added test files (50 tests); the treatment
+  retains the property, 24 boundaries and wire regression (53 tests).
+- All 8 new mutant identities match between these two copies, including ID,
+  path, offsets, original text, replacement, group and location. The `Int32`
+  spelling shifts offsets, so these IDs differ from the old campaign.
+
+| New mutant ID | Change | Original tests, corrected source | Added tests |
+| --- | --- | --- | --- |
+| m-f103f0a1ddb6920f | body -> empty string | survived | killed |
+| m-b0fda3db2c86fe3f | body -> xyzzy | survived | killed |
+| m-953787cf582f436f | zero condition -> true | survived | killed |
+| m-54ac322fcf87268c | zero condition -> false | survived | killed |
+| m-d1eda2ee0c70ae82 | == -> != | survived | killed |
+| m-cb3ab7c33035b86b | > -> < | survived | killed |
+| m-f609f25824612bee | string + -> - | unviable | unviable |
+| m-55ddd627d811dcdf | / -> * | survived | killed |
+
+The new control has 0 killed / 7 survived; the new treatment has 7 killed /
+0 survived. Both have 1 unviable mutant and 0 timeouts. All seven viable mutants
+are caught by both the property and boundary assertions; property-exclusive
+kills remain zero. This is 7/7 within the selected pure helper, not a score for
+the whole HTTP library. The seed, accepted-case count, size, shrinking limit,
+nonnegative domain and independent core radix oracle are unchanged.
+
+Fresh local validation passes native, JavaScript and wasm-gc tests (53/53
+each), native `--deny-warn` check, JavaScript and wasm-gc checks, native build,
+classic wasm test build-only, `moon info`, `moon fmt`, `moon fmt --check` and
+`git diff --check`. Public interfaces are identical to updated main. The
+non-native checks retain 8 unused-import warnings in the native-only example
+packages; no unrelated cleanup is included.
+
+The original defect was separately restored in a disposable merged-source
+copy: the property fails and shrinks to `1`. The isolated wire regression
+passes 1/1 on pristine merged source and fails 0/1 on the condition-true mutant.
+Hosted CI is verified separately against the pushed PR HEAD.
+
+## Original campaign reproducibility
 
 - Repository: https://github.com/f4ah6o/http11.mbt
 - Base: `250a978988e3c81377b8d7c432cae5e7b193d96d`
@@ -45,7 +103,7 @@ turtles --dir . --target native --jobs 2 --timeout 30 --emit-regressions \
   --json after.json --output-dir .turtles
 ```
 
-## Evidence and comparison design
+## Original evidence and comparison design
 
 1. The original suite passed twice: 50/50 native tests on the pinned toolchain.
    The unchanged helper extraction preserved this baseline.
@@ -64,7 +122,7 @@ turtles --dir . --target native --jobs 2 --timeout 30 --emit-regressions \
    source; 0/1 passed when `if n == 0` was replaced with `if true` in a separate
    copy. It detected the wire-size byte changing from `0x31` to `0x30`.
 
-## Final mutant classification
+## Original mutant classification
 
 | ID | Change | Original tests, corrected source | Added tests |
 | --- | --- | --- | --- |
@@ -83,7 +141,7 @@ All seven viable kills were attributed to both the property and explicit
 assertions; there were zero property-exclusive kills. The property additionally
 found the actual production defect before the boundary regression was retained.
 
-## Final validation
+## Original validation
 
 - Native tests: 53/53, repeated
 - JavaScript tests: 53/53

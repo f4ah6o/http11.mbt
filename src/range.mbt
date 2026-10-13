@@ -454,22 +454,22 @@ fn rg_trim_string(s : String) -> String {
 }
 
 ///|
-fn rg_char_at(s : String, idx : Int) -> Int {
+fn rg_char_at(s : String, idx : Int32) -> Int32 {
   str_char_at(s, idx)
 }
 
 ///|
-fn rg_string_slice(s : String, start : Int, end : Int) -> String {
+fn rg_string_slice(s : String, start : Int32, end : Int32) -> String {
   str_string_slice(s, start, end)
 }
 
 ///|
-fn rg_string_slice_from(s : String, start : Int) -> String {
+fn rg_string_slice_from(s : String, start : Int32) -> String {
   str_string_slice_from(s, start)
 }
 
 ///|
-fn rg_find_char(s : String, target : Int) -> Int? {
+fn rg_find_char(s : String, target : Int32) -> Int32? {
   let mut idx = 0
   while idx < s.length() {
     if rg_char_at(s, idx) == target {
@@ -530,7 +530,7 @@ pub fn rg_parse_u64(s : String) -> UInt64? {
 }
 
 ///|
-fn int_digit_to_u64(d : Int) -> UInt64 {
+fn int_digit_to_u64(d : Int32) -> UInt64 {
   // Convert single digit Int (0-9) to UInt64
   if d == 0 {
     0UL
@@ -581,7 +581,7 @@ pub fn rg_u64_to_string(n : UInt64) -> String {
     let remainder = num % 10UL
     // Convert UInt64 digit (0-9) to Int using subtraction
     let digit_int = u64_digit_to_int(remainder)
-    chars.push(Int::unsafe_to_char(digit_int + 48).to_string())
+    chars.push(Int32::unsafe_to_char(digit_int + 48).to_string())
     num = num / 10UL
   }
   let mut result = ""
@@ -597,7 +597,7 @@ pub fn rg_u64_to_string(n : UInt64) -> String {
 }
 
 ///|
-fn u64_digit_to_int(d : UInt64) -> Int {
+fn u64_digit_to_int(d : UInt64) -> Int32 {
   // Convert a single digit UInt64 (0-9) to Int
   if d == 0UL {
     0

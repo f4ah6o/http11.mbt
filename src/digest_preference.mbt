@@ -2,13 +2,13 @@
 /// Digest preference (algorithm + weight 0-10)
 pub(all) struct DigestPreference {
   algorithm : String
-  weight : Int
+  weight : Int32
 } derive(Eq)
 
 ///|
 pub fn DigestPreference::new(
   algorithm : String,
-  weight : Int,
+  weight : Int32,
 ) -> DigestPreference {
   { algorithm, weight, }
 }
@@ -19,7 +19,7 @@ pub fn DigestPreference::algorithm(self : DigestPreference) -> String {
 }
 
 ///|
-pub fn DigestPreference::weight(self : DigestPreference) -> Int {
+pub fn DigestPreference::weight(self : DigestPreference) -> Int32 {
   self.weight
 }
 
